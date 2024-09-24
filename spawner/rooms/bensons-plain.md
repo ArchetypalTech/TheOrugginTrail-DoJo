@@ -40,9 +40,7 @@ material: "dirt"
 
 #### [the path heads north, it leads to a barn](elis-barn.md)
 
-## Ball
-
-a knock off UEFA football
+## a knock off UEFA football
 
 its a bit battered and bruised
 
@@ -51,6 +49,7 @@ not exactly a sphere
 but you can kick it
 
 ```yaml
+type: "ball"
 material: leather
 ```
 
