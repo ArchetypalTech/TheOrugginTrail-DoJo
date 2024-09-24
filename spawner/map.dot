@@ -1,0 +1,23 @@
+digraph {
+    compound = true;
+    subgraph cluster_room_1 {
+        label = "ROOM 1";
+        room_1_entry [label = "";style = invis;];
+        // ---------------------------------------
+        room_1_window [label = "window";];
+        room_1_door [label = "door";];
+        room_1_football [label = "football";];
+    }
+    
+    
+    subgraph cluster_room_2 {
+        label = "ROOM 2";
+        room_2_entry [label = "";style = invis;];
+        // ---------------------------------------
+        room_2_window [label = "window";];
+        room_2_door [label = "door";];
+    }
+    
+    room_1_door -> room_2_entry [lhead = cluster_room_2;];
+    room_2_door -> room_1_entry [lhead = cluster_room_1;];
+}
