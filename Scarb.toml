@@ -28,3 +28,5 @@ allowed-libfuncs-list.name = "experimental"
 [profile.dev]
 
 [profile.slot]
+
+[profile.local]
