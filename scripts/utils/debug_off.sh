@@ -18,8 +18,11 @@ process_file() {
     local temp_file=$(mktemp)
     
     while IFS= read -r line; do
-        # Skip lines containing "Copyright"
-        if [[ ! $line =~ Copyright ]]; then
+        # Check if line contains println! and IS commented (with or without whitespace)
+        if [[ $line =~ println! ]] && [[ $line =~ ^[[:space:]]*//.*|^//.* ]]; then
+            # Remove // but preserve the original whitespace
+            echo "${line/\/\//}" >> "$temp_file"
+        else
             echo "$line" >> "$temp_file"
         fi
     done < "$file"

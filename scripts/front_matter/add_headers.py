@@ -3,9 +3,9 @@ import os
 # The header to add to each file
 HEADER = """
 // **************************************************************************************
-// * Copyright (c) 2024 Tim Storey (itrainspiders) & Archetypal Tech
 // *
-// * MeaCulpa (mc) 2024 lbdl | itrainspiders
+// * MeaCulpa (mc) 2024 lbdl | itrainspiders | Tim Storey | ZORG
+// *
 // **************************************************************************************
 //
 
