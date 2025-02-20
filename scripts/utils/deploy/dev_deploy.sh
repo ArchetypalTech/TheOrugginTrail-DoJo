@@ -181,7 +181,7 @@ copy_contract_manifests() {
     fi
 }
 
-# we domnt need this anymore, now ca be done by an overlay
+# we dont need this anymore, now ca be done by an overlay
 # and anyway its a carpet bomb
 set_auth() {
   local rpc='http://localhost:5050'
