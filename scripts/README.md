@@ -17,3 +17,5 @@ Utility scripts for development
 
 `./utils/build/build_manifest.sh`   : builds the abi's but backgrounds the katana process
 `./utils/deploy/dev_deploy.sh`  : backgrounds `torii` and `katana` and builds and deploys
+
+`./utils/deploy/migrate`    : runs a deploy in the foreground
