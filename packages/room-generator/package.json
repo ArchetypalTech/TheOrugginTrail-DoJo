@@ -1,0 +1,22 @@
+{
+  "name": "@zorg/generator",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run index.ts",
+    "build": "bun build ./index.ts --compile --outfile ./dist/room-generator",
+    "generate": "bun run index.ts config/test_game.json ../src/systems/spawner.cairo"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.11.19"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@starkware-industries/starkware-crypto-utils": "^0.0.2",
+    "ansicolor": "^2.0.3",
+    "typescript": "^5.0.0"
+  }
+}
