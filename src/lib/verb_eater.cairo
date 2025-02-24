@@ -107,6 +107,46 @@ pub mod verb_dispatcher {
                 }
                 out = desc;
             },
+            ActionType::Drop => {
+                println!("drop------->{:?}", msg);
+                let mut desc: ByteArray = "";
+                if msg.dobj == ObjectType::None {
+                    // let item_desc: ByteArray = object_type_to_str(msg.dobj);
+                    desc = "hmmm, there isnt one of those here to drop. are you mad fam?";
+                }else {
+                    let mut rm: Room = wrld.read_model(player.location.clone());
+                    let mut inv: Inventory = wrld.read_model(player.inventory.clone());
+                    let mut new_inv_items: Array<felt252> = array![]; // New inventory without the dropped item
+                    let mut found: bool = false;
+                    println!("inv items {:?}", inv.items.len());
+                    for ele in inv.items {
+                        let obj: Object = wrld.read_model(ele);
+                        println!("{:?}", obj.objType);
+                        if obj.objType == msg.dobj && !found {
+                            println!("dropping thing");
+                            rm.objectIds.append(obj.objectId);
+                            let item_desc: ByteArray = object_type_to_str(obj.objType);
+                            desc =
+                                format!(
+                                    "you drop the {} from your trusty adventurors plastic bag",
+                                    item_desc
+                                );
+                            found = true;
+                        } else {
+                            new_inv_items.append(ele);
+                        }
+                    };
+
+                    if !found {
+                        desc = "you don't have one of those to drop.";
+                    }
+
+                    inv.items = new_inv_items; // Update inventory
+                    wrld.write_model(@rm);
+                    wrld.write_model(@inv);
+                }
+                out = desc;
+            },
             ActionType::Help => {
                 // println!("help------>");
                 let txt: ByteArray =

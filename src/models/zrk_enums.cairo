@@ -308,6 +308,7 @@ pub enum ActionType {
     Explode,
     Disintegrate,
     Close,
+    Drop,
 }
 
 impl AT_to_Felt252 of Into<ActionType, felt252> {
@@ -339,6 +340,7 @@ impl AT_to_Felt252 of Into<ActionType, felt252> {
             ActionType::Close => 'close',
             ActionType::Soak => 'soak',
             ActionType::Empty => 'empty',
+            ActionType::Drop => 'drop',
             ActionType::None => 'none'
         }
     }

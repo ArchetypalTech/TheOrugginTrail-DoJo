@@ -1,0 +1,38 @@
+# db_dir = "./torii-db"
+
+# The World address to index.
+world_address = "0x067631b711ce310b8e6b32fb88f5427244534dba2a2584bb07c35256f618affa"
+ 
+# Default RPC URL configuration
+rpc = "https://api.cartridge.gg/x/theoruggintrail/katana" #rpc = "https://api.cartridge.gg/x/starknet/sepolia"
+
+
+
+#External URL for GraphQL Playground
+# Optional: Used in hosted environments
+# external_url = "https://api.cartridge.gg/x/theoruggintrail/torii/graphql"
+
+# Server Options
+#[server]
+#http_addr = "127.0.0.1"
+#http_port = 8080
+#http_cors_origins = ["*"]
+ 
+# Relay Options
+#[relay]
+#port = 9090                   # TCP & UDP Quic transport
+#webrtc_port = 9091            # WebRTC transport
+#websocket_port = 9092         # WebSocket transport
+
+[indexing]
+events_chunk_size = 1024     # Size of events page to fetch
+blocks_chunk_size = 10240    # Blocks to process before DB commit
+index_pending = true         # Enable indexing pending blocks
+polling_interval = 500       # Polling interval in milliseconds
+max_concurrent_tasks = 100   # Maximum concurrent indexing tasks
+index_transactions = false   # Whether to index world transactions
+contracts = [
+    "erc721:0x02cf8f08f551ecb5b839726396d8c8600843078a30b2e288784980cb098ccb7b", # Snake Oil. Batch 23. Sepolia
+    "erc721:0x050ab7cbc80f8c7ee18f859dcc81e7ae4213e08da243851a8889d48c2ed7f765", # Snake Oil. Batch 23. Katana
+    #"erc721:0x073e84f7c8a69177a1643af77c801eabc4203a7076ea15999fbc1ae5eae9253d", # Snake Oil. Batch 23. Katana2. This is for the testing branches
+]
