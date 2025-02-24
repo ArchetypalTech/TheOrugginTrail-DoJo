@@ -1,0 +1,63 @@
+{
+	"biome.requireConfiguration": false,
+	"biome.lspBin": "./biome-test/node_modules/@biomejs/biome/bin/biome",
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "bradlc.vscode-tailwindcss"
+	},
+	"[scss]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[solidity]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[cairo]": {
+		"editor.defaultFormatter": "StarkWare.cairo1"
+	},
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"editor.formatOnSave": true,
+	"editor.tabSize": 2,
+	"search.exclude": {
+		"**/*.bin": true,
+		"**/*.gltf": true,
+		"**/*.jpg": true,
+		"**/*.typeface.json": true,
+		"**/*.wav": true,
+		"**/*.webp": true,
+		"**/*.webm": true,
+		"**/*.glb": true,
+		"**/*.png": true,
+		"**/*.cube": true,
+		"**/*.CUBE": true,
+		"**/*.mp3": true,
+		"**/*.hdr": true,
+		"**/*.woff": true,
+		"**/*.woff2": true,
+		"**/*.ttf": true,
+		"**/*.svg": true,
+		"**/*.tga": true,
+		"**/*.fbx": true
+	}
+}
