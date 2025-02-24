@@ -44,6 +44,8 @@ pub mod tokeniser {
             ActionType::Soak
         } else if s == "close" {
             ActionType::Close
+        } else if s == "drop" {
+            ActionType::Drop
         } else {
             ActionType::None
         }

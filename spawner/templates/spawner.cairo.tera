@@ -101,6 +101,8 @@
   zrk::ActionType::Disintegrate
   {%- elif t == "Close" -%}
   zrk::ActionType::Close
+  {%- elif t == "Drop" -%}
+  zrk::ActionType::Drop
   {%- else -%}
   zrk::ActionType::None
   {%- endif -%}

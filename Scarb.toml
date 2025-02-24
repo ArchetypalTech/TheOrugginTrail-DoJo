@@ -27,3 +27,5 @@ build-external-contracts = ["dojo::world::world_contract::world"]
 allowed-libfuncs-list.name = "experimental"
 
 [profile.dev]
+
+[profile.slot]

@@ -1,0 +1,27 @@
+[world]
+seed = "the_oruggin_trail"
+name = "The Oruggin Trail"
+description = "The official unauthorised and unwanted onchain text adventure engine. hoorah!"
+#cover_uri = "file://assets/cover.png"
+#icon_uri = "file://assets/icon.png"
+# website = "https://github.com/ArchetypalTech/TheOrugginTrail-DoJo/tree/main"
+
+[namespace]
+default = "the_oruggin_trail"
+# remapping can be done at tag level, or for the whole namespace.
+# In this example, `armory-Flatbow` model will belong to `dojo_examples_weapons` namespace, and all `bestiary` models will belong to the `dojo_examples_foes` namespace when compiled into `spawn-and-move`.
+# mappings = { "armory-Flatbow" = "dojo_examples_weapons", "bestiary" = "dojo_examples_foes" }
+
+[env]
+rpc_url = "https://api.cartridge.gg/x/theoruggintrail/katana"
+
+# katana v1
+#| Account address |  0x6677fe62ee39c7b07401f754138502bab7fac99d2d3c5d37df7d1c6fab10819
+#| Private key     |  0x3e3979c1ed728490308054fe357a9f49cf67f80f9721f44cc57235129e090f4
+account_address = "0x6677fe62ee39c7b07401f754138502bab7fac99d2d3c5d37df7d1c6fab10819"
+private_key = "0x3e3979c1ed728490308054fe357a9f49cf67f80f9721f44cc57235129e090f4"
+world_address = "0x067631b711ce310b8e6b32fb88f5427244534dba2a2584bb07c35256f618affa"
+
+# not sure we need to set this for outputter any more
+[writers]
+"the_oruggin_trail" = ["the_oruggin_trail-meatpuppet", "the_oruggin_trail-outputter", "the_oruggin_trail-spawner"]
