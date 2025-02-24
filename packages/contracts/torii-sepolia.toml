@@ -1,7 +1,7 @@
 # db_dir = "./torii-db"
 
 # The World address to index.
-world_address = "0x067631b711ce310b8e6b32fb88f5427244534dba2a2584bb07c35256f618affa"
+world_address = "0x059cbdb7b3b6f4b7828e8b50f2c1bfd6cab76212be4492ec5fee80671a8355b2"
  
 # Default RPC URL configuration
 rpc = "https://api.cartridge.gg/x/theoruggintrail/katana" #rpc = "https://api.cartridge.gg/x/starknet/sepolia"

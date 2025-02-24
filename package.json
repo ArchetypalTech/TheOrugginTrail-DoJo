@@ -3,10 +3,12 @@
 	"type": "module",
 	"version": "0.1.0",
 	"scripts": {
-		"dev": "mprocs"
+		"install": "bun run ./scripts/install.ts # 🦨💕 quickstart installer ",
+		"dev": "mprocs # start developer mode"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
+		"ansicolor": "^2.0.3",
 		"mprocs": "^0.7.2",
 		"wait-port": "^1.1.0"
 	},

@@ -20,8 +20,12 @@ rpc_url = "https://api.cartridge.gg/x/theoruggintrail/katana"
 #| Private key     |  0x3e3979c1ed728490308054fe357a9f49cf67f80f9721f44cc57235129e090f4
 account_address = "0x6677fe62ee39c7b07401f754138502bab7fac99d2d3c5d37df7d1c6fab10819"
 private_key = "0x3e3979c1ed728490308054fe357a9f49cf67f80f9721f44cc57235129e090f4"
-world_address = "0x067631b711ce310b8e6b32fb88f5427244534dba2a2584bb07c35256f618affa"
+world_address = "0x59cbdb7b3b6f4b7828e8b50f2c1bfd6cab76212be4492ec5fee80671a8355b2"
 
 # not sure we need to set this for outputter any more
 [writers]
-"the_oruggin_trail" = ["the_oruggin_trail-meatpuppet", "the_oruggin_trail-outputter", "the_oruggin_trail-spawner"]
+"the_oruggin_trail" = [
+  "the_oruggin_trail-meatpuppet",
+  "the_oruggin_trail-outputter",
+  "the_oruggin_trail-spawner",
+]

@@ -1,7 +1,10 @@
 procs:
+  contracts:
+    cwd: packages/contracts
+    shell: wait-port 5050 && sozo build && sozo inspect && sozo migrate && sozo inspect && torii --world "0x059cbdb7b3b6f4b7828e8b50f2c1bfd6cab76212be4492ec5fee80671a8355b2" --http.cors_origins "*"
+  client:
+    cwd: packages/client
+    shell: bun run dev
   katana:
     cwd: packages/contracts
     shell: katana --dev --dev.no-fee
-  torii:
-    cwd: packages/contracts
-    shell: sozo build && sozo inspect && sozo migrate && sozo inspect && torii --http.cors_origins "*"

@@ -5,6 +5,7 @@
       "name": "theoruggintrail-dojo",
       "devDependencies": {
         "@types/bun": "latest",
+        "ansicolor": "^2.0.3",
         "mprocs": "^0.7.2",
         "wait-port": "^1.1.0",
       },
