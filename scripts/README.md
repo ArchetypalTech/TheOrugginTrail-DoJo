@@ -5,6 +5,11 @@ Utility scripts for development
 `filter-error`          : awkscript to cut down noise when running
 `filter-warnings`       : awkscript to cut down noise when g
 
+to use:
+```sh
+    sozosozo build | filter-warnings
+```
+
 `./utils/debug_on.sh`   : uncomments debug flags
 `./utils/debug_off.sh`  : comments debug flags
 
