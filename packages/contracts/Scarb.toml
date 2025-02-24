@@ -8,7 +8,7 @@ edition = "2024_07"
 sierra-replace-ids = true
 
 [scripts]
-migrate = "sozo build && sozo migrate apply"
+migrate = "sozo build && sozo migrate apply && ./scripts/default_auth.sh"
 spawn = "./scripts/spawn.sh"
 move = "./scripts/move.sh"
 
@@ -29,3 +29,5 @@ allowed-libfuncs-list.name = "experimental"
 [profile.dev]
 
 [profile.slot]
+
+[profile.local]

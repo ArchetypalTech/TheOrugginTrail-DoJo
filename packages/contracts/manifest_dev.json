@@ -1,7 +1,7 @@
 {
   "world": {
-    "class_hash": "0x79d9ce84b97bcc2a631996c3100d57966fc2f5b061fb1ec4dfd0040976bcac6",
-    "address": "0x67631b711ce310b8e6b32fb88f5427244534dba2a2584bb07c35256f618affa",
+    "class_hash": "0x7c9469d45a9cdbab775035afb48e1fa73fb35ab059fcb9dfb0a301aa973e783",
+    "address": "0x59cbdb7b3b6f4b7828e8b50f2c1bfd6cab76212be4492ec5fee80671a8355b2",
     "seed": "the_oruggin_trail",
     "name": "The Oruggin Trail",
     "entrypoints": [
@@ -11,6 +11,7 @@
       "register_event",
       "register_model",
       "register_contract",
+      "register_library",
       "init_contract",
       "upgrade_event",
       "upgrade_model",
@@ -78,6 +79,10 @@
           {
             "name": "Unregistered",
             "type": "()"
+          },
+          {
+            "name": "Library",
+            "type": "(core::starknet::class_hash::ClassHash, core::felt252)"
           }
         ]
       },
@@ -92,6 +97,10 @@
           {
             "name": "metadata_uri",
             "type": "core::byte_array::ByteArray"
+          },
+          {
+            "name": "metadata_hash",
+            "type": "core::felt252"
           }
         ]
       },
@@ -354,6 +363,34 @@
             "outputs": [
               {
                 "type": "core::starknet::contract_address::ContractAddress"
+              }
+            ],
+            "state_mutability": "external"
+          },
+          {
+            "type": "function",
+            "name": "register_library",
+            "inputs": [
+              {
+                "name": "namespace",
+                "type": "core::byte_array::ByteArray"
+              },
+              {
+                "name": "class_hash",
+                "type": "core::starknet::class_hash::ClassHash"
+              },
+              {
+                "name": "name",
+                "type": "core::byte_array::ByteArray"
+              },
+              {
+                "name": "version",
+                "type": "core::byte_array::ByteArray"
+              }
+            ],
+            "outputs": [
+              {
+                "type": "core::starknet::class_hash::ClassHash"
               }
             ],
             "state_mutability": "external"
@@ -963,6 +1000,28 @@
       },
       {
         "type": "event",
+        "name": "dojo::world::world_contract::world::LibraryRegistered",
+        "kind": "struct",
+        "members": [
+          {
+            "name": "name",
+            "type": "core::byte_array::ByteArray",
+            "kind": "key"
+          },
+          {
+            "name": "namespace",
+            "type": "core::byte_array::ByteArray",
+            "kind": "key"
+          },
+          {
+            "name": "class_hash",
+            "type": "core::starknet::class_hash::ClassHash",
+            "kind": "data"
+          }
+        ]
+      },
+      {
+        "type": "event",
         "name": "dojo::world::world_contract::world::EventEmitted",
         "kind": "struct",
         "members": [
@@ -1001,6 +1060,11 @@
           {
             "name": "uri",
             "type": "core::byte_array::ByteArray",
+            "kind": "data"
+          },
+          {
+            "name": "hash",
+            "type": "core::felt252",
             "kind": "data"
           }
         ]
@@ -1198,6 +1262,11 @@
             "kind": "nested"
           },
           {
+            "name": "LibraryRegistered",
+            "type": "dojo::world::world_contract::world::LibraryRegistered",
+            "kind": "nested"
+          },
+          {
             "name": "EventEmitted",
             "type": "dojo::world::world_contract::world::EventEmitted",
             "kind": "nested"
@@ -1243,8 +1312,8 @@
   },
   "contracts": [
     {
-      "address": "0x6f758cfd367ac46b8cae5b74770503253f0fd090097cfb0d8772ce275ea1376",
-      "class_hash": "0x2c7363619e332e4c0d8c6531436cd22a6fe33cec010c8b32a41908c766f7698",
+      "address": "0x2a5f3e10724a2208a85e81dd377ed61d2b547a136c98487d5de38a147fb2f3c",
+      "class_hash": "0x429b010da950f7eff1af1c64f5aae5c9ee1a94a65cb081ea6c774ee12e78607",
       "abi": [
         {
           "type": "impl",
@@ -1468,8 +1537,8 @@
       ]
     },
     {
-      "address": "0x743573d012b712630f5c2a0b4d0ce8886986e9cac50e294dee45b7298106589",
-      "class_hash": "0x2099974b8069724da42f47d8ddca73f62e50b431cbe7607fb3467f29e4ab285",
+      "address": "0x56dbd725ce3aff977d0e0e57934328f51d11a3bc0fd716b650e6c9860b673cc",
+      "class_hash": "0x4e86d0268c7658cd5ed48a48afe147cfc6141d349f4cf7c104348b295dcef75",
       "abi": [
         {
           "type": "impl",
@@ -1676,8 +1745,8 @@
       ]
     },
     {
-      "address": "0x6a323a076ce878c41502d0af571ed750abca8ac8d415923c0468b7fa3e2a4f1",
-      "class_hash": "0x27c9bcd414ba6e0c28683f4e7eb5ac49dfc0f1c12d971848799dd6926b7ee3b",
+      "address": "0x65bd082550dd4723820db9d96448adc7d369ea2430f0fe4fd3603dbcd2cecfb",
+      "class_hash": "0x5fd340f96a1a1771248cb617a52b11afc346876014a8eec8922fa149c52511b",
       "abi": [
         {
           "type": "impl",
@@ -1888,55 +1957,57 @@
       ]
     }
   ],
+  "libraries": [],
   "models": [
     {
       "members": [],
-      "class_hash": "0x781e4bdadac8fb2024fd7fab24df811ee47cb1ee46b6eca58b40c430d8b8d00",
+      "class_hash": "0x771722cf9544aaabafc63bd138d01b747531b07fcd9b9a844068af1ea364693",
       "tag": "the_oruggin_trail-Action",
       "selector": "0x73074e1ebd038077e439048a0ca7acc7adefe262afd21042e10f61a8c383456"
     },
     {
       "members": [],
-      "class_hash": "0x34e83af563fb7e66d5f6672f08588d0e31a6de693ffc3b8f70e2c8c580e69b4",
+      "class_hash": "0x5c80e39b57ade06474fa2affe0a4e992ebbb33545ed6444de1d6ed50e1bdbdf",
       "tag": "the_oruggin_trail-Inventory",
       "selector": "0x39e2daf9ca66e2d67529350fbc09271a3c8bc1c8af38ca0720e901d8302b963"
     },
     {
       "members": [],
-      "class_hash": "0x4fe21ca95c91a8ec25329ce29dcb39fa7cd354cd7658a58cd14e8c42d8c32c0",
+      "class_hash": "0x2c829792b4900814b5edcafdc74bfd44c2777fc5653efa636a5af31d554d3c8",
       "tag": "the_oruggin_trail-Object",
       "selector": "0x4fb4d030de6a33ed1299b70767b5efbf47af7f21535b4f094f4622e0dafd44"
     },
     {
       "members": [],
-      "class_hash": "0x7d768d28e47bf245246972419342e31e9cdb33de82e83e1a746c1f0f7031ef0",
+      "class_hash": "0x5883f0f3fa5d036dfa6d76926c5244a275996b6a30bfc37431cc0a0511a68f",
       "tag": "the_oruggin_trail-Output",
       "selector": "0x55f44298c07639e35f14dd8904f32219a4f0f4ba2efbca6414e73312da5b224"
     },
     {
       "members": [],
-      "class_hash": "0x5f56ee3ea300668785104774c60e19d2e6759c8124aa7d4d2039be3972caea7",
+      "class_hash": "0x6f7a03a6ef91e4c8c57b2f27428e479baab0b7df8e8a3cfe5969b4a89575d12",
       "tag": "the_oruggin_trail-Player",
       "selector": "0x320049d3f365911c63800593b9c78aaf9a1d5caa253af3980103a3424e17832"
     },
     {
       "members": [],
-      "class_hash": "0x6f2c325e041dab4b1fee6b30ce24ce9c9a1fe8a3cee93587654458aece33d9b",
+      "class_hash": "0x26fc48aa6e520934a66a866c519b5ee0c05c65446bbb568cdfef20f5fa82278",
       "tag": "the_oruggin_trail-Room",
       "selector": "0x29e011fc5da96859d49e5a6f65a5d7c57803d049b59a3e78c4f247a6013e13a"
     },
     {
       "members": [],
-      "class_hash": "0x22596ac236c2f8811581839897f4ccf1d951a2cdb2e5ddc4558d8f04355ab6",
+      "class_hash": "0x494b4f2af89a57ac9e52bc2f25b3c34f61718556c271fb60d087e25b6f501c",
       "tag": "the_oruggin_trail-Spawnroom",
       "selector": "0x11d8a3920e47b3b4587ef69133eb3f594e40e80e0a956607e5de6bc9026679c"
     },
     {
       "members": [],
-      "class_hash": "0x513e70e9e39d1ce57c33a6a1cfe7edc3441d17e9593a23bea8f1d266c855783",
+      "class_hash": "0x1b131a2a1df80186b4305592b82b19282cfb09c690c74e11353dea39dafc150",
       "tag": "the_oruggin_trail-Txtdef",
       "selector": "0x5ce865258cd7265d9ac3c68d1ac7503f2ca9d52d2e87f1fcccd24231dc28714"
     }
   ],
-  "events": []
+  "events": [],
+  "external_contracts": []
 }

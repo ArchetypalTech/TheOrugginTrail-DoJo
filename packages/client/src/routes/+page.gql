@@ -1,0 +1,12 @@
+query Nodes{
+  models {
+    edges {
+      node {
+      	id
+        contractAddress
+      	name
+        classHash
+      }
+    }
+  }
+} 

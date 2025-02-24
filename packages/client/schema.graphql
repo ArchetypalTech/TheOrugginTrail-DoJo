@@ -1,0 +1,847 @@
+schema {
+  query: World__Query
+  subscription: World__Subscription
+}
+
+"""
+Indicates that an Input Object is a OneOf Input Object (and thus requires
+                        exactly one of its field be provided)
+"""
+directive @oneOf on INPUT_OBJECT
+
+scalar ByteArray
+
+scalar ContractAddress
+
+scalar Cursor
+
+scalar DateTime
+
+type ERC20__Token {
+  amount: String!
+  contractAddress: String!
+  decimals: Int!
+  name: String!
+  symbol: String!
+}
+
+type ERC721__Token {
+  contractAddress: String!
+  imagePath: String!
+  metadata: String!
+  metadataAttributes: String
+  metadataDescription: String
+  metadataName: String
+  name: String!
+  symbol: String!
+  tokenId: String!
+}
+
+union ERC__Token = ERC20__Token | ERC721__Token
+
+scalar Enum
+
+union ModelUnion = the_oruggin_trail_Action | the_oruggin_trail_Inventory | the_oruggin_trail_Object | the_oruggin_trail_Output | the_oruggin_trail_Player | the_oruggin_trail_Room | the_oruggin_trail_Spawnroom | the_oruggin_trail_Txtdef
+
+enum OrderDirection {
+  ASC
+  DESC
+}
+
+type Token {
+  tokenMetadata: ERC__Token!
+}
+
+type TokenConnection {
+  edges: [TokenEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type TokenEdge {
+  cursor: Cursor
+  node: Token
+}
+
+type Token__Balance {
+  tokenMetadata: ERC__Token!
+}
+
+type Token__BalanceConnection {
+  edges: [Token__BalanceEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type Token__BalanceEdge {
+  cursor: Cursor
+  node: Token__Balance
+}
+
+type Token__Transfer {
+  executedAt: String!
+  from: String!
+  to: String!
+  tokenMetadata: ERC__Token!
+  transactionHash: String!
+}
+
+type Token__TransferConnection {
+  edges: [Token__TransferEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type Token__TransferEdge {
+  cursor: Cursor
+  node: Token__Transfer
+}
+
+type World__Content {
+  coverUri: String
+  description: String
+  iconUri: String
+  name: String
+  socials: [World__Social]
+  website: String
+}
+
+type World__Controller {
+  address: String!
+  deployedAt: DateTime!
+  id: ID
+  username: String!
+}
+
+type World__ControllerConnection {
+  edges: [World__ControllerEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type World__ControllerEdge {
+  cursor: Cursor
+  node: World__Controller
+}
+
+type World__Entity {
+  createdAt: DateTime
+  eventId: String
+  executedAt: DateTime
+  id: ID
+  keys: [String]
+  models: [ModelUnion]
+  updatedAt: DateTime
+}
+
+type World__EntityConnection {
+  edges: [World__EntityEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type World__EntityEdge {
+  cursor: Cursor
+  node: World__Entity
+}
+
+type World__Event {
+  createdAt: DateTime
+  data: [String]
+  executedAt: DateTime
+  id: ID
+  keys: [String]
+  transactionHash: String
+}
+
+type World__EventConnection {
+  edges: [World__EventEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type World__EventEdge {
+  cursor: Cursor
+  node: World__Event
+}
+
+type World__EventMessage {
+  createdAt: DateTime
+  eventId: String
+  executedAt: DateTime
+  id: ID
+  keys: [String]
+  models: [ModelUnion]
+  updatedAt: DateTime
+}
+
+type World__EventMessageConnection {
+  edges: [World__EventMessageEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type World__EventMessageEdge {
+  cursor: Cursor
+  node: World__EventMessage
+}
+
+type World__Metadata {
+  content: World__Content
+  coverImg: String
+  createdAt: DateTime
+  executedAt: DateTime
+  iconImg: String
+  id: ID
+  updatedAt: DateTime
+  uri: String
+  worldAddress: String!
+}
+
+type World__MetadataConnection {
+  edges: [World__MetadataEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type World__MetadataEdge {
+  cursor: Cursor
+  node: World__Metadata
+}
+
+type World__Model {
+  classHash: felt252
+  contractAddress: felt252
+  createdAt: DateTime
+  executedAt: DateTime
+  id: ID
+  name: String
+  namespace: String
+  transactionHash: felt252
+}
+
+type World__ModelConnection {
+  edges: [World__ModelEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type World__ModelEdge {
+  cursor: Cursor
+  node: World__Model
+}
+
+input World__ModelOrder {
+  direction: OrderDirection!
+  field: World__ModelOrderField!
+}
+
+enum World__ModelOrderField {
+  CLASS_HASH
+  NAME
+}
+
+type World__PageInfo {
+  endCursor: Cursor
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: Cursor
+}
+
+type World__Query {
+  controller(id: ID!): World__Controller!
+  controllers(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int): World__ControllerConnection
+  entities(after: Cursor, before: Cursor, first: Int, keys: [String], last: Int, limit: Int, offset: Int): World__EntityConnection
+  entity(id: ID!): World__Entity!
+  eventMessage(id: ID!): World__EventMessage!
+  eventMessages(after: Cursor, before: Cursor, first: Int, keys: [String], last: Int, limit: Int, offset: Int): World__EventMessageConnection
+  events(after: Cursor, before: Cursor, first: Int, keys: [String], last: Int, limit: Int, offset: Int): World__EventConnection
+  metadatas(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int): World__MetadataConnection
+  model(id: ID!): World__Model!
+  models(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: World__ModelOrder): World__ModelConnection
+  theOrugginTrailActionModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_ActionOrder, where: the_oruggin_trail_ActionWhereInput): the_oruggin_trail_ActionConnection
+  theOrugginTrailInventoryModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_InventoryOrder, where: the_oruggin_trail_InventoryWhereInput): the_oruggin_trail_InventoryConnection
+  theOrugginTrailObjectModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_ObjectOrder, where: the_oruggin_trail_ObjectWhereInput): the_oruggin_trail_ObjectConnection
+  theOrugginTrailOutputModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_OutputOrder, where: the_oruggin_trail_OutputWhereInput): the_oruggin_trail_OutputConnection
+  theOrugginTrailPlayerModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_PlayerOrder, where: the_oruggin_trail_PlayerWhereInput): the_oruggin_trail_PlayerConnection
+  theOrugginTrailRoomModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_RoomOrder, where: the_oruggin_trail_RoomWhereInput): the_oruggin_trail_RoomConnection
+  theOrugginTrailSpawnroomModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_SpawnroomOrder, where: the_oruggin_trail_SpawnroomWhereInput): the_oruggin_trail_SpawnroomConnection
+  theOrugginTrailTxtdefModels(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int, order: the_oruggin_trail_TxtdefOrder, where: the_oruggin_trail_TxtdefWhereInput): the_oruggin_trail_TxtdefConnection
+  token(id: String!): Token!
+  tokenBalances(accountAddress: String!, after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int): Token__BalanceConnection
+  tokenTransfers(accountAddress: String!, after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int): Token__TransferConnection
+  tokens(after: Cursor, before: Cursor, contractAddress: String, first: Int, last: Int, limit: Int, offset: Int): TokenConnection!
+  transaction(transactionHash: ID!): World__Transaction!
+  transactions(after: Cursor, before: Cursor, first: Int, last: Int, limit: Int, offset: Int): World__TransactionConnection
+}
+
+type World__Social {
+  name: String
+  url: String
+}
+
+type World__Subscription {
+  entityUpdated(id: ID): World__Entity!
+  eventEmitted(keys: [String]): World__Event!
+  eventMessageUpdated(id: ID): World__EventMessage!
+  modelRegistered(id: ID): World__Model!
+  tokenBalanceUpdated(accountAddress: String): Token__Balance!
+  tokenUpdated: Token!
+}
+
+type World__Transaction {
+  calldata: [felt252]
+  createdAt: DateTime
+  executedAt: DateTime
+  id: ID
+  maxFee: felt252
+  nonce: felt252
+  senderAddress: felt252
+  signature: [felt252]
+  transactionHash: felt252
+}
+
+type World__TransactionConnection {
+  edges: [World__TransactionEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type World__TransactionEdge {
+  cursor: Cursor
+  node: World__Transaction
+}
+
+scalar bool
+
+scalar felt252
+
+type the_oruggin_trail_Action {
+  actionId: felt252
+  actionType: Enum
+  affectedByActionId: felt252
+  affectsActionId: felt252
+  dBit: bool
+  dBitTxt: ByteArray
+  enabled: bool
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  revertable: bool
+}
+
+type the_oruggin_trail_ActionConnection {
+  edges: [the_oruggin_trail_ActionEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_ActionEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Action
+}
+
+input the_oruggin_trail_ActionOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_ActionOrderField!
+}
+
+enum the_oruggin_trail_ActionOrderField {
+  ACTIONID
+  ACTIONTYPE
+  AFFECTEDBYACTIONID
+  AFFECTSACTIONID
+  DBIT
+  DBITTXT
+  ENABLED
+  REVERTABLE
+}
+
+input the_oruggin_trail_ActionWhereInput {
+  actionId: felt252
+  actionIdEQ: felt252
+  actionIdGT: felt252
+  actionIdGTE: felt252
+  actionIdIN: [felt252]
+  actionIdLIKE: felt252
+  actionIdLT: felt252
+  actionIdLTE: felt252
+  actionIdNEQ: felt252
+  actionIdNOTIN: [felt252]
+  actionIdNOTLIKE: felt252
+  actionType: Enum
+  affectedByActionId: felt252
+  affectedByActionIdEQ: felt252
+  affectedByActionIdGT: felt252
+  affectedByActionIdGTE: felt252
+  affectedByActionIdIN: [felt252]
+  affectedByActionIdLIKE: felt252
+  affectedByActionIdLT: felt252
+  affectedByActionIdLTE: felt252
+  affectedByActionIdNEQ: felt252
+  affectedByActionIdNOTIN: [felt252]
+  affectedByActionIdNOTLIKE: felt252
+  affectsActionId: felt252
+  affectsActionIdEQ: felt252
+  affectsActionIdGT: felt252
+  affectsActionIdGTE: felt252
+  affectsActionIdIN: [felt252]
+  affectsActionIdLIKE: felt252
+  affectsActionIdLT: felt252
+  affectsActionIdLTE: felt252
+  affectsActionIdNEQ: felt252
+  affectsActionIdNOTIN: [felt252]
+  affectsActionIdNOTLIKE: felt252
+  dBit: bool
+  dBitTxt: ByteArray
+  dBitTxtEQ: ByteArray
+  dBitTxtGT: ByteArray
+  dBitTxtGTE: ByteArray
+  dBitTxtIN: [ByteArray]
+  dBitTxtLIKE: ByteArray
+  dBitTxtLT: ByteArray
+  dBitTxtLTE: ByteArray
+  dBitTxtNEQ: ByteArray
+  dBitTxtNOTIN: [ByteArray]
+  dBitTxtNOTLIKE: ByteArray
+  enabled: bool
+  revertable: bool
+}
+
+type the_oruggin_trail_Inventory {
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  items: [felt252]
+  owner_id: felt252
+}
+
+type the_oruggin_trail_InventoryConnection {
+  edges: [the_oruggin_trail_InventoryEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_InventoryEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Inventory
+}
+
+input the_oruggin_trail_InventoryOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_InventoryOrderField!
+}
+
+enum the_oruggin_trail_InventoryOrderField {
+  ITEMS
+  OWNER_ID
+}
+
+input the_oruggin_trail_InventoryWhereInput {
+  owner_id: felt252
+  owner_idEQ: felt252
+  owner_idGT: felt252
+  owner_idGTE: felt252
+  owner_idIN: [felt252]
+  owner_idLIKE: felt252
+  owner_idLT: felt252
+  owner_idLTE: felt252
+  owner_idNEQ: felt252
+  owner_idNOTIN: [felt252]
+  owner_idNOTLIKE: felt252
+}
+
+type the_oruggin_trail_Object {
+  destId: felt252
+  dirType: Enum
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  matType: Enum
+  objType: Enum
+  objectActionIds: [felt252]
+  objectId: felt252
+  txtDefId: felt252
+}
+
+type the_oruggin_trail_ObjectConnection {
+  edges: [the_oruggin_trail_ObjectEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_ObjectEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Object
+}
+
+input the_oruggin_trail_ObjectOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_ObjectOrderField!
+}
+
+enum the_oruggin_trail_ObjectOrderField {
+  DESTID
+  DIRTYPE
+  MATTYPE
+  OBJECTACTIONIDS
+  OBJECTID
+  OBJTYPE
+  TXTDEFID
+}
+
+input the_oruggin_trail_ObjectWhereInput {
+  destId: felt252
+  destIdEQ: felt252
+  destIdGT: felt252
+  destIdGTE: felt252
+  destIdIN: [felt252]
+  destIdLIKE: felt252
+  destIdLT: felt252
+  destIdLTE: felt252
+  destIdNEQ: felt252
+  destIdNOTIN: [felt252]
+  destIdNOTLIKE: felt252
+  dirType: Enum
+  matType: Enum
+  objType: Enum
+  objectId: felt252
+  objectIdEQ: felt252
+  objectIdGT: felt252
+  objectIdGTE: felt252
+  objectIdIN: [felt252]
+  objectIdLIKE: felt252
+  objectIdLT: felt252
+  objectIdLTE: felt252
+  objectIdNEQ: felt252
+  objectIdNOTIN: [felt252]
+  objectIdNOTLIKE: felt252
+  txtDefId: felt252
+  txtDefIdEQ: felt252
+  txtDefIdGT: felt252
+  txtDefIdGTE: felt252
+  txtDefIdIN: [felt252]
+  txtDefIdLIKE: felt252
+  txtDefIdLT: felt252
+  txtDefIdLTE: felt252
+  txtDefIdNEQ: felt252
+  txtDefIdNOTIN: [felt252]
+  txtDefIdNOTLIKE: felt252
+}
+
+type the_oruggin_trail_Output {
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  playerId: felt252
+  text_o_vision: ByteArray
+}
+
+type the_oruggin_trail_OutputConnection {
+  edges: [the_oruggin_trail_OutputEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_OutputEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Output
+}
+
+input the_oruggin_trail_OutputOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_OutputOrderField!
+}
+
+enum the_oruggin_trail_OutputOrderField {
+  PLAYERID
+  TEXT_O_VISION
+}
+
+input the_oruggin_trail_OutputWhereInput {
+  playerId: felt252
+  playerIdEQ: felt252
+  playerIdGT: felt252
+  playerIdGTE: felt252
+  playerIdIN: [felt252]
+  playerIdLIKE: felt252
+  playerIdLT: felt252
+  playerIdLTE: felt252
+  playerIdNEQ: felt252
+  playerIdNOTIN: [felt252]
+  playerIdNOTLIKE: felt252
+  text_o_vision: ByteArray
+  text_o_visionEQ: ByteArray
+  text_o_visionGT: ByteArray
+  text_o_visionGTE: ByteArray
+  text_o_visionIN: [ByteArray]
+  text_o_visionLIKE: ByteArray
+  text_o_visionLT: ByteArray
+  text_o_visionLTE: ByteArray
+  text_o_visionNEQ: ByteArray
+  text_o_visionNOTIN: [ByteArray]
+  text_o_visionNOTLIKE: ByteArray
+}
+
+type the_oruggin_trail_Player {
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  inventory: felt252
+  location: felt252
+  player_adr: ContractAddress
+  player_id: felt252
+}
+
+type the_oruggin_trail_PlayerConnection {
+  edges: [the_oruggin_trail_PlayerEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_PlayerEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Player
+}
+
+input the_oruggin_trail_PlayerOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_PlayerOrderField!
+}
+
+enum the_oruggin_trail_PlayerOrderField {
+  INVENTORY
+  LOCATION
+  PLAYER_ADR
+  PLAYER_ID
+}
+
+input the_oruggin_trail_PlayerWhereInput {
+  inventory: felt252
+  inventoryEQ: felt252
+  inventoryGT: felt252
+  inventoryGTE: felt252
+  inventoryIN: [felt252]
+  inventoryLIKE: felt252
+  inventoryLT: felt252
+  inventoryLTE: felt252
+  inventoryNEQ: felt252
+  inventoryNOTIN: [felt252]
+  inventoryNOTLIKE: felt252
+  location: felt252
+  locationEQ: felt252
+  locationGT: felt252
+  locationGTE: felt252
+  locationIN: [felt252]
+  locationLIKE: felt252
+  locationLT: felt252
+  locationLTE: felt252
+  locationNEQ: felt252
+  locationNOTIN: [felt252]
+  locationNOTLIKE: felt252
+  player_adr: ContractAddress
+  player_adrEQ: ContractAddress
+  player_adrGT: ContractAddress
+  player_adrGTE: ContractAddress
+  player_adrIN: [ContractAddress]
+  player_adrLIKE: ContractAddress
+  player_adrLT: ContractAddress
+  player_adrLTE: ContractAddress
+  player_adrNEQ: ContractAddress
+  player_adrNOTIN: [ContractAddress]
+  player_adrNOTLIKE: ContractAddress
+  player_id: felt252
+  player_idEQ: felt252
+  player_idGT: felt252
+  player_idGTE: felt252
+  player_idIN: [felt252]
+  player_idLIKE: felt252
+  player_idLT: felt252
+  player_idLTE: felt252
+  player_idNEQ: felt252
+  player_idNOTIN: [felt252]
+  player_idNOTLIKE: felt252
+}
+
+type the_oruggin_trail_Room {
+  biomeType: Enum
+  dirObjIds: [felt252]
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  objectIds: [felt252]
+  players: [felt252]
+  roomId: felt252
+  roomType: Enum
+  shortTxt: ByteArray
+  txtDefId: felt252
+}
+
+type the_oruggin_trail_RoomConnection {
+  edges: [the_oruggin_trail_RoomEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_RoomEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Room
+}
+
+input the_oruggin_trail_RoomOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_RoomOrderField!
+}
+
+enum the_oruggin_trail_RoomOrderField {
+  BIOMETYPE
+  DIROBJIDS
+  OBJECTIDS
+  PLAYERS
+  ROOMID
+  ROOMTYPE
+  SHORTTXT
+  TXTDEFID
+}
+
+input the_oruggin_trail_RoomWhereInput {
+  biomeType: Enum
+  roomId: felt252
+  roomIdEQ: felt252
+  roomIdGT: felt252
+  roomIdGTE: felt252
+  roomIdIN: [felt252]
+  roomIdLIKE: felt252
+  roomIdLT: felt252
+  roomIdLTE: felt252
+  roomIdNEQ: felt252
+  roomIdNOTIN: [felt252]
+  roomIdNOTLIKE: felt252
+  roomType: Enum
+  shortTxt: ByteArray
+  shortTxtEQ: ByteArray
+  shortTxtGT: ByteArray
+  shortTxtGTE: ByteArray
+  shortTxtIN: [ByteArray]
+  shortTxtLIKE: ByteArray
+  shortTxtLT: ByteArray
+  shortTxtLTE: ByteArray
+  shortTxtNEQ: ByteArray
+  shortTxtNOTIN: [ByteArray]
+  shortTxtNOTLIKE: ByteArray
+  txtDefId: felt252
+  txtDefIdEQ: felt252
+  txtDefIdGT: felt252
+  txtDefIdGTE: felt252
+  txtDefIdIN: [felt252]
+  txtDefIdLIKE: felt252
+  txtDefIdLT: felt252
+  txtDefIdLTE: felt252
+  txtDefIdNEQ: felt252
+  txtDefIdNOTIN: [felt252]
+  txtDefIdNOTLIKE: felt252
+}
+
+type the_oruggin_trail_Spawnroom {
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  id: u32
+  rooms: [felt252]
+}
+
+type the_oruggin_trail_SpawnroomConnection {
+  edges: [the_oruggin_trail_SpawnroomEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_SpawnroomEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Spawnroom
+}
+
+input the_oruggin_trail_SpawnroomOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_SpawnroomOrderField!
+}
+
+enum the_oruggin_trail_SpawnroomOrderField {
+  ID
+  ROOMS
+}
+
+input the_oruggin_trail_SpawnroomWhereInput {
+  id: u32
+  idEQ: u32
+  idGT: u32
+  idGTE: u32
+  idIN: [u32]
+  idLIKE: u32
+  idLT: u32
+  idLTE: u32
+  idNEQ: u32
+  idNOTIN: [u32]
+  idNOTLIKE: u32
+}
+
+type the_oruggin_trail_Txtdef {
+  entity: World__Entity
+  eventMessage: World__EventMessage
+  id: felt252
+  owner: felt252
+  text: ByteArray
+}
+
+type the_oruggin_trail_TxtdefConnection {
+  edges: [the_oruggin_trail_TxtdefEdge]
+  pageInfo: World__PageInfo!
+  totalCount: Int!
+}
+
+type the_oruggin_trail_TxtdefEdge {
+  cursor: Cursor
+  node: the_oruggin_trail_Txtdef
+}
+
+input the_oruggin_trail_TxtdefOrder {
+  direction: OrderDirection!
+  field: the_oruggin_trail_TxtdefOrderField!
+}
+
+enum the_oruggin_trail_TxtdefOrderField {
+  ID
+  OWNER
+  TEXT
+}
+
+input the_oruggin_trail_TxtdefWhereInput {
+  id: felt252
+  idEQ: felt252
+  idGT: felt252
+  idGTE: felt252
+  idIN: [felt252]
+  idLIKE: felt252
+  idLT: felt252
+  idLTE: felt252
+  idNEQ: felt252
+  idNOTIN: [felt252]
+  idNOTLIKE: felt252
+  owner: felt252
+  ownerEQ: felt252
+  ownerGT: felt252
+  ownerGTE: felt252
+  ownerIN: [felt252]
+  ownerLIKE: felt252
+  ownerLT: felt252
+  ownerLTE: felt252
+  ownerNEQ: felt252
+  ownerNOTIN: [felt252]
+  ownerNOTLIKE: felt252
+  text: ByteArray
+  textEQ: ByteArray
+  textGT: ByteArray
+  textGTE: ByteArray
+  textIN: [ByteArray]
+  textLIKE: ByteArray
+  textLT: ByteArray
+  textLTE: ByteArray
+  textNEQ: ByteArray
+  textNOTIN: [ByteArray]
+  textNOTLIKE: ByteArray
+}
+
+scalar u32

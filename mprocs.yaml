@@ -4,4 +4,4 @@ procs:
     shell: katana --dev --dev.no-fee
   torii:
     cwd: packages/contracts
-    shell: sozo build && sozo inspect && sozo migrate && sozo inspect && torii --world "0x067631b711ce310b8e6b32fb88f5427244534dba2a2584bb07c35256f618affa" --http.cors_origins "*"
+    shell: sozo build && sozo inspect && sozo migrate && sozo inspect && torii --http.cors_origins "*"
