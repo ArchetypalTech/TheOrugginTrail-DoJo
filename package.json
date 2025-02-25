@@ -3,7 +3,7 @@
 	"type": "module",
 	"version": "0.1.0",
 	"scripts": {
-		"install": "bun run ./scripts/install.ts # 🦨💕 quickstart installer ",
+		"quickstart": "bun run ./scripts/quickstart.ts # 🦨💕 quickstart installer ",
 		"dev": "mprocs # start developer mode"
 	},
 	"devDependencies": {

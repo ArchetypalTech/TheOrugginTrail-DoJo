@@ -2,9 +2,6 @@
 	"name": "@zorg/contracts",
 	"type": "module",
 	"version": "0.1.0",
-	"scripts": {
-		"dev": "mprocs"
-	},
 	"engines": {
 		"bun": "latest"
 	}

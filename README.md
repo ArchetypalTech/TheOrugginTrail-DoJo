@@ -26,7 +26,7 @@ bun install
 Automated installer for installing [scarb](https://github.com/software-mansion/scarb) and [dojo](https://book.dojoengine.org/getting-started#install-using-asdf) using [asdf](https://asdf-vm.com/) and [homebrew](https://brew.sh/).
 
 ```bash
-bun run install
+bun run quickstart
 ```
 
 ### 🕹️ Run development mode:
