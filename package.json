@@ -1,6 +1,7 @@
 {
 	"name": "@zorg/root",
 	"type": "module",
+	"private": true,
 	"version": "0.1.0",
 	"scripts": {
 		"quickstart": "bun run ./scripts/quickstart.ts # 🦨💕 quickstart installer ",
@@ -9,7 +10,9 @@
 	"workspaces": ["packages/*"],
 	"engines": {
 		"bun": "^1.2.4",
-		"asdf": "^0.16.0"
+		"asdf": "^0.16.0",
+		"scarb": "2.10.1",
+		"dojo": "1.2.1"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",

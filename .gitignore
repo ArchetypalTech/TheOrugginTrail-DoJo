@@ -22,3 +22,6 @@ target
 manifests
 katana_local_db
 torii_local_db
+
+# asdf
+.tool-versions

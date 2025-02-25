@@ -39,35 +39,22 @@ if (
 	await $`brew upgrade asdf`;
 }
 
-if (!(await Bun.file("./.tool-versions").exists())) {
-	throw new Error("No .tool-versions file found");
-}
-
-// read asdf tool versions
-const toolVersions = Object.fromEntries(
-	(await Bun.file("./.tool-versions").text())
-		.trim()
-		.split("\n")
-		.map((x) => {
-			const v = getVersion(x.trim());
-			const [key] = x.split(" ");
-			return [key.trim(), v];
-		}),
-);
 prompt(
 	`\nPress enter to install ${yellow(" 🐞 scarb ")} and ${red(" ⛩️ dojo ")}`,
 );
 
-console.log(`asdf install scarb ${toolVersions.scarb}`);
-await $`asdf install scarb ${toolVersions.scarb}`;
-await $`asdf set scarb ${toolVersions.scarb}`;
-await $`asdf install dojo ${toolVersions.dojo}`;
-await $`asdf set dojo ${toolVersions.dojo}`;
+console.log(`asdf install scarb ${packageJson.engines.scarb}`);
+await $`asdf install scarb ${packageJson.engines.scarb}`;
+await $`asdf set scarb ${packageJson.engines.scarb}`;
+await $`asdf install dojo ${packageJson.engines.dojo}`;
+await $`asdf set dojo ${packageJson.engines.dojo}`;
 await $`asdf current`;
 await $`asdf reshim dojo`;
 await $`asdf reshim scarb`;
-// await SetupASDFPaths();
+
 console.log(`${lightGray("✅ Done!")}`);
+
+await SetupASDFPaths();
 
 const runScripts = Object.entries(packageJson.scripts).map(([key, value]) => {
 	const name = value.split("#")[0].trim();
