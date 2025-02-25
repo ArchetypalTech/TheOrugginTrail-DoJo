@@ -59,9 +59,6 @@
     "packages/contracts": {
       "name": "@zorg/contracts",
       "version": "0.1.0",
-      "devDependencies": {
-        "mprocs": "^0.7.2",
-      },
     },
     "packages/room-generator": {
       "name": "@zorg/generator",

@@ -1,4 +1,5 @@
 import { $ } from "bun";
+import * as Bun from "bun";
 import {
 	bgDarkGray,
 	yellow,
