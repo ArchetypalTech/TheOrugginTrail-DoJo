@@ -1,7 +1,6 @@
 import { $ } from "bun";
 import * as semver from "semver";
-import { yellow } from "ansicolor";
-import { lightGray } from "ansicolor";
+import { bgYellow, black } from "ansicolor";
 
 export const getVersion = (input: string): string => {
 	// Match semver format anywhere in the string
@@ -47,8 +46,18 @@ export const isCommandAvailable = async (command: string): Promise<boolean> => {
 export const SetupASDFPaths = async () => {
 	const asdfDataDir = `${process.env.HOME}/.asdf`;
 	const asdfShimsPath = `${asdfDataDir}/shims`;
-	const commandDataDir = `export ASDF_DATA_DIR=${asdfDataDir}`;
-	const commandPath = `export PATH=${asdfShimsPath}:$PATH`;
-	console.log(commandDataDir);
-	console.log(commandPath);
+	// check if process.env.PATH contains .asdf
+	if (!process.env.PATH?.includes(".asdf")) {
+		// const commandDataDir = `export ASDF_DATA_DIR=${asdfDataDir}`;
+		const commandPath = `export PATH="${asdfShimsPath}:$PATH"`;
+		console.log(
+			bgYellow(
+				black(
+					"\n ⚠️ Warning you may need to set the following PATH in your shell after installing ASDF ",
+				),
+			),
+		);
+		console.log(commandPath);
+	}
+	// await $`${commandPath}`;
 };
