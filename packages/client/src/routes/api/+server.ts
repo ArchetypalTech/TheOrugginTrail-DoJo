@@ -9,17 +9,7 @@ import {
 	byteArray,
 } from "starknet";
 import manifest from "@zorg/contracts/manifest_dev.json";
-import { Katana, katanaRPC, Manifest_Addresses } from "../../lib/config";
-
-// wallet 10
-// NB `sozo` uses wallet 0 as the migration account this
-// aacoutn will fail if we use it as the account for the
-// contract invoke calls
-//| Account address |  0x6b86e40118f29ebe393a75469b4d926c7a44c2e2681b6d319520b7c1156d114
-//| Private key     |  0x1c9053c053edf324aec366a34c6901b1095b07af69495bffec7d7fe21effb1b
-//| Public key      |  0x4c339f18b9d1b95b64a6d378abd1480b2e0d5d5bd33cd0828cbce4d65c27284
-
-// toggle to pass command to Torri client
+import { ORUG_CONFIG } from "../../lib/config";
 
 // POST on route /api
 export const POST: RequestHandler = async (event) => {
@@ -41,12 +31,12 @@ export const GET: RequestHandler = async () => {
 
 	// set up the provider and account. Writes are not free
 	const katanaProvider: RpcProvider = new RpcProvider({
-		nodeUrl: katanaRPC,
+		nodeUrl: ORUG_CONFIG.endpoints.katana,
 	});
 	const burnerAccount: Account = new Account(
 		katanaProvider,
-		Katana.default_address,
-		Katana.default_private_key,
+		ORUG_CONFIG.wallet.address,
+		ORUG_CONFIG.wallet.private_key,
 	);
 
 	// read in the compiled contract abi
@@ -56,7 +46,7 @@ export const GET: RequestHandler = async () => {
 
 	const theOutputter: Contract = new Contract(
 		contractAbi.abi,
-		Manifest_Addresses.OUTPUTTER_ADDRESS,
+		ORUG_CONFIG.manifest.outputter.address,
 		katanaProvider,
 	);
 

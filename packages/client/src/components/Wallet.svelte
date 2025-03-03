@@ -4,8 +4,8 @@ import { get } from "svelte/store";
 
 // Controller - Cartridge
 import Controller from "@cartridge/controller";
-import { Manifest_Addresses, ETH_CONTRACT, katanaRPC } from "$lib/config";
-import { addrContract, oruggin_ChainID } from "$lib/tokens/constants";
+import { ORUG_CONFIG } from "$lib/config";
+import { addrContract } from "$lib/tokens/constants";
 import {
 	accountController,
 	walletAddressCont,
@@ -34,7 +34,7 @@ const controller = new Controller({
 	// Policies are required to be defined better
 	policies: {
 		contracts: {
-			[Manifest_Addresses.ENTITY_ADDRESS]: {
+			[ORUG_CONFIG.manifest.entity.address]: {
 				name: "The Oruggin Trail", // Optional, can be added if you want a name
 				description:
 					"Approve or reject submitting transactions to play The Oruggin Trail",
@@ -74,12 +74,12 @@ const controller = new Controller({
 			rpcUrl: "https://api.cartridge.gg/x/theoruggintrail/katana", // Use `rpcUrl` here
 		},
 	],
-	defaultChainId: oruggin_ChainID,
+	defaultChainId: ORUG_CONFIG.token.chainId,
 	//rpc: "https://api.cartridge.gg/x/starknet/sepolia",
 
 	// List of tokens to follow
 	tokens: {
-		erc20: [ETH_CONTRACT],
+		erc20: [ORUG_CONFIG.token.erc20],
 		//erc721: [addrContract],
 	},
 	slot: "theoruggintrail",
@@ -138,7 +138,7 @@ const connectWallet = async () => {
 
 	// Define myWalletAccount based on the connected wallet above
 	const myWalletAccount = new WalletAccount(
-		{ nodeUrl: katanaRPC },
+		{ nodeUrl: ORUG_CONFIG.endpoints.katana },
 		selectedWalletSWO,
 	);
 

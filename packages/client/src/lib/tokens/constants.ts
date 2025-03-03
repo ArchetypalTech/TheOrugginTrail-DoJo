@@ -1,21 +1,17 @@
 // Starknet.js
+import { ORUG_CONFIG } from "$lib/config";
 import { RpcProvider, Contract } from "starknet";
 
 // Initialize provider with Sepolia Testnet node
 // Sepolia: https://starknet-sepolia.public.blastapi.io
 export const provider = new RpcProvider({
-	nodeUrl: "https://api.cartridge.gg/x/theoruggintrail/katana",
+	nodeUrl: ORUG_CONFIG.token.provider,
 });
 export const providerSepolia = new RpcProvider({
 	nodeUrl: "https://starknet-sepolia.public.blastapi.io",
 });
 
-// starkli chain-id --rpc https://api.cartridge.gg/x/theoruggintrail/katana
-export const oruggin_ChainID = "0x57505f5448454f52554747494e545241494c";
-
-// Contract address for the TOT NFT Token in Katana/Slot
-export const addrContract =
-	"0x050ab7cbc80f8c7ee18f859dcc81e7ae4213e08da243851a8889d48c2ed7f765";
+export const addrContract = ORUG_CONFIG.token.contract_address;
 
 // Contract address for the TOT NFT Token in Sepolia
 export const addrContractSepolia =

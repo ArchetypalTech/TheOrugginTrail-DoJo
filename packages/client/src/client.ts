@@ -1,25 +1,17 @@
 import { HoudiniClient } from "$houdini";
 import { createClient } from "graphql-ws";
 import { subscription } from "$houdini/plugins";
-import { toriiRPC, toriiWS } from "./lib/config";
+import { ORUG_CONFIG } from "$lib/config";
+
+const { torii } = ORUG_CONFIG.endpoints;
 
 export default new HoudiniClient({
-	url: `${toriiRPC}/graphql`,
+	url: `${torii.http}/graphql`,
 	plugins: [
 		subscription(() =>
 			createClient({
-				url: `${toriiWS}/graphql`,
+				url: `${torii.ws}/graphql`,
 			}),
 		),
 	],
-
-	// uncomment this to configure the network call (for things like authentication)
-	// for more information, please visit here: https://www.houdinigraphql.com/guides/authentication
-	// fetchParams({ session }) {
-	//     return {
-	//         headers: {
-	//             Authentication: `Bearer ${session.token}`,
-	//         }
-	//     }
-	// }
 });

@@ -1,7 +1,7 @@
 // place files you want to import through the `$lib` alias in this folder.
 import { RpcProvider, Account, Contract, CallData, byteArray } from "starknet";
 
-import { Katana, katanaRPC, Manifest_Addresses } from "./config";
+import { ORUG_CONFIG } from "./config";
 import manifest from "@zorg/contracts/manifest_dev.json";
 
 // MUTATATION | ACTION | POST
@@ -24,12 +24,12 @@ async function sendMessage(message: string) {
 	 * worth remebering that `katana` doesnt listen on `localhost:*`
 	 */
 	const katanaProvider: RpcProvider = new RpcProvider({
-		nodeUrl: katanaRPC,
+		nodeUrl: ORUG_CONFIG.endpoints.katana,
 	});
 	const burnerAccount: Account = new Account(
 		katanaProvider,
-		Katana.default_address,
-		Katana.default_private_key,
+		ORUG_CONFIG.wallet.address,
+		ORUG_CONFIG.wallet.private_key,
 	);
 
 	// now get the contract abi's from the manifest and make a starknet contract
@@ -41,7 +41,7 @@ async function sendMessage(message: string) {
 	}
 	const theOutputter: Contract = new Contract(
 		contractAbi.abi,
-		Manifest_Addresses.ENTITY_ADDRESS,
+		ORUG_CONFIG.manifest.entity.address,
 		katanaProvider,
 	);
 

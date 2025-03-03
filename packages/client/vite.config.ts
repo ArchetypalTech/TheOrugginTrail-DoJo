@@ -7,7 +7,7 @@ import fs from "node:fs";
 const config: UserConfig = {
 	plugins: [houdini(), sveltekit()],
 	build: {
-		target: "esnext", // Use `esnext` for modern JavaScript features like top-level await
+		target: "esnext",
 	},
 	server: {
 		// add SSL certificates
@@ -17,14 +17,8 @@ const config: UserConfig = {
 				path.resolve(__dirname, "ssl", "localhost-cert.pem"),
 			), // Path to your certificate
 		},
-		proxy: {
-			api: {
-				target: "http://localhost:5050",
-				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, ""),
-			},
-		},
 		cors: true,
 	},
 };
+
 export default defineConfig(config);

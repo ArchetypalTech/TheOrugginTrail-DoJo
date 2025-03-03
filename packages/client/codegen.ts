@@ -1,8 +1,8 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-import { toriiRPC } from "./src/lib/config";
+import { ORUG_CONFIG } from "./src/lib/config";
 
 const config: CodegenConfig = {
-	schema: `${toriiRPC}/graphql`,
+	schema: `${ORUG_CONFIG.endpoints.torii.http}/graphql`,
 	documents: ["src/**/*.{svelte,ts,js}"],
 	generates: {
 		"./src/gql/": {
