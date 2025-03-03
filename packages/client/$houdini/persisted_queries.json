@@ -1,4 +1,0 @@
-{
-    "a1a2cee045ac38adc360b3a6c0240bbfe2c794fef459e84cd8016f38d28f0f55": "subscription Event {\n  eventEmitted {\n    id\n    keys\n  }\n}\n",
-    "cbee4ceb462df606a2316587f4c976a66f996973104a2526c0a4c65f37bb7df5": "subscription EntityModel($id: ID!) {\n  entityUpdated(id: $id) {\n    id\n    keys\n    models {\n      __typename\n      ... on the_oruggin_trail_Output {\n        text_o_vision\n      }\n      __typename\n    }\n  }\n}\n"
-}

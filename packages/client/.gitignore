@@ -30,3 +30,4 @@ torii_local_db
 # svelte
 .svelte-kit
 build
+$houdini
