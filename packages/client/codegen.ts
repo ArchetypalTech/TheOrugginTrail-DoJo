@@ -1,5 +1,5 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
-import { toriiRPC } from "./src/be_fe_constants";
+import { toriiRPC } from "./src/lib/config";
 
 const config: CodegenConfig = {
 	schema: `${toriiRPC}/graphql`,

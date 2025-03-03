@@ -4,11 +4,8 @@ import { get } from "svelte/store";
 
 // Controller - Cartridge
 import Controller from "@cartridge/controller";
-import { Manifest_Addresses, ETH_CONTRACT } from "../be_fe_constants.js";
-import {
-	addrContract,
-	oruggin_ChainID,
-} from "../TOTToken/tot_NFT_constants.js";
+import { Manifest_Addresses, ETH_CONTRACT, katanaRPC } from "$lib/config";
+import { addrContract, oruggin_ChainID } from "$lib/tokens/constants";
 import {
 	accountController,
 	walletAddressCont,
@@ -17,8 +14,7 @@ import {
 	accountArgentX,
 	walletAddressArX,
 	connectedToArX,
-	providerST,
-} from "../Wallets/Wallet_constants.js";
+} from "$lib/stores/wallet_store";
 
 // Argent X - Wallet
 import { connect, disconnect } from "get-starknet";
@@ -96,19 +92,20 @@ async function connectCGC() {
 		const res = await controller.connect(); // Get response from the connection
 		console.log("res is", res);
 
-		if (res) {
-			accountController.set(res); // Store the controller
-			console.log("storedController-controller is ", get(accountController));
+		if (!res) {
+			throw new Error("No response from Cartridge Game Controller");
+		}
+		accountController.set(res); // Store the controller
+		console.log("storedController-controller is ", get(accountController));
 
-			username.set(await controller.username()); // Store the username
+		username.set(await controller.username()); // Store the username
 
-			walletAddressCont.set(res.address); // Store the account address.
+		walletAddressCont.set(res.address); // Store the account address.
 
-			if (!get(connectedToCGC)) {
-				connectedToCGC.set(true); // Store the connected status to true
-				console.log("Username is", get(username));
-				console.log("accountController address is", get(walletAddressCont));
-			}
+		if (!get(connectedToCGC)) {
+			connectedToCGC.set(true); // Store the connected status to true
+			console.log("Username is", get(username));
+			console.log("accountController address is", get(walletAddressCont));
 		}
 	} catch (e) {
 		handleError(e);
@@ -134,7 +131,6 @@ function disconnectCGC() {
 //--------------Argent X Wallet--------------//
 // Connect to Argent X wallet
 const connectWallet = async () => {
-	// Connect to wallet
 	const selectedWalletSWO = await connect({
 		modalMode: "alwaysAsk",
 		modalTheme: "system",
@@ -142,7 +138,7 @@ const connectWallet = async () => {
 
 	// Define myWalletAccount based on the connected wallet above
 	const myWalletAccount = new WalletAccount(
-		{ nodeUrl: providerST },
+		{ nodeUrl: katanaRPC },
 		selectedWalletSWO,
 	);
 
@@ -172,7 +168,7 @@ const disconnectWallet = async () => {
 };
 
 // Error handling
-function handleError(error: any) {
+function handleError(error: unknown) {
 	errorMessage = "An error occurred. Please try again.";
 	console.error("Application error:", error);
 }

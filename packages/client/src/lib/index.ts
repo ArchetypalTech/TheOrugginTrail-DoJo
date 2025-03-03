@@ -1,7 +1,7 @@
 // place files you want to import through the `$lib` alias in this folder.
 import { RpcProvider, Account, Contract, CallData, byteArray } from "starknet";
 
-import { Katana, Manifest_Addresses } from "./be_fe_constants";
+import { Katana, Manifest_Addresses } from "./config";
 import manifest from "@zorg/contracts/manifest_dev.json";
 
 // MUTATATION | ACTION | POST
@@ -28,8 +28,8 @@ async function sendMessage(message: string) {
 	});
 	const burnerAccount: Account = new Account(
 		katanaProvider,
-		Katana.addr,
-		Katana.pKey,
+		Katana.default_address,
+		Katana.default_private_key,
 	);
 
 	// now get the contract abi's from the manifest and make a starknet contract

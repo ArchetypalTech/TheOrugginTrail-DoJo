@@ -9,7 +9,7 @@ import {
 	byteArray,
 } from "starknet";
 import manifest from "@zorg/contracts/manifest_dev.json";
-import { Katana, Manifest_Addresses } from "../../lib/be_fe_constants";
+import { Katana, Manifest_Addresses } from "../../lib/config";
 
 // wallet 10
 // NB `sozo` uses wallet 0 as the migration account this
@@ -23,6 +23,7 @@ import { Katana, Manifest_Addresses } from "../../lib/be_fe_constants";
 
 // POST on route /api
 export const POST: RequestHandler = async (event) => {
+	console.log("SERVER POST> POST");
 	console.log("===", event.request.url);
 	const data = await event.request.formData();
 	const command = data.get("entry") as string;
@@ -44,8 +45,8 @@ export const GET: RequestHandler = async () => {
 	});
 	const burnerAccount: Account = new Account(
 		katanaProvider,
-		Katana.addr,
-		Katana.pKey,
+		Katana.default_address,
+		Katana.default_private_key,
 	);
 
 	// read in the compiled contract abi

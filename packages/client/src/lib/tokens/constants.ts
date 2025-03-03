@@ -1,5 +1,5 @@
 // Starknet.js
-import { RpcProvider, Contract, Account, ec, json } from "starknet";
+import { RpcProvider, Contract } from "starknet";
 
 // Initialize provider with Sepolia Testnet node
 // Sepolia: https://starknet-sepolia.public.blastapi.io

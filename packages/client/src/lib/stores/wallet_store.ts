@@ -1,6 +1,5 @@
 import { writable } from "svelte/store";
 import type { AccountInterface } from "starknet";
-import { katanaRPC } from "../lib/be_fe_constants";
 
 // Store for account for Cartridge Controller
 export const accountController = writable<AccountInterface | undefined>(
@@ -24,6 +23,3 @@ export const connectedToArX = writable(false); // Initial value is a boolean fal
 
 // Store account address from ArgentX
 export const walletAddressArX = writable<string | undefined>(undefined);
-
-// export const networkName: string = constants.NetworkName.SN_SEPOLIA;
-export const providerST = katanaRPC; // Sepolia

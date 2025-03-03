@@ -10,12 +10,12 @@ import Typewriter from "$components/Typewriter.svelte";
 import { windowsStore, WindowType } from "$lib/stores/windows_store";
 import { helpStore, handleHelp } from "$lib/stores/help_store";
 import { audioStore } from "$lib/stores/audio_store";
-import { connectedToArX, connectedToCGC } from "../Wallets/Wallet_constants";
+import { connectedToArX, connectedToCGC } from "$lib/stores/wallet_store";
 import {
 	getBalance,
 	getBalance2,
 	transferToken,
-} from "../TOTToken/tot_NFT_Interaction";
+} from "$lib/tokens/interaction";
 import { get } from "svelte/store";
 
 const headerText = [

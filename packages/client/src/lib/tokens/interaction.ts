@@ -7,12 +7,12 @@ import {
 	connectedToCGC,
 	walletAddressCont,
 	accountController,
-} from "../Wallets/Wallet_constants";
+} from "$lib/stores/wallet_store";
 import {
 	addrContract,
 	addrContractSepolia,
 	initializeContracts,
-} from "./tot_NFT_constants.js";
+} from "./constants.js";
 
 // Get the balance of the FerryTicket via command
 export async function getBalance(): Promise<string> {

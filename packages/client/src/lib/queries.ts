@@ -1,13 +1,13 @@
 import { graphql } from "$houdini";
 
-export const updates = graphql(`
-  subscription Event {
-    eventEmitted {
-      id
-      keys
-    }
-  }
-`);
+// export const updates = graphql(`
+//   subscription Event {
+//     eventEmitted {
+//       id
+//       keys
+//     }
+//   }
+// `);
 
 export const torii_gql = graphql(`
   subscription EntityModel($id: ID!) {
