@@ -2,19 +2,19 @@
 import { onMount } from "svelte";
 import { get } from "svelte/store";
 
+import { ORUG_CONFIG } from "$lib/config";
+import {
+	accountArgentX,
+	accountController,
+	connectedToArX,
+	connectedToCGC,
+	username,
+	walletAddressArX,
+	walletAddressCont,
+} from "$lib/stores/wallet_store";
+import { addrContract } from "$lib/tokens/constants";
 // Controller - Cartridge
 import Controller from "@cartridge/controller";
-import { ORUG_CONFIG } from "$lib/config";
-import { addrContract } from "$lib/tokens/constants";
-import {
-	accountController,
-	walletAddressCont,
-	username,
-	connectedToCGC,
-	accountArgentX,
-	walletAddressArX,
-	connectedToArX,
-} from "$lib/stores/wallet_store";
 
 // Argent X - Wallet
 import { connect, disconnect } from "get-starknet";
@@ -41,13 +41,11 @@ const controller = new Controller({
 				methods: [
 					{
 						entrypoint: "approve", // The actual method name
-						description:
-							"Approve submitting transactions to play The Oruggin Trail",
+						description: "Approve submitting transactions to play The Oruggin Trail",
 					},
 					{
 						entrypoint: "reject", // The actual method name
-						description:
-							"Reject submitting transactions to play The Oruggin Trail",
+						description: "Reject submitting transactions to play The Oruggin Trail",
 					},
 				],
 			},

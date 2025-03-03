@@ -1,9 +1,9 @@
 <script lang="ts">
 import { onDestroy } from "svelte";
 export let text: string;
-export let sentenceDelay: number = 2000;
-export let minTypingDelay: number = 30;
-export let maxTypingDelay: number = 200;
+export const sentenceDelay: number = 2000;
+export const minTypingDelay: number = 30;
+export const maxTypingDelay: number = 200;
 
 let displayText: string = "";
 let interval: ReturnType<typeof setInterval>;

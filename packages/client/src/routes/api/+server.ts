@@ -1,15 +1,15 @@
-import type { RequestHandler } from "./$types";
 import { SystemCalls } from "$lib";
-import {
-	RpcProvider,
-	Account,
-	json,
-	Contract,
-	CallData,
-	byteArray,
-} from "starknet";
 import manifest from "@zorg/contracts/manifest_dev.json";
+import {
+	Account,
+	CallData,
+	Contract,
+	RpcProvider,
+	byteArray,
+	json,
+} from "starknet";
 import { ORUG_CONFIG } from "../../lib/config";
+import type { RequestHandler } from "./$types";
 
 // POST on route /api
 export const POST: RequestHandler = async (event) => {
@@ -61,12 +61,9 @@ export const GET: RequestHandler = async () => {
 	console.log("==================================");
 	console.log(response.transaction_hash);
 
-	return new Response(
-		JSON.stringify({ message: "test transaction made: OK" }),
-		{
-			headers: {
-				"Content-Type": "application/json",
-			},
+	return new Response(JSON.stringify({ message: "test transaction made: OK" }), {
+		headers: {
+			"Content-Type": "application/json",
 		},
-	);
+	});
 };

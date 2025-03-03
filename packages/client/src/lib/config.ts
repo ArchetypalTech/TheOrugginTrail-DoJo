@@ -1,11 +1,9 @@
 import manifest from "@zorg/contracts/manifest_dev.json";
-import { cleanEnv, str, url, host } from "envalid";
+import { url, cleanEnv, host, str } from "envalid";
 
 const getOrFail = <T>(value: T | undefined, name?: string): T => {
 	if (value === undefined || value === null) {
-		throw new Error(
-			name ? `Value {${name}} is undefined` : "Value is undefined",
-		);
+		throw new Error(name ? `Value {${name}} is undefined` : "Value is undefined");
 	}
 	return value;
 };
@@ -43,9 +41,7 @@ export const ORUG_CONFIG = {
 		chainId: env.VITE_CONTROLLER_CHAINID,
 		// Contract address for the TOT NFT Token
 		contract_address: env.VITE_TOKEN_CONTRACT_ADDRESS,
-		erc20: [
-			"0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7",
-		],
+		erc20: ["0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"],
 	},
 	manifest: {
 		entity: getOrFail(

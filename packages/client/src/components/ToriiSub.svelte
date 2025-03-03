@@ -5,7 +5,7 @@
 
 <script lang="ts">
 import { torii_gql } from "$lib/queries";
-import { addTerminalContent } from "$lib/stores/terminal_content_store";
+import { addTerminalContent } from "$lib/stores/terminal_store";
 import { onMount } from "svelte";
 
 export let entityId: string;

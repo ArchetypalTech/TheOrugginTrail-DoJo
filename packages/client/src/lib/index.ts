@@ -1,8 +1,8 @@
 // place files you want to import through the `$lib` alias in this folder.
-import { RpcProvider, Account, Contract, CallData, byteArray } from "starknet";
+import { Account, CallData, Contract, RpcProvider, byteArray } from "starknet";
 
-import { ORUG_CONFIG } from "./config";
 import manifest from "@zorg/contracts/manifest_dev.json";
+import { ORUG_CONFIG } from "./config";
 
 // MUTATATION | ACTION | POST
 /**

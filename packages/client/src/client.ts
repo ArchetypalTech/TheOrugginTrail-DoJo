@@ -1,7 +1,7 @@
 import { HoudiniClient } from "$houdini";
-import { createClient } from "graphql-ws";
 import { subscription } from "$houdini/plugins";
 import { ORUG_CONFIG } from "$lib/config";
+import { createClient } from "graphql-ws";
 
 const { torii } = ORUG_CONFIG.endpoints;
 

@@ -1,6 +1,6 @@
 // Starknet.js
 import { ORUG_CONFIG } from "$lib/config";
-import { RpcProvider, Contract } from "starknet";
+import { Contract, RpcProvider } from "starknet";
 
 // Initialize provider with Sepolia Testnet node
 // Sepolia: https://starknet-sepolia.public.blastapi.io

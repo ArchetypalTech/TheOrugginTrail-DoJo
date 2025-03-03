@@ -1,20 +1,19 @@
-import * as THREE from "three";
-import { AsciiEffect } from "three/examples/jsm/effects/AsciiEffect.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import sceneData from "$lib/three_scene_definition.json";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { AsciiEffect } from "three/examples/jsm/effects/AsciiEffect.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 let scene: THREE.Scene;
 export let camera: THREE.PerspectiveCamera;
-let sceneHolder: THREE.Object3D = new THREE.Object3D();
+const sceneHolder: THREE.Object3D = new THREE.Object3D();
 let controls: OrbitControls;
 let currentSceneIndex = 0;
-let sceneList: Map<string, THREE.Group<THREE.Object3DEventMap>> = new Map();
+const sceneList: Map<string, THREE.Group<THREE.Object3DEventMap>> = new Map();
 
 // Add logging variables
 let isLogging = false;
-let loggedPositions: { x: number; y: number; z: number }[] = [];
-
+const loggedPositions: { x: number; y: number; z: number }[] = [];
 
 // some initial camera positions
 // {
@@ -29,11 +28,16 @@ let loggedPositions: { x: number; y: number; z: number }[] = [];
 export function setupThree() {
 	// Scene setup
 	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	camera = new THREE.PerspectiveCamera(
+		75,
+		window.innerWidth / window.innerHeight,
+		0.1,
+		1000,
+	);
 	loadScene(currentSceneIndex, true);
-	let renderer = new THREE.WebGLRenderer();
+	const renderer = new THREE.WebGLRenderer();
 	// Effect setup
-	let effect = new AsciiEffect(renderer, " .·-:*=%@#", {
+	const effect = new AsciiEffect(renderer, " .·-:*=%@#", {
 		invert: true,
 	});
 	effect.setSize(window.innerWidth, window.innerHeight);
@@ -48,24 +52,24 @@ export function setupThree() {
 	effect.setSize(window.innerWidth, window.innerHeight);
 
 	// Add event listeners for logging
-	window.addEventListener('keydown', (event) => {
-		if (event.key === 'l' || event.key === 'L') {
+	window.addEventListener("keydown", (event) => {
+		if (event.key === "l" || event.key === "L") {
 			isLogging = !isLogging;
-			console.log(isLogging ? 'Logging started' : 'Logging stopped');
+			console.log(isLogging ? "Logging started" : "Logging stopped");
 			if (!isLogging) {
-				console.log('Logged positions:', loggedPositions);
+				console.log("Logged positions:", loggedPositions);
 			}
 		}
 	});
 
-	controls.addEventListener('change', () => {
+	controls.addEventListener("change", () => {
 		if (isLogging) {
 			loggedPositions.push({
 				x: camera.position.x,
 				y: camera.position.y,
-				z: camera.position.z
+				z: camera.position.z,
 			});
-			console.log('Current position:', camera.position);
+			console.log("Current position:", camera.position);
 		}
 	});
 
@@ -108,13 +112,13 @@ export function setupThree() {
 			const loader: GLTFLoader = new GLTFLoader();
 			loader.load(
 				sceneData[i].filename,
-				function (gltf) {
+				(gltf) => {
 					sceneList.set(sceneData[i].key, gltf.scene);
 				},
 				undefined,
-				function (error) {
+				(error) => {
 					console.error(error);
-				}
+				},
 			);
 		}
 	}
@@ -130,18 +134,18 @@ function loadScene(index: number, firstRun: boolean = false) {
 	} else {
 		loader.load(
 			sceneData[index].filename,
-			function (gltf) {
+			(gltf) => {
 				// make sure we're loading the active, not the first scene when the game starts.
-				if (firstRun && index != currentSceneIndex) return;
+				if (firstRun && index !== currentSceneIndex) return;
 				loadedScene = gltf.scene;
 				sceneList.set(sceneData[index].key, loadedScene);
 				finishLoading();
 				currentSceneIndex = index;
 			},
 			undefined,
-			function (error) {
+			(error) => {
 				console.error(error);
-			}
+			},
 		);
 	}
 	// once the scene is loaded, update the sceneHolder and camera.
@@ -158,8 +162,8 @@ function loadScene(index: number, firstRun: boolean = false) {
 		if (controls) {
 			controls.target = new THREE.Vector3(
 				camera.position.x + 0.01,
-				camera.position.y,// + 0.01,
-				camera.position.z
+				camera.position.y, // + 0.01,
+				camera.position.z,
 			);
 		}
 		controls.update();
@@ -172,7 +176,7 @@ function loadScene(index: number, firstRun: boolean = false) {
  */
 export function updateScene(text: string) {
 	for (let i = 0; i < sceneData.length; i++) {
-		if (text.startsWith(sceneData[i].key) && i != currentSceneIndex) {
+		if (text.startsWith(sceneData[i].key) && i !== currentSceneIndex) {
 			currentSceneIndex = i;
 			loadScene(i);
 		}

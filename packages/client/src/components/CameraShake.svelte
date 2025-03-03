@@ -1,11 +1,11 @@
 <script lang="ts">
-import { onMount, onDestroy } from "svelte";
+import { onDestroy, onMount } from "svelte";
 import { camera } from "../three";
 
 // Configurable parameters
-export let intensity: number = 0.001;
-export let decay: number = 0.95;
-export let maxOffset: number = 0.1;
+export const intensity: number = 0.001;
+export const decay: number = 0.95;
+export const maxOffset: number = 0.1;
 
 let frameId: number;
 let velocityX: number = 0;

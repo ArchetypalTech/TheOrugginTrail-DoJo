@@ -101,12 +101,7 @@ const helpTexts: Record<string, HelpContent> = {
 	hear: {
 		description: "Control the ambient sound system",
 		usage: "hear wind [on|off]\nhear tone [on|off]\nhear help",
-		examples: [
-			"hear wind off",
-			"hear wind on",
-			"hear tone off",
-			"hear tone on",
-		],
+		examples: ["hear wind off", "hear wind on", "hear tone off", "hear tone on"],
 	},
 	spawn: {
 		description: "Create a new world instance",
@@ -123,8 +118,7 @@ function createHelpStore() {
 		commands: {
 			help: {
 				description: "Open the help window.",
-				usage:
-					"help [command]\nwhere [command] is passed will print long form.",
+				usage: "help [command]\nwhere [command] is passed will print long form.",
 				examples: ["help", "help jump"],
 			},
 			"help list": {
@@ -135,9 +129,9 @@ function createHelpStore() {
 				description: "Show the help for help!",
 				usage: "help help",
 			},
-			"help-close": {
+			"help close": {
 				description: "Close the help window.",
-				usage: "help-close",
+				usage: "help close",
 			},
 			spawn: {
 				description: "Create a new world instance",
@@ -252,7 +246,7 @@ export function handleHelp(command: string) {
 	}
 
 	// If "help close" or "help-close" is typed, close the window
-	if (command.trim().toLowerCase() === "help-close") {
+	if (command.trim().toLowerCase() === "help close") {
 		helpStore.hide();
 		return;
 	}

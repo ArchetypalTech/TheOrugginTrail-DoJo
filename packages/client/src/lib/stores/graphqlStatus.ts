@@ -1,3 +1,3 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
-export const graphqlStatus = writable({ isDown: false }); 
+export const graphqlStatus = writable({ isDown: false });

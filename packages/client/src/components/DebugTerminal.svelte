@@ -1,50 +1,50 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    
-    let messages: string[] = [];
-    let terminalElement: HTMLDivElement;
-    let autoScroll = true;
-    
-    function scrollToBottom() {
-        if (!terminalElement || !autoScroll) return;
-        
-        setTimeout(() => {
-            terminalElement.scrollTop = terminalElement.scrollHeight;
-        }, 0);
-    }
-    
-    onMount(() => {
-        const originalConsoleLog = console.log;
-        console.log = (...args) => {
-            const message = args.map(arg => 
-                typeof arg === 'object' ? JSON.stringify(arg) : arg
-            ).join(' ');
-            messages = [...messages, message].slice(-50);
-            originalConsoleLog.apply(console, args);
-            scrollToBottom();
-        };
-        
-        return () => {
-            console.log = originalConsoleLog;
-        };
-    });
-    
-    // Handle manual scrolling
-    function handleScroll() {
-        if (!terminalElement) return;
-        
-        const isScrolledToBottom = 
-            Math.abs(
-                terminalElement.scrollHeight - 
-                terminalElement.clientHeight - 
-                terminalElement.scrollTop
-            ) < 2;
-            
-        autoScroll = isScrolledToBottom;
-    }
-    
-    // Still keep the reactive statement as a backup
-    $: if (messages.length) scrollToBottom();
+import { onMount } from "svelte";
+
+let messages: string[] = [];
+let terminalElement: HTMLDivElement;
+let autoScroll = true;
+
+function scrollToBottom() {
+	if (!terminalElement || !autoScroll) return;
+
+	setTimeout(() => {
+		terminalElement.scrollTop = terminalElement.scrollHeight;
+	}, 0);
+}
+
+onMount(() => {
+	const originalConsoleLog = console.log;
+	console.log = (...args) => {
+		const message = args
+			.map((arg) => (typeof arg === "object" ? JSON.stringify(arg) : arg))
+			.join(" ");
+		messages = [...messages, message].slice(-50);
+		originalConsoleLog.apply(console, args);
+		scrollToBottom();
+	};
+
+	return () => {
+		console.log = originalConsoleLog;
+	};
+});
+
+// Handle manual scrolling
+function handleScroll() {
+	if (!terminalElement) return;
+
+	const isScrolledToBottom =
+		Math.abs(
+			terminalElement.scrollHeight -
+				terminalElement.clientHeight -
+				terminalElement.scrollTop,
+		) < 2;
+
+	autoScroll = isScrolledToBottom;
+}
+
+// Still keep the reactive statement as a backup
+$: if (messages.length) scrollToBottom();
 </script>
 
 <div 

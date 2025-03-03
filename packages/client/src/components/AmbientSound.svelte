@@ -1,17 +1,17 @@
 <script lang="ts">
-import { onMount, onDestroy } from "svelte";
 import { audioStore } from "$lib/stores/audio_store";
+import { onDestroy, onMount } from "svelte";
 
 // Configurable parameters
-export let tonalVolume: number = 0.03;
-export let noiseVolume: number = 0.008;
-export let tonalFrequency: number = 220; // Base frequency in Hz (lower tone)
-export let modulationRate: number = 0.1; // Speed of frequency modulation in Hz
-export let modulationDepth: number = 1.5; // How much the frequency varies
-export let volumeModRate: number = 0.05; // Speed of volume modulation in Hz
-export let volumeModDepth: number = 0.7; // How much the volume varies (0-1)
-export let tonalFrequency2: number = 330; // Second frequency in Hz (higher tone)
-export let transitionTime: number = 2; // Time to transition in seconds
+export const tonalVolume: number = 0.03;
+export const noiseVolume: number = 0.008;
+export const tonalFrequency: number = 220; // Base frequency in Hz (lower tone)
+export const modulationRate: number = 0.1; // Speed of frequency modulation in Hz
+export const modulationDepth: number = 1.5; // How much the frequency varies
+export const volumeModRate: number = 0.05; // Speed of volume modulation in Hz
+export const volumeModDepth: number = 0.7; // How much the volume varies (0-1)
+export const tonalFrequency2: number = 330; // Second frequency in Hz (higher tone)
+export const transitionTime: number = 2; // Time to transition in seconds
 
 let audioContext: AudioContext;
 let noiseNode: AudioBufferSourceNode;
@@ -277,10 +277,7 @@ $: if (oscillatorGain && audioContext) {
 			audioContext.currentTime + 1,
 		);
 	} else {
-		oscillatorGain.gain.linearRampToValueAtTime(
-			0,
-			audioContext.currentTime + 1,
-		);
+		oscillatorGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 1);
 		if (oscillatorNode) {
 			setTimeout(() => {
 				try {

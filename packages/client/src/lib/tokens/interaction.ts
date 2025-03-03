@@ -1,13 +1,13 @@
+import {
+	accountArgentX,
+	accountController,
+	connectedToArX,
+	connectedToCGC,
+	walletAddressArX,
+	walletAddressCont,
+} from "$lib/stores/wallet_store";
 // Internals
 import { get } from "svelte/store";
-import {
-	connectedToArX,
-	walletAddressArX,
-	accountArgentX,
-	connectedToCGC,
-	walletAddressCont,
-	accountController,
-} from "$lib/stores/wallet_store";
 import {
 	addrContract,
 	addrContractSepolia,
@@ -18,8 +18,7 @@ import {
 export async function getBalance(): Promise<string> {
 	try {
 		// Initialize contracts (this may take some time)
-		const { totNFTContract, totNFTContractSepolia } =
-			await initializeContracts();
+		const { totNFTContract, totNFTContractSepolia } = await initializeContracts();
 		if (get(connectedToArX)) {
 			try {
 				// Get the balance of the address stored in walletAddress
@@ -84,8 +83,7 @@ export async function getBalance(): Promise<string> {
 export async function getBalance2(): Promise<number> {
 	try {
 		// Initialize contracts (this may take some time)
-		const { totNFTContract, totNFTContractSepolia } =
-			await initializeContracts();
+		const { totNFTContract, totNFTContractSepolia } = await initializeContracts();
 		if (get(walletAddressArX)) {
 			try {
 				// Get the balance of the address stored in walletAddress
@@ -201,8 +199,7 @@ export async function transferToken(
 	//         console.log("updated value of wallet address is", updatedWallet);
 	try {
 		// Initialize contracts (this may take some time)
-		const { totNFTContract, totNFTContractSepolia } =
-			await initializeContracts();
+		const { totNFTContract, totNFTContractSepolia } = await initializeContracts();
 		if (get(connectedToArX)) {
 			try {
 				// Subscribe to the walletAddress store and ensure it's defined
@@ -258,9 +255,7 @@ export async function transferToken(
 			} catch (error) {
 				// Enhanced error handling
 				if ((error as Error).message.includes("USER_REFUSED_OP")) {
-					console.error(
-						"Error transferring token: Transaction rejected by user.",
-					);
+					console.error("Error transferring token: Transaction rejected by user.");
 					return `Transaction rejected by user. Please check your wallet and try again.`;
 				}
 				console.error("Error transferring token:", error);
@@ -322,9 +317,7 @@ export async function transferToken(
 			} catch (error) {
 				// Enhanced error handling
 				if ((error as Error).message.includes("USER_REFUSED_OP")) {
-					console.error(
-						"Error transferring token: Transaction rejected by user.",
-					);
+					console.error("Error transferring token: Transaction rejected by user.");
 					return `Transaction rejected by user. Please check your wallet and try again.`;
 				}
 				console.error("Error transferring token:", error);

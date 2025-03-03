@@ -1,5 +1,5 @@
-import { writable } from "svelte/store";
 import type { AccountInterface } from "starknet";
+import { writable } from "svelte/store";
 
 // Store for account for Cartridge Controller
 export const accountController = writable<AccountInterface | undefined>(

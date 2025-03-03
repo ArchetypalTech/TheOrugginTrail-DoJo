@@ -1,22 +1,22 @@
 <script lang="ts">
-import { onMount, onDestroy } from "svelte";
 import { audioStore } from "$lib/stores/audio_store";
+import { onDestroy, onMount } from "svelte";
 
 // Configurable parameters
-export let tonalVolume: number = 0.004;
-export let noiseVolume: number = 0.008;
-export let tonalFrequency: number = 220; // Lower frequency bound
-export let modulationRate: number = 0.1; // Speed of frequency modulation in Hz
-export let modulationDepth: number = 1.8; // Reduced for smoother variations
-export let volumeModRate: number = 0.05; // Speed of volume modulation in Hz
-export let volumeModDepth: number = 0.7; // How much the volume varies (0-1)
-export let tonalFrequency2: number = 330; // Upper frequency bound
-export let transitionTime: number = 5; // Longer transition time for more gradual changes
-export let secondaryModRate: number = 0.233; // Slightly offset from main mod rate for complexity
-export let secondaryModDepth: number = 0.7; // Less intense than primary modulation
-export let ultraLowModRate: number = 0.017; // Very slow modulation for gradual changes
-export let ultraLowModDepth: number = 0.3; // Subtle but noticeable depth
-export let autoSwitchInterval: number = 15000; // Time between automatic tone switches (15 seconds)
+export const tonalVolume: number = 0.004;
+export const noiseVolume: number = 0.008;
+export const tonalFrequency: number = 220; // Lower frequency bound
+export const modulationRate: number = 0.1; // Speed of frequency modulation in Hz
+export const modulationDepth: number = 1.8; // Reduced for smoother variations
+export const volumeModRate: number = 0.05; // Speed of volume modulation in Hz
+export const volumeModDepth: number = 0.7; // How much the volume varies (0-1)
+export const tonalFrequency2: number = 330; // Upper frequency bound
+export const transitionTime: number = 5; // Longer transition time for more gradual changes
+export const secondaryModRate: number = 0.233; // Slightly offset from main mod rate for complexity
+export const secondaryModDepth: number = 0.7; // Less intense than primary modulation
+export const ultraLowModRate: number = 0.017; // Very slow modulation for gradual changes
+export const ultraLowModDepth: number = 0.3; // Subtle but noticeable depth
+export const autoSwitchInterval: number = 15000; // Time between automatic tone switches (15 seconds)
 
 let audioContext: AudioContext;
 let noiseNode: AudioBufferSourceNode;
@@ -331,7 +331,7 @@ onMount(() => {
 	setupAudio();
 
 	// Expose switchTone to the global window object
-	(window as any).switchTone = switchTone;
+	Object.assign(window, { switchTone });
 });
 
 onDestroy(() => {
