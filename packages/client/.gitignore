@@ -1,0 +1,31 @@
+node_modules
+
+## Ignore pnpm lockfiles
+pnpm-lock.yaml
+pnpm-lock.*
+
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
+
+# env files
+.env*.local
+.env
+
+# local 
+local.*
+mprocs.log
+
+# dojo
+target
+manifests
+katana_local_db
+torii_local_db
+
+# asdf
+.tool-versions
+
+# svelte
+.svelte-kit
+build
