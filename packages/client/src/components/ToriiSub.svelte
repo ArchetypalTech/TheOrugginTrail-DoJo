@@ -97,6 +97,7 @@ $: if (($torii_gql.errors?.length ?? 0) > 0) {
 
 let lastProcessedText = "";
 let trimmedNewText = "";
+let timeout = Date.now();
 
 $: if ($torii_gql.data?.entityUpdated?.models) {
 	console.log(":------------> UPDATE");
@@ -117,22 +118,27 @@ $: if ($torii_gql.data?.entityUpdated?.models) {
 
 	trimmedNewText = newText.trim();
 
-	if (trimmedNewText !== lastProcessedText.trim()) {
+	// FIXME: this impl is broken, now you don't get a response when trying the same command a few times
+	if (
+		trimmedNewText === lastProcessedText.trim() &&
+		Date.now() - timeout < 500
+	) {
+		console.log("Skipping duplicate update");
+		timeout = Date.now();
+	} else {
+		timeout = Date.now();
 		const lines: string[] = processWhitespaceTags(trimmedNewText);
 		lastProcessedText = trimmedNewText; // Store last processed text to avoid duplicates
 		displayToriiOutput(lines).then(() => {
 			console.log("Done processing");
 		});
-	} else {
-		console.log("Skipping duplicate update");
-		// FIXME: this impl is broken, now you don't get a response when trying the same command a few times
 	}
 }
 
 async function displayToriiOutput(lines: string[]) {
 	for (const line of lines) {
 		console.log("LINE: ", line);
-		await addTerminalContent({
+		addTerminalContent({
 			text: line,
 			format: "out",
 			useTypewriter: true,

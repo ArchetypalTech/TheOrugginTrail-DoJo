@@ -2,11 +2,14 @@
 import Typewriter from "$components/Typewriter.svelte";
 import {
 	addTerminalContent,
+	currentContentItem,
+	nextItem,
 	terminalContent,
 } from "$lib/stores/terminal_store";
 import { transferToken } from "$lib/tokens/interaction";
 import { onMount, tick } from "svelte";
 import { commandHandler } from "../lib/terminalCommands/commandHandler";
+import { get } from "svelte/store";
 
 const headerText = [
 	"Archetypal Tech.",
@@ -29,25 +32,34 @@ let token_ID: number | null = null;
 
 function handleKeyDown(e: KeyboardEvent) {
 	// up down cycle through prevInputs or back to originalInputValue
-	if (e.key === "ArrowUp") {
-		e.preventDefault();
-		if (inputHistoryIndex === 0) {
-			originalInputValue = inputValue;
-		}
-		if (inputHistoryIndex < inputHistory.length) {
-			inputHistoryIndex++;
-			inputValue = inputHistory[inputHistory.length - inputHistoryIndex];
-		}
-	} else if (e.key === "ArrowDown") {
-		e.preventDefault();
-		if (inputHistoryIndex > 0) {
-			inputHistoryIndex--;
+	switch (e.key) {
+		case "ArrowUp":
+			e.preventDefault();
 			if (inputHistoryIndex === 0) {
-				inputValue = originalInputValue;
-			} else {
+				originalInputValue = inputValue;
+			}
+			if (inputHistoryIndex < inputHistory.length) {
+				inputHistoryIndex++;
 				inputValue = inputHistory[inputHistory.length - inputHistoryIndex];
 			}
-		}
+			break;
+		case "ArrowDown":
+			e.preventDefault();
+			if (inputHistoryIndex > 0) {
+				inputHistoryIndex--;
+				if (inputHistoryIndex === 0) {
+					inputValue = originalInputValue;
+				} else {
+					inputValue = inputHistory[inputHistory.length - inputHistoryIndex];
+				}
+			}
+			break;
+		case "Escape":
+			e.preventDefault();
+			nextItem(get(currentContentItem));
+			break;
+		default:
+			break;
 	}
 }
 
@@ -185,17 +197,21 @@ async function handleTokenIdInput(e: SubmitEvent) {
     </div>
     <!-- <ul class="w-full"> -->
     {#each $terminalContent as content}
-      {#if content.useTypewriter}
-        <Typewriter
-          text={content.text}
-          sentenceDelay={1000}
-          minTypingDelay={30}
-          maxTypingDelay={100}
-        />
-      {:else}
-        <div class="break-words {content.format}-style">{content.text}</div>
-      {/if}
+      <div
+        class="terminal-line"
+        class:shog={content.format === "shog"}
+        class:out={content.format === "out"}
+        class:input={content.format === "input"}
+        class:hash={content.format === "hash"}
+        class:error={content.format === "error"}
+        class:system={content.format === "system"}
+      >
+        {content.text}
+      </div>
     {/each}
+    <Typewriter
+      terminalContent={$currentContentItem}
+    />
     <!-- </ul> -->
     <div id="scroller" class="w-full flex flex-row gap-2">
       <span>&#x3e;</span><input
@@ -215,24 +231,26 @@ async function handleTokenIdInput(e: SubmitEvent) {
   input {
     outline: none;
   }
-  .hash-style {
+  .terminal-line {
+    font-size: 1.02em;
+  }
+  .terminal-line.hash {
     color: #ffd700;
     font-weight: bold;
-    font-size: 0.7em;
   }
-  .out-style {
+  .terminal-line.out {
     color: #309810;
-    /* font-weight: bold; */
-    font-size: 1.1em;
   }
-  .shog-style {
+  .terminal-line.shog {
     color: #309810;
-    /* font-weight: bold; */
-    font-size: 1.1em;
   }
-  .input-style {
+  .terminal-line.input {
     color: #25642a;
-    /* font-weight: bold; */
-    font-size: 0.9em;
   }
+  .terminal-line.system {
+    color: #25642a;
+  }
+	.terminal-line.error {
+		color: #ff0000;
+	}
 </style>

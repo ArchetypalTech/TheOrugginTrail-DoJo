@@ -32,7 +32,7 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 		console.log(command);
 		addTerminalContent({
 			text: `Help window toggled`,
-			format: "input",
+			format: "hash",
 			useTypewriter: false,
 		});
 	},

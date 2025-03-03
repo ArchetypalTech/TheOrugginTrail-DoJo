@@ -1,5 +1,6 @@
-import { writable } from "svelte/store";
-export type FormatType = "input" | "hash" | "error" | "out" | "shog";
+import { tick } from "svelte";
+import { get, writable } from "svelte/store";
+export type FormatType = "input" | "hash" | "error" | "out" | "shog" | "system";
 
 export type TerminalContentItem = {
 	text: string;
@@ -8,23 +9,32 @@ export type TerminalContentItem = {
 };
 
 export const terminalContent = writable<TerminalContentItem[]>([]);
+export const currentContentItem = writable<TerminalContentItem | null>(null);
+export const contentQueue = writable<TerminalContentItem[]>([]);
 
-export function addTerminalContent(item: TerminalContentItem): Promise<void> {
-	return new Promise<void>((resolve) => {
-		terminalContent.update((content) => [...content, item]);
+export function addTerminalContent(item: TerminalContentItem) {
+	contentQueue.update((content) => [...content, item]);
+	tick();
+	if (get(currentContentItem) === null) {
+		nextItem(null);
+	}
+}
 
-		if (item.useTypewriter) {
-			// Simulate the typewriter effect with a delay based on item.text length
-			const typewriterDelay = item.text.length * 50; // Adjust delay
-
-			setTimeout(() => {
-				console.log(`Finished adding: ${item.text}`);
-				resolve(); // Resolve when done
-			}, typewriterDelay);
-		} else {
-			resolve(); // Immediately resolve if no typewriter effect
+export function nextItem(contentItem: TerminalContentItem | null) {
+	// check if contentItem is in the currentItem
+	if (contentItem && get(currentContentItem) === contentItem) {
+		terminalContent.update((content) => [...content, contentItem]);
+		currentContentItem.set(null);
+	}
+	if (get(contentQueue).length > 0) {
+		const nextItem = get(contentQueue).shift();
+		if (nextItem) {
+			contentQueue.update((content) =>
+				content.filter((item) => item !== nextItem),
+			);
+			currentContentItem.set(nextItem);
 		}
-	});
+	}
 }
 
 export function clearTerminalContent() {

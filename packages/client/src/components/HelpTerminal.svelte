@@ -28,12 +28,7 @@ $: if (currentText && terminalElement && !isDefaultHelp) {
     <div class="title">HELP SYSTEM n23</div>
     <div class="content">
         {#key currentText}
-            <Typewriter
-                text={currentText}
-                minTypingDelay={0}
-                maxTypingDelay={0}
-                sentenceDelay={0}
-            />
+           <div>{currentText}</div>
         {/key}
     </div>
 </div>
