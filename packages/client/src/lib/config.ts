@@ -18,9 +18,6 @@ export const toriiWS =
 
 // Katana burner account
 export const Katana = {
-	// Endpoint connection to Katana. // fish this from an env file if in local mode
-	KATANA_ENDPOINT: katanaRPC,
-
 	// katana default accounts
 	default_address:
 		"0x6677fe62ee39c7b07401f754138502bab7fac99d2d3c5d37df7d1c6fab10819",
@@ -35,6 +32,13 @@ export const Manifest_Addresses = {
 	OUTPUTTER_ADDRESS: manifest.contracts[1].address,
 	// the world
 	WORLD_ADDRESS: manifest.world.address,
+};
+
+export const Token_Contract = {
+	provider: "https://api.cartridge.gg/x/theoruggintrail/katana",
+	chainId: "0x57505f5448454f52554747494e545241494c",
+	contract_address:
+		"0x050ab7cbc80f8c7ee18f859dcc81e7ae4213e08da243851a8889d48c2ed7f765",
 };
 
 // @deprecated: fix the naming of this or delete this

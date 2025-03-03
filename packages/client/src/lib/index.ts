@@ -1,7 +1,7 @@
 // place files you want to import through the `$lib` alias in this folder.
 import { RpcProvider, Account, Contract, CallData, byteArray } from "starknet";
 
-import { Katana, Manifest_Addresses } from "./config";
+import { Katana, katanaRPC, Manifest_Addresses } from "./config";
 import manifest from "@zorg/contracts/manifest_dev.json";
 
 // MUTATATION | ACTION | POST
@@ -24,7 +24,7 @@ async function sendMessage(message: string) {
 	 * worth remebering that `katana` doesnt listen on `localhost:*`
 	 */
 	const katanaProvider: RpcProvider = new RpcProvider({
-		nodeUrl: Katana.KATANA_ENDPOINT,
+		nodeUrl: katanaRPC,
 	});
 	const burnerAccount: Account = new Account(
 		katanaProvider,

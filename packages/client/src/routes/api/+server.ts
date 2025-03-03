@@ -9,7 +9,7 @@ import {
 	byteArray,
 } from "starknet";
 import manifest from "@zorg/contracts/manifest_dev.json";
-import { Katana, Manifest_Addresses } from "../../lib/config";
+import { Katana, katanaRPC, Manifest_Addresses } from "../../lib/config";
 
 // wallet 10
 // NB `sozo` uses wallet 0 as the migration account this
@@ -41,7 +41,7 @@ export const GET: RequestHandler = async () => {
 
 	// set up the provider and account. Writes are not free
 	const katanaProvider: RpcProvider = new RpcProvider({
-		nodeUrl: Katana.KATANA_ENDPOINT,
+		nodeUrl: katanaRPC,
 	});
 	const burnerAccount: Account = new Account(
 		katanaProvider,

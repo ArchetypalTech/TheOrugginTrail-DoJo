@@ -1,5 +1,5 @@
 // Internals
-import { writable, get } from "svelte/store";
+import { get } from "svelte/store";
 import {
 	connectedToArX,
 	walletAddressArX,
