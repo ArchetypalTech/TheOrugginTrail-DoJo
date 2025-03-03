@@ -1,178 +1,194 @@
 <script lang="ts">
-	
-	import { onMount, tick } from 'svelte';
-  import { writable, get } from "svelte/store";
+import { onMount } from "svelte";
+import { get } from "svelte/store";
 
-	// Controller - Cartridge
-    import Controller from "@cartridge/controller";
-    import {Manifest_Addresses, ETH_CONTRACT} from "../be_fe_constants.js";
-    import { addrContract, oruggin_ChainID } from '../TOTToken/tot_NFT_constants.js';
-    import {accountController, walletAddressCont, username, connectedToCGC, accountArgentX , walletAddressArX, connectedToArX, providerST} from '../Wallets/Wallet_constants.js';
+// Controller - Cartridge
+import Controller from "@cartridge/controller";
+import { Manifest_Addresses, ETH_CONTRACT } from "../be_fe_constants.js";
+import {
+	addrContract,
+	oruggin_ChainID,
+} from "../TOTToken/tot_NFT_constants.js";
+import {
+	accountController,
+	walletAddressCont,
+	username,
+	connectedToCGC,
+	accountArgentX,
+	walletAddressArX,
+	connectedToArX,
+	providerST,
+} from "../Wallets/Wallet_constants.js";
 
-  // Argent X - Wallet
-    import { connect, disconnect } from "get-starknet";
-      
-  // Starknet.js
-   import { WalletAccount, constants } from 'starknet';
- 
-  
-	// States and variables
-  let loading = true;
-  let errorMessage: string | null = null;
+// Argent X - Wallet
+import { connect, disconnect } from "get-starknet";
 
-  //--------------Cartridge Game Controller--------------//
-	// Controller setup and methods
-	let controller = new Controller({
-    colorMode: 'dark',
-    //theme: "here will go our theme that needs to be designed and added",
-    // Policies are required to be defined better
-    policies: {
-      contracts: {
-        [Manifest_Addresses.ENTITY_ADDRESS]: {
-          name: "The Oruggin Trail", // Optional, can be added if you want a name
-          description: "Approve or reject submitting transactions to play The Oruggin Trail",
-          methods: [
-            {
-              entrypoint: "approve", // The actual method name
-              description: "Approve submitting transactions to play The Oruggin Trail",
-            },
-            {
-              entrypoint: "reject", // The actual method name
-              description: "Reject submitting transactions to play The Oruggin Trail",
-            },
-          ],
-        },
-        [addrContract]: {
-          name: "TOT NFT", // Optional
-          description: "Mint and transfer TOT tokens",
-          methods: [
-            {
-              entrypoint: "mint", // The actual method name
-              description: "Approve minting a TOT Token",
-            },
-            {
-              entrypoint: "transfer_from", // The actual method name
-              description: "Transfer a TOT Token",
-            },
-          ],
-        },
-      },
-    },  
-    // Network to connect to
-    // Can be mainnet, sepolia, slot
-    chains: [
-    {
-      rpcUrl: "https://api.cartridge.gg/x/theoruggintrail/katana", // Use `rpcUrl` here
-    },
-  ],
-  defaultChainId: oruggin_ChainID,
-    //rpc: "https://api.cartridge.gg/x/starknet/sepolia",
+// Starknet.js
+import { WalletAccount } from "starknet";
 
-    // List of tokens to follow
-    tokens: {
-      erc20: [ETH_CONTRACT],
-      //erc721: [addrContract],
-    },
-    slot: "theoruggintrail"
-	});
+// States and variables
+let loading = true;
+let errorMessage: string | null = null;
 
-  // Connect to Cartridge Game Controller
-	async function connectCGC() {
-    loading = true;
-    try {
-      const res = await controller.connect(); // Get response from the connection 
-      console.log("res is", res);
-      
-      if (res) {
-        accountController.set(res); // Store the controller
-        console.log("storedController-controller is ", get(accountController));
+//--------------Cartridge Game Controller--------------//
+// Controller setup and methods
+const controller = new Controller({
+	colorMode: "dark",
+	//theme: "here will go our theme that needs to be designed and added",
+	// Policies are required to be defined better
+	policies: {
+		contracts: {
+			[Manifest_Addresses.ENTITY_ADDRESS]: {
+				name: "The Oruggin Trail", // Optional, can be added if you want a name
+				description:
+					"Approve or reject submitting transactions to play The Oruggin Trail",
+				methods: [
+					{
+						entrypoint: "approve", // The actual method name
+						description:
+							"Approve submitting transactions to play The Oruggin Trail",
+					},
+					{
+						entrypoint: "reject", // The actual method name
+						description:
+							"Reject submitting transactions to play The Oruggin Trail",
+					},
+				],
+			},
+			[addrContract]: {
+				name: "TOT NFT", // Optional
+				description: "Mint and transfer TOT tokens",
+				methods: [
+					{
+						entrypoint: "mint", // The actual method name
+						description: "Approve minting a TOT Token",
+					},
+					{
+						entrypoint: "transfer_from", // The actual method name
+						description: "Transfer a TOT Token",
+					},
+				],
+			},
+		},
+	},
+	// Network to connect to
+	// Can be mainnet, sepolia, slot
+	chains: [
+		{
+			rpcUrl: "https://api.cartridge.gg/x/theoruggintrail/katana", // Use `rpcUrl` here
+		},
+	],
+	defaultChainId: oruggin_ChainID,
+	//rpc: "https://api.cartridge.gg/x/starknet/sepolia",
 
-        username.set(await controller.username()); // Store the username
+	// List of tokens to follow
+	tokens: {
+		erc20: [ETH_CONTRACT],
+		//erc721: [addrContract],
+	},
+	slot: "theoruggintrail",
+});
 
-        walletAddressCont.set(res.address); // Store the account address. 
-       
+// Connect to Cartridge Game Controller
+async function connectCGC() {
+	loading = true;
+	try {
+		const res = await controller.connect(); // Get response from the connection
+		console.log("res is", res);
 
-        if (!get(connectedToCGC)){
-          connectedToCGC.set(true); // Store the connected status to true
-          console.log("Username is", get(username));  
-          console.log("accountController address is", get(walletAddressCont));
-        }
-        
-      }
-    } catch (e) {
-      handleError(e);
-    } finally {
-      loading = false;
-    }
-  }
+		if (res) {
+			accountController.set(res); // Store the controller
+			console.log("storedController-controller is ", get(accountController));
 
-  // Open the controller's profile
-  const openUserProfile = () => {
-    controller.openProfile("inventory");
-  };  
+			username.set(await controller.username()); // Store the username
 
-  // Disconnect from Cartridge Game Controller
-	function disconnectCGC() {
-	  controller.disconnect(); // Disconnect the controller
-    accountController.set(undefined); // Set to undefine the account
-	  username.set(undefined); // Set to undefine the username
-    walletAddressCont.set(undefined); // Set to undefine the accountAddr
-    connectedToCGC.set(false); // Set to false the connected status
+			walletAddressCont.set(res.address); // Store the account address.
+
+			if (!get(connectedToCGC)) {
+				connectedToCGC.set(true); // Store the connected status to true
+				console.log("Username is", get(username));
+				console.log("accountController address is", get(walletAddressCont));
+			}
+		}
+	} catch (e) {
+		handleError(e);
+	} finally {
+		loading = false;
 	}
+}
 
-  //--------------Argent X Wallet--------------//
-  // Connect to Argent X wallet
-  const connectWallet = async () => {     
-    // Connect to wallet
-    const selectedWalletSWO = await connect({ modalMode: 'alwaysAsk', modalTheme: 'system' });
+// Open the controller's profile
+const openUserProfile = () => {
+	controller.openProfile("inventory");
+};
 
-    // Define myWalletAccount based on the connected wallet above
-    const myWalletAccount = new WalletAccount({ nodeUrl: providerST }, selectedWalletSWO);
+// Disconnect from Cartridge Game Controller
+function disconnectCGC() {
+	controller.disconnect(); // Disconnect the controller
+	accountController.set(undefined); // Set to undefine the account
+	username.set(undefined); // Set to undefine the username
+	walletAddressCont.set(undefined); // Set to undefine the accountAddr
+	connectedToCGC.set(false); // Set to false the connected status
+}
 
-    // If defined
-    if (myWalletAccount) {
-      // Store the wallet and the account address
-      accountArgentX.set(myWalletAccount); 
-      walletAddressArX.set(myWalletAccount.walletProvider?.selectedAddress);
-
-      // If local variable not connected to Argent X
-      if (!get(connectedToArX)) {
-        // Set local variable connected to true
-        connectedToArX.set(true);
-        // Debug
-        console.log("wallet address is:", get(walletAddressArX));
-        console.log("wallet is on:", myWalletAccount );
-      }         
-    }   
-  }
-
-  // Disconnect to Argent X wallet
-  const disconnectWallet = async () => {
-    await disconnect();
-    accountArgentX.set(null);
-    walletAddressArX.set(undefined);
-    connectedToArX.set(false);
-  }
-
-  // Error handling
-  function handleError(error: any) {
-    errorMessage = 'An error occurred. Please try again.';
-    console.error('Application error:', error);
-  }
-  
-	onMount(async () => {
-	  // Try to connect to a previous cartridge controller
-    try {
-      if (await controller.probe()) {
-        await connectCGC();
-      }
-    } catch (error) {
-      handleError(error);
-    } finally {
-      loading
-      = false;
-    }     
+//--------------Argent X Wallet--------------//
+// Connect to Argent X wallet
+const connectWallet = async () => {
+	// Connect to wallet
+	const selectedWalletSWO = await connect({
+		modalMode: "alwaysAsk",
+		modalTheme: "system",
 	});
+
+	// Define myWalletAccount based on the connected wallet above
+	const myWalletAccount = new WalletAccount(
+		{ nodeUrl: providerST },
+		selectedWalletSWO,
+	);
+
+	// If defined
+	if (myWalletAccount) {
+		// Store the wallet and the account address
+		accountArgentX.set(myWalletAccount);
+		walletAddressArX.set(myWalletAccount.walletProvider?.selectedAddress);
+
+		// If local variable not connected to Argent X
+		if (!get(connectedToArX)) {
+			// Set local variable connected to true
+			connectedToArX.set(true);
+			// Debug
+			console.log("wallet address is:", get(walletAddressArX));
+			console.log("wallet is on:", myWalletAccount);
+		}
+	}
+};
+
+// Disconnect to Argent X wallet
+const disconnectWallet = async () => {
+	await disconnect();
+	accountArgentX.set(null);
+	walletAddressArX.set(undefined);
+	connectedToArX.set(false);
+};
+
+// Error handling
+function handleError(error: any) {
+	errorMessage = "An error occurred. Please try again.";
+	console.error("Application error:", error);
+}
+
+onMount(async () => {
+	// Try to connect to a previous cartridge controller
+	try {
+		if (await controller.probe()) {
+			await connectCGC();
+		}
+	} catch (error) {
+		handleError(error);
+	} finally {
+		loading = false;
+	}
+});
 </script>
   
 <style>

@@ -14,8 +14,6 @@ import {
 	initializeContracts,
 } from "./tot_NFT_constants.js";
 
-import { Buffer } from "buffer";
-
 // Get the balance of the FerryTicket via command
 export async function getBalance(): Promise<string> {
 	try {

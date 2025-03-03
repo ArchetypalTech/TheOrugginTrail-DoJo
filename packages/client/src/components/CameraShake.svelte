@@ -1,62 +1,62 @@
 <script lang="ts">
-    import { onMount, onDestroy } from 'svelte';
-    import { camera } from '../three';
-    
-    // Configurable parameters
-    export let intensity: number = 0.001;
-    export let decay: number = 0.95;
-    export let maxOffset: number = 0.1;
+import { onMount, onDestroy } from "svelte";
+import { camera } from "../three";
 
-    let frameId: number;
-    let velocityX: number = 0;
-    let velocityY: number = 0;
-    let isActive: boolean = true;
-    let debugStatus: string = "Initializing...";
-    let frameCount: number = 0;
+// Configurable parameters
+export let intensity: number = 0.001;
+export let decay: number = 0.95;
+export let maxOffset: number = 0.1;
 
-    function updateCamera() {
-        if (!camera) {
-            debugStatus = "ERROR: Camera not initialized";
-            return;
-        }
+let frameId: number;
+let velocityX: number = 0;
+let velocityY: number = 0;
+let isActive: boolean = true;
+let debugStatus: string = "Initializing...";
+let frameCount: number = 0;
 
-        if (!isActive) {
-            debugStatus = "Camera shake disabled";
-            return;
-        }
+function updateCamera() {
+	if (!camera) {
+		debugStatus = "ERROR: Camera not initialized";
+		return;
+	}
 
-        // Add random movement
-        velocityX += (Math.random() - 0.5) * intensity;
-        velocityY += (Math.random() - 0.5) * intensity;
+	if (!isActive) {
+		debugStatus = "Camera shake disabled";
+		return;
+	}
 
-        // Apply decay
-        velocityX *= decay;
-        velocityY *= decay;
+	// Add random movement
+	velocityX += (Math.random() - 0.5) * intensity;
+	velocityY += (Math.random() - 0.5) * intensity;
 
-        // Clamp maximum movement
-        velocityX = Math.max(Math.min(velocityX, maxOffset), -maxOffset);
-        velocityY = Math.max(Math.min(velocityY, maxOffset), -maxOffset);
+	// Apply decay
+	velocityX *= decay;
+	velocityY *= decay;
 
-        // Apply to camera
-        camera.position.x += velocityX;
-        camera.position.y += velocityY;
+	// Clamp maximum movement
+	velocityX = Math.max(Math.min(velocityX, maxOffset), -maxOffset);
+	velocityY = Math.max(Math.min(velocityY, maxOffset), -maxOffset);
 
-        frameCount++;
-        debugStatus = `Running (frames: ${frameCount}, pos: ${camera.position.x.toFixed(5)}, ${camera.position.y.toFixed(5)})`;
+	// Apply to camera
+	camera.position.x += velocityX;
+	camera.position.y += velocityY;
 
-        frameId = requestAnimationFrame(updateCamera);
-    }
+	frameCount++;
+	debugStatus = `Running (frames: ${frameCount}, pos: ${camera.position.x.toFixed(5)}, ${camera.position.y.toFixed(5)})`;
 
-    onMount(() => {
-        console.log("CameraShake: Mounting component");
-        frameId = requestAnimationFrame(updateCamera);
-    });
+	frameId = requestAnimationFrame(updateCamera);
+}
 
-    onDestroy(() => {
-        console.log("CameraShake: Destroying component");
-        isActive = false;
-        if (frameId) cancelAnimationFrame(frameId);
-    });
+onMount(() => {
+	console.log("CameraShake: Mounting component");
+	frameId = requestAnimationFrame(updateCamera);
+});
+
+onDestroy(() => {
+	console.log("CameraShake: Destroying component");
+	isActive = false;
+	if (frameId) cancelAnimationFrame(frameId);
+});
 </script>
 
 {#if import.meta.env.DEV}

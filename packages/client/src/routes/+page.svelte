@@ -21,7 +21,7 @@
   let hasError = false;
   let ambientSoundComponent: { switchTone: () => void };
 
-  function handleError(error: any) {
+  function handleError(error: unknown) {
     hasError = true;
     console.error("Application error:", error);
   }

@@ -1,31 +1,43 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 interface AudioState {
-    windEnabled: boolean;
-    toneEnabled: boolean;
+	windEnabled: boolean;
+	toneEnabled: boolean;
 }
 
 function createAudioStore() {
-    const { subscribe, update } = writable<AudioState>({
-        windEnabled: false,
-        toneEnabled: false,
-    });
+	const { subscribe, update } = writable<AudioState>({
+		windEnabled: false,
+		toneEnabled: false,
+	});
 
-    return {
-        subscribe,
-        toggleWind: () => update(state => {
-            console.log('---------->TOG:WIND');
-            const newState = { ...state, windEnabled: !state.windEnabled };
-            console.log('🌬️ Wind toggled:', { previous: state.windEnabled, new: newState.windEnabled });
-            return newState;
-        }),
-        toggleTone: () => update(state => {
-            const newState = { ...state, toneEnabled: !state.toneEnabled };
-            console.log('🎵 Tone toggled:', { previous: state.toneEnabled, new: newState.toneEnabled });
-            return newState;
-        })
-        
-    };
+	return {
+		subscribe,
+		toggleWind: () =>
+			update((state) => {
+				console.log("---------->TOG:WIND");
+				const newState = { ...state, windEnabled: !state.windEnabled };
+				console.log("🌬️ Wind toggled:", {
+					previous: state.windEnabled,
+					new: newState.windEnabled,
+				});
+				return newState;
+			}),
+		toggleTone: () =>
+			update((state) => {
+				const newState = { ...state, toneEnabled: !state.toneEnabled };
+				console.log("🎵 Tone toggled:", {
+					previous: state.toneEnabled,
+					new: newState.toneEnabled,
+				});
+				return newState;
+			}),
+		toggleCricket: () =>
+			// TODO: added because was referenced, but needs impl
+			update((state) => {
+				throw new Error("Not implemented");
+			}),
+	};
 }
 
-export const audioStore = createAudioStore(); 
+export const audioStore = createAudioStore();

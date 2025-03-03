@@ -19,10 +19,12 @@ export const systemCalls = {
  * @returns
  */
 export async function sendMessage(message: string) {
-	console.log("MSG: ", message);
+	console.log("sendMessage: ", message);
 	const cmds_raw = message.split(/\s+/);
 	const cmds = cmds_raw.filter((word) => word !== "");
-	console.log(cmds);
+	console.log("sendMessage(cmds): ", cmds);
+	const cmd_array = cmds.map((cmd) => byteArray.byteArrayFromString(cmd));
+
 	/**
 	 * NO! this need to be passed the endpoint form the env or somewhere
 	 * worth remebering that `katana` doesnt listen on `localhost:*`
@@ -39,7 +41,7 @@ export async function sendMessage(message: string) {
 	// now get the contract abi's from the manifest and make a starknet contract
 	const contractAbi = manifest.contracts.find(
 		(x) => x.tag === "the_oruggin_trail-meatpuppet",
-	)!;
+	);
 	if (contractAbi === undefined) {
 		throw new Error("contractAbi is undefined");
 	}
@@ -52,13 +54,9 @@ export async function sendMessage(message: string) {
 	// connect the account to the contract
 	theOutputter.connect(burnerAccount);
 	// create message as readable contract data
-	const cmd_array = cmds.map((cmd) => {
-		return byteArray.byteArrayFromString(cmd);
-	});
 	// console.log(cmd_array);
 	const calldata = CallData.compile([cmd_array, 23]);
-	console.log("sending");
-	console.log(calldata);
+	console.log("sendMessage(calldata): ", calldata);
 	// ionvoke the contract as we are doing a write
 	const response = await theOutputter.invoke("listen", [calldata]);
 
