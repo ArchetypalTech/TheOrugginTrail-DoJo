@@ -1,8 +1,8 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import houdini from "houdini/vite";
-import { defineConfig, UserConfig } from "vite";
-import path from "path"; // We need to import 'path' to use path.resolve
-import fs from "fs"; // For reading the SSL certificate files
+import { defineConfig, type UserConfig } from "vite";
+import path from "node:path";
+import fs from "node:fs";
 
 const config: UserConfig = {
 	plugins: [houdini(), sveltekit()],
@@ -10,6 +10,7 @@ const config: UserConfig = {
 		target: "esnext", // Use `esnext` for modern JavaScript features like top-level await
 	},
 	server: {
+		// add SSL certificates
 		https: {
 			key: fs.readFileSync(path.resolve(__dirname, "ssl", "localhost-key.pem")), // Path to your private key
 			cert: fs.readFileSync(

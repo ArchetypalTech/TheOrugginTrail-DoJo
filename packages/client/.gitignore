@@ -16,6 +16,7 @@ pnpm-lock.*
 # local 
 local.*
 mprocs.log
+*.local.*
 
 # dojo
 target

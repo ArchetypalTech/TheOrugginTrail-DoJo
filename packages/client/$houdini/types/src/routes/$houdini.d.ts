@@ -1,6 +1,4 @@
 import type * as Kit from '@sveltejs/kit';
-import { Nodes$result, Nodes$input } from '../../../artifacts/Nodes';
-import { NodesStore } from '../../../plugins/houdini-svelte/stores/Nodes';
 
 type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 // @ts-ignore
@@ -22,12 +20,11 @@ type LayoutParentData = EnsureDefined<{}>;
 							[Key in Keys]?: Target[Key] | undefined | null
 						}
 					
-type PageParams = PageLoadEvent['params'];
 
 export type PageServerData = null;
 export type PageLoad<OutputData extends OutputDataShape<PageParentData> = OutputDataShape<PageParentData>> = Kit.Load<RouteParams, PageServerData, PageParentData, OutputData, RouteId>;
 export type PageLoadEvent = Parameters<PageLoad>[0];
-export type PageData = Expand<Expand<Omit<PageParentData, keyof Kit.LoadProperties<Awaited<ReturnType<typeof import('./proxy+page.js').load>>>> & OptionalUnion<EnsureDefined<Kit.LoadProperties<Awaited<ReturnType<typeof import('./proxy+page.js').load>>>>>> & { Nodes: NodesStore }>;
+export type PageData = Expand<Expand<Omit<PageParentData, keyof Kit.LoadProperties<Awaited<ReturnType<typeof import('./proxy+page.js').load>>>> & OptionalUnion<EnsureDefined<Kit.LoadProperties<Awaited<ReturnType<typeof import('./proxy+page.js').load>>>>>> & {  }>;
 export type PageProps = { data: PageData }
 export type LayoutServerLoad<OutputData extends Partial<App.PageData> & Record<string, any> | void = Partial<App.PageData> & Record<string, any> | void> = Kit.ServerLoad<LayoutParams, LayoutServerParentData, OutputData, LayoutRouteId>;
 export type LayoutServerLoadEvent = Parameters<LayoutServerLoad>[0];

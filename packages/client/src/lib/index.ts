@@ -1,36 +1,8 @@
 // place files you want to import through the `$lib` alias in this folder.
-import {
-	RpcProvider,
-	Account,
-	json,
-	Contract,
-	CallData,
-	byteArray,
-} from "starknet";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import { RpcProvider, Account, Contract, CallData, byteArray } from "starknet";
 
-export * from "./system";
 import { Katana, Manifest_Addresses } from "../be_fe_constants";
 import manifest from "@zorg/contracts/manifest_dev.json";
-
-// ES6 work around for getting project relative paths
-// const filepath = setFilePath('../manifest/outputter.json') // => filepath()
-export const setFilePath = (target: string) => {
-	// relative to $lib
-	return () => {
-		const __filename = fileURLToPath(import.meta.url);
-		const __dirname = path.dirname(__filename);
-		return path.resolve(__dirname, target);
-	};
-};
-
-// make this go away into a setup function
-// File is the one with -> drop implementation
-const MANIFEST = setFilePath(
-	"../manifest/the_oruggin_trail_meatpuppet.contract_class_v2.json",
-);
 
 // SYSTEM CALLS
 // import these based on the contract abi's
@@ -88,36 +60,11 @@ export async function sendMessage(message: string) {
 	console.log("sending");
 	console.log(calldata);
 	// ionvoke the contract as we are doing a write
-	let response = await theOutputter.invoke("listen", [calldata]);
+	const response = await theOutputter.invoke("listen", [calldata]);
 
 	return new Response(JSON.stringify(response), {
 		headers: {
 			"Content-Type": "application/json",
 		},
-	});
-}
-
-// How we expect to use a standard RPC call
-async function standardRPC() {
-	// get bacon. shoot laser. win
-	const params = {
-		contractName: "outputter",
-		entrypoint: "updateOutput",
-		calldata: ["foo"],
-	};
-
-	const body = JSON.stringify({
-		jsonrpc: "2.0",
-		method: "starknet_chainId",
-		params,
-		id: 1,
-	});
-
-	const response = await fetch(Katana.KATANA_ENDPOINT, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body,
 	});
 }

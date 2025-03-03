@@ -1,6 +1,4 @@
 import type { Record } from "./public/record";
-import { Nodes$result, Nodes$input } from "../artifacts/Nodes";
-import { NodesStore } from "../plugins/houdini-svelte/stores/Nodes";
 import type { the_oruggin_trail_TxtdefOrderField } from "$houdini/graphql/enums";
 import type { the_oruggin_trail_SpawnroomOrderField } from "$houdini/graphql/enums";
 import type { the_oruggin_trail_RoomOrderField } from "$houdini/graphql/enums";
@@ -1861,5 +1859,5 @@ export declare type CacheTypeDef = {
         };
     };
     lists: {};
-    queries: [[NodesStore, Nodes$result, Nodes$input]];
+    queries: [];
 };

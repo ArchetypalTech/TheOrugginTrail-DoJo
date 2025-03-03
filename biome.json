@@ -23,7 +23,8 @@
 			"style": {
 				"noNonNullAssertion": "off",
 				"useNumberNamespace": "off",
-				"noInferrableTypes": "off"
+				"noInferrableTypes": "off",
+				"noUnusedTemplateLiteral": "off"
 			},
 			"complexity": {
 				"noForEach": "off"
