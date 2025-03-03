@@ -1,5 +1,5 @@
 import type { RequestHandler } from "./$types";
-import { systemCalls } from "$lib";
+import { SystemCalls } from "$lib";
 import {
 	RpcProvider,
 	Account,
@@ -9,7 +9,7 @@ import {
 	byteArray,
 } from "starknet";
 import manifest from "@zorg/contracts/manifest_dev.json";
-import { Katana, Manifest_Addresses } from "../../be_fe_constants";
+import { Katana, Manifest_Addresses } from "../../lib/be_fe_constants";
 
 // wallet 10
 // NB `sozo` uses wallet 0 as the migration account this
@@ -28,13 +28,14 @@ export const POST: RequestHandler = async (event) => {
 	const command = data.get("entry") as string;
 	// log recieving POST
 	console.log("Send message to katana", command);
-	return systemCalls.sendMessage(command);
+	return SystemCalls.sendMessage(command);
 };
 
 /**
  * make get request from client
  * */
 export const GET: RequestHandler = async () => {
+	console.log("SERVER GET> GET");
 	console.log("----------------> GET");
 
 	// set up the provider and account. Writes are not free

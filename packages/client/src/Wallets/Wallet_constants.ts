@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 import type { AccountInterface } from "starknet";
-import { katanaRPC } from "../be_fe_constants";
+import { katanaRPC } from "../lib/be_fe_constants";
 
 // Store for account for Cartridge Controller
 export const accountController = writable<AccountInterface | undefined>(

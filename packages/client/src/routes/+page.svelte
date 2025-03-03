@@ -1,38 +1,38 @@
 <script lang="ts">
-  import {
-    Terminal,
-    Wallet,
-    ToriiSub,
-    DebugTerminal,
-    HelpTerminal,
-  } from "$components";
-  import { setupThree } from "../three";
-  import { getEntityIdFromKeys } from "$lib/utils";
-  import { onMount } from "svelte";
-  import { windowsStore, WindowType } from "$lib/stores/windows_store";
-  import { helpStore } from "$lib/stores/help_store";
-  import CameraShake from "$components/CameraShake.svelte";
-  import Ambient from "$components/Ambient.svelte";
+import {
+	Terminal,
+	Wallet,
+	ToriiSub,
+	DebugTerminal,
+	HelpTerminal,
+} from "$components";
+import { setupThree } from "../three";
+import { getEntityIdFromKeys } from "$lib/utils";
+import { onMount } from "svelte";
+import { windowsStore, WindowType } from "$lib/stores/windows_store";
+import { helpStore } from "$lib/stores/help_store";
+import CameraShake from "$components/CameraShake.svelte";
+import Ambient from "$components/Ambient.svelte";
 
-  const ENTITY_ID = 23;
-  const entityId = getEntityIdFromKeys(ENTITY_ID);
-  console.log("ID:------------> ", entityId);
+const ENTITY_ID = 23;
+const entityId = getEntityIdFromKeys(ENTITY_ID);
+console.log("Player ID: --> ", ENTITY_ID, entityId);
 
-  let hasError = false;
-  let ambientSoundComponent: { switchTone: () => void };
+let hasError = false;
+let ambientSoundComponent: { switchTone: () => void };
 
-  function handleError(error: unknown) {
-    hasError = true;
-    console.error("Application error:", error);
-  }
+function handleError(error: unknown) {
+	hasError = true;
+	console.error("Application error:", error);
+}
 
-  onMount(async () => {
-    try {
-      setupThree();
-    } catch (error) {
-      handleError(error);
-    }
-  });
+onMount(async () => {
+	try {
+		setupThree();
+	} catch (error) {
+		handleError(error);
+	}
+});
 </script>
 
 <div class="w-screen h-screen relative bg-black">

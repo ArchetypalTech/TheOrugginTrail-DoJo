@@ -1,7 +1,7 @@
 import { HoudiniClient } from "$houdini";
 import { createClient } from "graphql-ws";
 import { subscription } from "$houdini/plugins";
-import { toriiRPC, toriiWS } from "./be_fe_constants";
+import { toriiRPC, toriiWS } from "./lib/be_fe_constants";
 
 export default new HoudiniClient({
 	url: `${toriiRPC}/graphql`,

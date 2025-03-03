@@ -1,24 +1,18 @@
 // place files you want to import through the `$lib` alias in this folder.
 import { RpcProvider, Account, Contract, CallData, byteArray } from "starknet";
 
-import { Katana, Manifest_Addresses } from "../be_fe_constants";
+import { Katana, Manifest_Addresses } from "./be_fe_constants";
 import manifest from "@zorg/contracts/manifest_dev.json";
-
-// SYSTEM CALLS
-// import these based on the contract abi's
-export const systemCalls = {
-	sendMessage,
-};
 
 // MUTATATION | ACTION | POST
 /**
  * This should take a msg type that we parse out from the
- * contract abi's but right now we dont: FIXME!!
+ * contract abi's but right now we dont: // to do this we need to implement a full ABI parser to make sendmessage accept all the ABI functions
  *
  * @param message
  * @returns
  */
-export async function sendMessage(message: string) {
+async function sendMessage(message: string) {
 	console.log("sendMessage: ", message);
 	const cmds_raw = message.split(/\s+/);
 	const cmds = cmds_raw.filter((word) => word !== "");
@@ -66,3 +60,7 @@ export async function sendMessage(message: string) {
 		},
 	});
 }
+
+export const SystemCalls = {
+	sendMessage,
+};
