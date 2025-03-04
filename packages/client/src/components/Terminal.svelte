@@ -12,10 +12,10 @@ import { commandHandler } from "../lib/terminalCommands/commandHandler";
 import { get } from "svelte/store";
 
 const headerText = [
-	"Archetypal Tech.",
-	"\n",
 	"The O'Ruggin Trail, no:23",
 	"from the good folk at",
+	"\n",
+	"Archetypal Tech",
 ];
 let inputValue = "";
 let originalInputValue = "";
@@ -236,7 +236,7 @@ async function handleTokenIdInput(e: SubmitEvent) {
   }
   .terminal-line.hash {
     color: #ffd700;
-    font-weight: bold;
+    /* font-weight: bold; */
   }
   .terminal-line.out {
     color: #309810;

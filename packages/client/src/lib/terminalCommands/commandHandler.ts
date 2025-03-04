@@ -4,7 +4,7 @@ import { getBalance2 } from "$lib/tokens/interaction";
 import { get } from "svelte/store";
 import { TERMINAL_SYSTEM_COMMANDS } from "./systemCommands";
 
-export const commandHandler = async (command: string) => {
+export const commandHandler = async (command: string, bypassSystem = false) => {
 	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
 	addTerminalContent({
 		text: command,
@@ -20,7 +20,7 @@ export const commandHandler = async (command: string) => {
 
 	// try to get a match with systemCommands
 	console.log(context);
-	if (TERMINAL_SYSTEM_COMMANDS[cmd]) {
+	if (!bypassSystem && TERMINAL_SYSTEM_COMMANDS[cmd]) {
 		console.log("MATCH");
 		TERMINAL_SYSTEM_COMMANDS[cmd](context);
 		return;
