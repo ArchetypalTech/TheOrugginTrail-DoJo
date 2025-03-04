@@ -44,6 +44,7 @@ export const ORUG_CONFIG = {
 		erc20: ["0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"],
 	},
 	manifest: {
+		default: manifest,
 		entity: getOrFail(
 			manifest.contracts.find((c) => c.tag === "the_oruggin_trail-meatpuppet"),
 			"the_oruggin_trail-meatpuppet",

@@ -1,28 +1,37 @@
 {
-	"name": "@zorg/root",
-	"type": "module",
-	"private": true,
-	"version": "0.1.0",
-	"scripts": {
-		"quickstart": "bun run ./scripts/quickstart.ts # 🦨💕 quickstart installer ",
-		"dev": "mprocs # start developer mode"
-	},
-	"workspaces": ["packages/*"],
-	"engines": {
-		"bun": "^1.2.3",
-		"asdf": "^0.16.0",
-		"scarb": "2.9.2",
-		"dojo": "1.2.1"
-	},
-	"devDependencies": {
-		"@types/bun": "latest",
-		"@types/semver": "^7.5.8",
-		"ansicolor": "^2.0.3",
-		"mprocs": "^0.7.2",
-		"semver": "^7.7.1",
-		"wait-port": "^1.1.0"
-	},
-	"peerDependencies": {
-		"typescript": "^5"
-	}
+  "name": "@zorg/root",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "quickstart": "bun run ./scripts/quickstart.ts # 🦨💕 quickstart installer ",
+    "dev": "mprocs # start developer mode"
+  },
+  "workspaces": ["packages/*"],
+  "engines": {
+    "bun": "^1.2.3",
+    "asdf": "^0.16.0",
+    "scarb": "2.9.2",
+    "dojo": "1.2.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/semver": "^7.5.8",
+    "ansicolor": "^2.0.3",
+    "mprocs": "^0.7.2",
+    "semver": "^7.7.1",
+    "wait-port": "^1.1.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "trustedDependencies": [
+    "@sveltejs/kit",
+    "@swc/core",
+    "cbor-extract",
+    "esbuild",
+    "keccak",
+    "secp256k1",
+    "svelte-preprocess"
+  ]
 }
