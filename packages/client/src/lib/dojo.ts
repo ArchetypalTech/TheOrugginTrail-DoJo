@@ -6,10 +6,17 @@ import {
 	type StandardizedQueryResult,
 } from "@dojoengine/sdk";
 import { type SchemaType, schema } from "./dojo/typescript/models.gen";
-import type { Outputter } from "./stores/dojo_store";
-import type { Writable } from "svelte/store";
 
-export const InitDojo = async (store: Writable<Outputter>) => {
+/**
+ * ## Initializes the Dojo SDK and configuration
+ * @dev @dojoengine/sdk has WASM components which cannot be linked to in other parts of the client
+ * @warning
+ * ### 🚸 after a fresh sozo build of the bindings you may see a `BigNumberish` error in `models.gen.ts`
+ * this can be fixed by prefixing the import with `'type'`
+ * #### Example: `import { CairoCustomEnum, type BigNumberish } from "starknet"`
+ * @returns An object containing the initialized SDK, config, provider, and query functions
+ */
+export const InitDojo = async () => {
 	const manifest = ORUG_CONFIG.manifest.default;
 	const rpcUrl = ORUG_CONFIG.endpoints.katana;
 	const dojoConfig = createDojoConfig({
@@ -67,6 +74,10 @@ export const InitDojo = async (store: Writable<Outputter>) => {
 		return query;
 	};
 
+	/**
+	 * Dojo Entity Subscription Query
+	 * @dev we do not do the subscription in the `hooks.client.ts` hook, but we subscribe to it further in the Svelte client
+	 */
 	const sub = async (
 		playerId: number,
 		callback: (response: {

@@ -1,16 +1,9 @@
 <script lang="ts">
-import {
-	DebugTerminal,
-	HelpTerminal,
-	Terminal,
-	ToriiSub,
-	Wallet,
-} from "$components";
+import { DebugTerminal, HelpTerminal, Terminal, Wallet } from "$components";
 import Ambient from "$components/Ambient.svelte";
 import CameraShake from "$components/CameraShake.svelte";
 import { helpStore } from "$lib/stores/help_store";
 import { WindowType, windowsStore } from "$lib/stores/windows_store";
-import { getEntityIdFromKeys } from "$lib/utils";
 import { onMount } from "svelte";
 import { setupThree } from "../three";
 

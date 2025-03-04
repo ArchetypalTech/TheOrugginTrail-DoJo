@@ -1,7 +1,6 @@
 import type { InitDojo } from "$lib/dojo";
 import { writable } from "svelte/store";
 import { addTerminalContent } from "$lib/stores/terminal_store";
-import type { init } from "@dojoengine/sdk";
 
 export type Outputter = {
 	playerId: string;
@@ -21,8 +20,8 @@ export const Dojo_Config =
 let existingSubscription: unknown | undefined = undefined;
 
 Dojo_Config.subscribe(async (config) => {
-	console.log("DOJO CONFIG: ", config);
 	if (config !== undefined) {
+		console.log("[DOJO]: CONFIG ", config);
 		if (existingSubscription === undefined) {
 			const [initialEntities, subscription] = await config.sub(23, (response) => {
 				if (response.error) {
@@ -35,8 +34,9 @@ Dojo_Config.subscribe(async (config) => {
 						return;
 					}
 				}
-				console.log("RESPONSE: ", response);
+				console.log("[DOJO]: initial response", response);
 			});
+			console.log("[DOJO]: initialized");
 			existingSubscription = subscription;
 		}
 	}

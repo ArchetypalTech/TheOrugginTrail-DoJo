@@ -1,6 +1,6 @@
 import type { SchemaType as ISchemaType } from "@dojoengine/sdk";
 
-import { CairoCustomEnum, type BigNumberish } from "starknet";
+import { CairoCustomEnum, type BigNumberish } from 'starknet';
 
 // Type definition for `the_oruggin_trail::models::action::Action` struct
 export interface Action {
@@ -160,7 +160,7 @@ export type ActionType = {
 	Disintegrate: string;
 	Close: string;
 	Drop: string;
-};
+}
 export type ActionTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::BiomeType` enum
@@ -175,7 +175,7 @@ export type BiomeType = {
 	Demon: string;
 	Mountains: string;
 	Prarie: string;
-};
+}
 export type BiomeTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::DirectionType` enum
@@ -189,7 +189,7 @@ export type DirectionType = {
 	Down: string;
 	Left: string;
 	Right: string;
-};
+}
 export type DirectionTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::MaterialType` enum
@@ -208,7 +208,7 @@ export type MaterialType = {
 	Metal: string;
 	TNT: string;
 	Hay: string;
-};
+}
 export type MaterialTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::ObjectType` enum
@@ -229,7 +229,7 @@ export type ObjectType = {
 	Dynamite: string;
 	Boulder: string;
 	Bale: string;
-};
+}
 export type ObjectTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::RoomType` enum
@@ -248,35 +248,35 @@ export type RoomType = {
 	Forge: string;
 	Pass: string;
 	Alley: string;
-};
+}
 export type RoomTypeEnum = CairoCustomEnum;
 
 export interface SchemaType extends ISchemaType {
 	the_oruggin_trail: {
-		Action: Action;
-		ActionValue: ActionValue;
-		Inventory: Inventory;
-		InventoryValue: InventoryValue;
-		Object: Object;
-		ObjectValue: ObjectValue;
-		Output: Output;
-		OutputValue: OutputValue;
-		Player: Player;
-		PlayerValue: PlayerValue;
-		Room: Room;
-		RoomValue: RoomValue;
-		Spawnroom: Spawnroom;
-		SpawnroomValue: SpawnroomValue;
-		Txtdef: Txtdef;
-		TxtdefValue: TxtdefValue;
-	};
+		Action: Action,
+		ActionValue: ActionValue,
+		Inventory: Inventory,
+		InventoryValue: InventoryValue,
+		Object: Object,
+		ObjectValue: ObjectValue,
+		Output: Output,
+		OutputValue: OutputValue,
+		Player: Player,
+		PlayerValue: PlayerValue,
+		Room: Room,
+		RoomValue: RoomValue,
+		Spawnroom: Spawnroom,
+		SpawnroomValue: SpawnroomValue,
+		Txtdef: Txtdef,
+		TxtdefValue: TxtdefValue,
+	},
 }
 export const schema: SchemaType = {
 	the_oruggin_trail: {
 		Action: {
 			actionId: 0,
-			actionType: new CairoCustomEnum({
-				None: "",
+		actionType: new CairoCustomEnum({ 
+					None: "",
 				Move: undefined,
 				Look: undefined,
 				Kick: undefined,
@@ -303,9 +303,8 @@ export const schema: SchemaType = {
 				Explode: undefined,
 				Disintegrate: undefined,
 				Close: undefined,
-				Drop: undefined,
-			}),
-			dBitTxt: "",
+				Drop: undefined, }),
+		dBitTxt: "",
 			enabled: false,
 			revertable: false,
 			dBit: false,
@@ -313,8 +312,8 @@ export const schema: SchemaType = {
 			affectedByActionId: 0,
 		},
 		ActionValue: {
-			actionType: new CairoCustomEnum({
-				None: "",
+		actionType: new CairoCustomEnum({ 
+					None: "",
 				Move: undefined,
 				Look: undefined,
 				Kick: undefined,
@@ -341,9 +340,8 @@ export const schema: SchemaType = {
 				Explode: undefined,
 				Disintegrate: undefined,
 				Close: undefined,
-				Drop: undefined,
-			}),
-			dBitTxt: "",
+				Drop: undefined, }),
+		dBitTxt: "",
 			enabled: false,
 			revertable: false,
 			dBit: false,
@@ -359,8 +357,8 @@ export const schema: SchemaType = {
 		},
 		Object: {
 			objectId: 0,
-			objType: new CairoCustomEnum({
-				None: "",
+		objType: new CairoCustomEnum({ 
+					None: "",
 				Ball: undefined,
 				Window: undefined,
 				Door: undefined,
@@ -375,10 +373,9 @@ export const schema: SchemaType = {
 				Can: undefined,
 				Dynamite: undefined,
 				Boulder: undefined,
-				Bale: undefined,
-			}),
-			dirType: new CairoCustomEnum({
-				None: "",
+				Bale: undefined, }),
+		dirType: new CairoCustomEnum({ 
+					None: "",
 				North: undefined,
 				East: undefined,
 				South: undefined,
@@ -386,11 +383,10 @@ export const schema: SchemaType = {
 				Up: undefined,
 				Down: undefined,
 				Left: undefined,
-				Right: undefined,
-			}),
+				Right: undefined, }),
 			destId: 0,
-			matType: new CairoCustomEnum({
-				None: "",
+		matType: new CairoCustomEnum({ 
+					None: "",
 				Wood: undefined,
 				Dirt: undefined,
 				Stone: undefined,
@@ -403,14 +399,13 @@ export const schema: SchemaType = {
 				Leather: undefined,
 				Metal: undefined,
 				TNT: undefined,
-				Hay: undefined,
-			}),
+				Hay: undefined, }),
 			objectActionIds: [0],
 			txtDefId: 0,
 		},
 		ObjectValue: {
-			objType: new CairoCustomEnum({
-				None: "",
+		objType: new CairoCustomEnum({ 
+					None: "",
 				Ball: undefined,
 				Window: undefined,
 				Door: undefined,
@@ -425,10 +420,9 @@ export const schema: SchemaType = {
 				Can: undefined,
 				Dynamite: undefined,
 				Boulder: undefined,
-				Bale: undefined,
-			}),
-			dirType: new CairoCustomEnum({
-				None: "",
+				Bale: undefined, }),
+		dirType: new CairoCustomEnum({ 
+					None: "",
 				North: undefined,
 				East: undefined,
 				South: undefined,
@@ -436,11 +430,10 @@ export const schema: SchemaType = {
 				Up: undefined,
 				Down: undefined,
 				Left: undefined,
-				Right: undefined,
-			}),
+				Right: undefined, }),
 			destId: 0,
-			matType: new CairoCustomEnum({
-				None: "",
+		matType: new CairoCustomEnum({ 
+					None: "",
 				Wood: undefined,
 				Dirt: undefined,
 				Stone: undefined,
@@ -453,17 +446,16 @@ export const schema: SchemaType = {
 				Leather: undefined,
 				Metal: undefined,
 				TNT: undefined,
-				Hay: undefined,
-			}),
+				Hay: undefined, }),
 			objectActionIds: [0],
 			txtDefId: 0,
 		},
 		Output: {
 			playerId: 0,
-			text_o_vision: "",
+		text_o_vision: "",
 		},
 		OutputValue: {
-			text_o_vision: "",
+		text_o_vision: "",
 		},
 		Player: {
 			player_id: 0,
@@ -478,8 +470,8 @@ export const schema: SchemaType = {
 		},
 		Room: {
 			roomId: 0,
-			roomType: new CairoCustomEnum({
-				None: "",
+		roomType: new CairoCustomEnum({ 
+					None: "",
 				WoodCabin: undefined,
 				Store: undefined,
 				Cavern: undefined,
@@ -492,10 +484,9 @@ export const schema: SchemaType = {
 				Barn: undefined,
 				Forge: undefined,
 				Pass: undefined,
-				Alley: undefined,
-			}),
-			biomeType: new CairoCustomEnum({
-				None: "",
+				Alley: undefined, }),
+		biomeType: new CairoCustomEnum({ 
+					None: "",
 				Forest: undefined,
 				Tundra: undefined,
 				Arctic: undefined,
@@ -504,17 +495,16 @@ export const schema: SchemaType = {
 				Faery: undefined,
 				Demon: undefined,
 				Mountains: undefined,
-				Prarie: undefined,
-			}),
+				Prarie: undefined, }),
 			txtDefId: 0,
-			shortTxt: "",
+		shortTxt: "",
 			objectIds: [0],
 			dirObjIds: [0],
 			players: [0],
 		},
 		RoomValue: {
-			roomType: new CairoCustomEnum({
-				None: "",
+		roomType: new CairoCustomEnum({ 
+					None: "",
 				WoodCabin: undefined,
 				Store: undefined,
 				Cavern: undefined,
@@ -527,10 +517,9 @@ export const schema: SchemaType = {
 				Barn: undefined,
 				Forge: undefined,
 				Pass: undefined,
-				Alley: undefined,
-			}),
-			biomeType: new CairoCustomEnum({
-				None: "",
+				Alley: undefined, }),
+		biomeType: new CairoCustomEnum({ 
+					None: "",
 				Forest: undefined,
 				Tundra: undefined,
 				Arctic: undefined,
@@ -539,10 +528,9 @@ export const schema: SchemaType = {
 				Faery: undefined,
 				Demon: undefined,
 				Mountains: undefined,
-				Prarie: undefined,
-			}),
+				Prarie: undefined, }),
 			txtDefId: 0,
-			shortTxt: "",
+		shortTxt: "",
 			objectIds: [0],
 			dirObjIds: [0],
 			players: [0],
@@ -557,35 +545,35 @@ export const schema: SchemaType = {
 		Txtdef: {
 			id: 0,
 			owner: 0,
-			text: "",
+		text: "",
 		},
 		TxtdefValue: {
 			owner: 0,
-			text: "",
+		text: "",
 		},
 	},
 };
 export enum ModelsMapping {
-	Action = "the_oruggin_trail-Action",
-	ActionValue = "the_oruggin_trail-ActionValue",
-	Inventory = "the_oruggin_trail-Inventory",
-	InventoryValue = "the_oruggin_trail-InventoryValue",
-	Object = "the_oruggin_trail-Object",
-	ObjectValue = "the_oruggin_trail-ObjectValue",
-	Output = "the_oruggin_trail-Output",
-	OutputValue = "the_oruggin_trail-OutputValue",
-	Player = "the_oruggin_trail-Player",
-	PlayerValue = "the_oruggin_trail-PlayerValue",
-	Room = "the_oruggin_trail-Room",
-	RoomValue = "the_oruggin_trail-RoomValue",
-	Spawnroom = "the_oruggin_trail-Spawnroom",
-	SpawnroomValue = "the_oruggin_trail-SpawnroomValue",
-	Txtdef = "the_oruggin_trail-Txtdef",
-	TxtdefValue = "the_oruggin_trail-TxtdefValue",
-	ActionType = "the_oruggin_trail-ActionType",
-	BiomeType = "the_oruggin_trail-BiomeType",
-	DirectionType = "the_oruggin_trail-DirectionType",
-	MaterialType = "the_oruggin_trail-MaterialType",
-	ObjectType = "the_oruggin_trail-ObjectType",
-	RoomType = "the_oruggin_trail-RoomType",
+	Action = 'the_oruggin_trail-Action',
+	ActionValue = 'the_oruggin_trail-ActionValue',
+	Inventory = 'the_oruggin_trail-Inventory',
+	InventoryValue = 'the_oruggin_trail-InventoryValue',
+	Object = 'the_oruggin_trail-Object',
+	ObjectValue = 'the_oruggin_trail-ObjectValue',
+	Output = 'the_oruggin_trail-Output',
+	OutputValue = 'the_oruggin_trail-OutputValue',
+	Player = 'the_oruggin_trail-Player',
+	PlayerValue = 'the_oruggin_trail-PlayerValue',
+	Room = 'the_oruggin_trail-Room',
+	RoomValue = 'the_oruggin_trail-RoomValue',
+	Spawnroom = 'the_oruggin_trail-Spawnroom',
+	SpawnroomValue = 'the_oruggin_trail-SpawnroomValue',
+	Txtdef = 'the_oruggin_trail-Txtdef',
+	TxtdefValue = 'the_oruggin_trail-TxtdefValue',
+	ActionType = 'the_oruggin_trail-ActionType',
+	BiomeType = 'the_oruggin_trail-BiomeType',
+	DirectionType = 'the_oruggin_trail-DirectionType',
+	MaterialType = 'the_oruggin_trail-MaterialType',
+	ObjectType = 'the_oruggin_trail-ObjectType',
+	RoomType = 'the_oruggin_trail-RoomType',
 }
