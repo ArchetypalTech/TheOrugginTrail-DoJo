@@ -51,7 +51,7 @@ export const ORUG_CONFIG = {
 		),
 		outputter: getOrFail(
 			manifest.contracts.find((c) => c.tag === "the_oruggin_trail-outputter"),
-			"the_oruggin_trail-meatpuppet",
+			"the_oruggin_trail-outputter",
 		),
 		world: manifest.world,
 	},

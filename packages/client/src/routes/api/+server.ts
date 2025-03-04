@@ -54,7 +54,7 @@ export const GET: RequestHandler = async () => {
 	theOutputter.connect(burnerAccount);
 
 	// call it baby
-	const calldata = CallData.compile([byteArray.byteArrayFromString("foobar")]);
+	const calldata = CallData.compile([byteArray.byteArrayFromString("look")]);
 
 	const response = await theOutputter.invoke("updateOutput", [calldata]);
 	await katanaProvider.waitForTransaction(response.transaction_hash);
