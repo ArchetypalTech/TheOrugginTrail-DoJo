@@ -14,10 +14,6 @@ import { getEntityIdFromKeys } from "$lib/utils";
 import { onMount } from "svelte";
 import { setupThree } from "../three";
 
-const ENTITY_ID = 23;
-const entityId = getEntityIdFromKeys(ENTITY_ID);
-console.log("Player ID: --> ", ENTITY_ID, entityId);
-
 let hasError = false;
 let ambientSoundComponent: { switchTone: () => void };
 
@@ -52,7 +48,6 @@ onMount(async () => {
       >
         <Wallet />
         <Terminal />
-        <ToriiSub {entityId} />
       </div>
 
       {#if $windowsStore[WindowType.DEBUG]}

@@ -66,7 +66,6 @@ async function sendCommand(command: string): Promise<string> {
 			method: "POST",
 			body: formData,
 		});
-		// get(Dojo_Config).sub();
 		return response.json();
 	} catch (error) {
 		const e = error as Error;

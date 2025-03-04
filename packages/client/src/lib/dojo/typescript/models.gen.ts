@@ -1,4 +1,5 @@
 import type { SchemaType as ISchemaType } from "@dojoengine/sdk";
+
 import { CairoCustomEnum, type BigNumberish } from "starknet";
 
 // Type definition for `the_oruggin_trail::models::action::Action` struct

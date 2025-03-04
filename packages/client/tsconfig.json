@@ -12,7 +12,7 @@
 		"strict": true,
 		"moduleResolution": "bundler",
 		"jsx": "preserve",
-		"rootDirs": [".", "./.svelte-kit/types", "./$houdini/types"]
+		"rootDirs": [".", "./.svelte-kit/types"]
 	},
 	"include": ["src/**/*", "tests/**/*"],
 	"exclude": ["node_modules"]
