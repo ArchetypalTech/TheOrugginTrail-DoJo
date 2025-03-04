@@ -5,6 +5,8 @@ import {
 	clearTerminalContent,
 } from "$lib/stores/terminal_store";
 import { WindowType, windowsStore } from "$lib/stores/windows_store";
+import { get } from "svelte/store";
+import { commandHandler } from "./commandHandler";
 
 type commandContext = {
 	command: string;
@@ -18,6 +20,18 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 	clear: () => {
 		clearTerminalContent();
 	},
+	close: (ctx) => {
+		if (ctx.args[0] === "help") {
+			helpStore.hide();
+			addTerminalContent({
+				text: "Toggled help window",
+				format: "hash",
+				useTypewriter: true,
+			});
+			return;
+		}
+		commandHandler(ctx.command, true);
+	},
 	debug: () => {
 		windowsStore.toggle(WindowType.DEBUG);
 		addTerminalContent({
@@ -26,14 +40,13 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 			useTypewriter: false,
 		});
 	},
-	help: (ctx) => TERMINAL_SYSTEM_COMMANDS.helpClose(ctx),
-	helpClose: ({ command }) => {
+	help: ({ command }) => {
 		handleHelp(command);
 		console.log(command);
 		addTerminalContent({
-			text: `Help window toggled`,
+			text: "Toggled help window",
 			format: "hash",
-			useTypewriter: false,
+			useTypewriter: true,
 		});
 	},
 	hear: ({ args }) => {

@@ -15,37 +15,10 @@ interface HelpState {
 }
 
 const helpTexts: Record<string, HelpContent> = {
-	default: {
-		description:
-			'Type "help close" to close this window\n' +
-			"--------------------------------\n" +
-			"Command Syntax:\n" +
-			'The parser understands natural language like "I want to open the door" or\n' +
-			'"please kick the ball at the troll", but you can save typing by using\n' +
-			'shorter forms like "open door", "kick ball troll", or just "n" for "go north".\n' +
-			"Most commands follow the pattern: <verb> <object> [target/direction]\n" +
-			"--------------------------------\n" +
-			"Available commands:\n" +
-			"help <topic> - Show help for a specific topic\n" +
-			"\nTopics:\n" +
-			"move        - Navigate through the world\n" +
-			"look        - Examine your surroundings\n" +
-			"burn        - Burn an object\n" +
-			"light       - Light a object like a lantern or synonym for burn/ignite\n" +
-			"ignite      - Set on fire\n" +
-			"spawn       - Create a new world instance\n" +
-			"take        - Take an object\n" +
-			"help        - Display available commands and their usage\n" +
-			"pour        - Pour a liquid\n" +
-			"soak        - Soak an object\n" +
-			"empty       - Empty a container\n" +
-			"close       - Close this help window\n" +
-			"hear        - Control ambient sounds",
-	},
 	close: {
 		description: "Close a thing requires a noun",
 		usage: "close [the] <noun>",
-		examples: ["close door", "close the door"],
+		examples: ["close door", "close help", "close the door"],
 	},
 	go: {
 		description:
@@ -110,6 +83,17 @@ const helpTexts: Record<string, HelpContent> = {
 	},
 };
 
+// add default text listing all the available commands
+Object.assign(helpTexts, {
+	default: {
+		description: `Type "close help" to close this window\n--------------------------------\nCommand Syntax:\nThe parser understands natural language like "I want to open the door" or\n"please kick the ball at the troll", but you can save typing by using\nshorter forms like "open door", "kick ball troll", or just "n" for "go north".\nMost commands follow the pattern: <verb> <object> [target/direction]\n--------------------------------\nAvailable commands:\n\n${Object.entries(
+			helpTexts,
+		)
+			.map(([cmd, content]) => `${cmd.padEnd(10)} - ${content.description}`)
+			.join("\n")}`,
+	},
+});
+
 function createHelpStore() {
 	const initialState: HelpState = {
 		currentText: "",
@@ -129,9 +113,9 @@ function createHelpStore() {
 				description: "Show the help for help!",
 				usage: "help help",
 			},
-			"help close": {
+			"close help": {
 				description: "Close the help window.",
-				usage: "help close",
+				usage: "close help",
 			},
 			spawn: {
 				description: "Create a new world instance",
@@ -242,12 +226,6 @@ export function handleHelp(command: string) {
 	// If help is typed alone, show default help
 	if (command.trim().toLowerCase() === "help") {
 		helpStore.showHelp();
-		return;
-	}
-
-	// If "help close" or "help-close" is typed, close the window
-	if (command.trim().toLowerCase() === "help close") {
-		helpStore.hide();
 		return;
 	}
 
