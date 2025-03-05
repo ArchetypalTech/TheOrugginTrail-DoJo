@@ -1,5 +1,6 @@
 <script lang="ts">
-  import "../styles/editor.css";
+  import "$styles/app.css";
+  import "$styles/editor.css";
 </script>
 
 <head>

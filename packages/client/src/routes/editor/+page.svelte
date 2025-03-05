@@ -1,1 +1,7 @@
-this is the editor
+<script>
+  import Editor from "$lib/editor/Editor.svelte";
+</script>
+
+<div class="container mx-auto">
+  <Editor />
+</div>

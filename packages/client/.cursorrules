@@ -1,3 +1,12 @@
-make sure to be using bun + svelte + tailwind + vite
+make sure to be using bun + svelte + tailwind + vite tailwind is using CSS based
+version 4, please refer to the docs:
+(https://tailwindcss.com/docs/installation/using-vite) this is how it's used in
+svelte
+<style lang="postcss">
+  @reference "tailwindcss";
+  :global(html) {
+    background-color: theme(--color-gray-100);
+  }
+</style>
 
-make sure to be using typescript
+act like a professional engineer- one of the questions you keep asking is, isn't there a solution that means I don't have to write this all by hand.

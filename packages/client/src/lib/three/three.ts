@@ -1,4 +1,4 @@
-import sceneData from "$lib/three_scene_definition.json";
+import sceneData from "$lib/three/three_scene_definition.json";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { AsciiEffect } from "three/examples/jsm/effects/AsciiEffect.js";

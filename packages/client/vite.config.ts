@@ -9,10 +9,10 @@ import tailwindcss from "@tailwindcss/vite";
 
 const config: UserConfig = {
 	plugins: [
+		tailwindcss(),
 		sveltekit(),
 		wasm(),
 		topLevelAwait(),
-		tailwindcss(),
 		patchBindings(), // Patcher for `models.gen.ts` starknet BigNumberish type import
 	],
 	build: {

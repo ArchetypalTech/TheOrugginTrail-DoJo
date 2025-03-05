@@ -5,7 +5,7 @@
   import { helpStore } from "$lib/stores/help_store";
   import { WindowType, windowsStore } from "$lib/stores/windows_store";
   import { onMount } from "svelte";
-  import { setupThree } from "../three";
+  import { setupThree } from "$lib/three/three";
 
   let hasError = false;
   let ambientSoundComponent: { switchTone: () => void };
