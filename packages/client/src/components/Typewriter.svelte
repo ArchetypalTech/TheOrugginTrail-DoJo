@@ -1,25 +1,29 @@
 <script lang="ts">
 import { nextItem, type TerminalContentItem } from "$lib/stores/terminal_store";
 import { onDestroy } from "svelte";
+import TerminalLine from "./TerminalLine.svelte";
 export let terminalContent: TerminalContentItem | null;
 const minTypingDelay: number = 20;
 const maxTypingDelay: number = 80;
 
-let displayText: string = "";
+let displayContent: TerminalContentItem | null = null;
 let interval: ReturnType<typeof setInterval>;
 
 function typeText(contentItem: TerminalContentItem | null) {
 	if (contentItem === null) {
 		clearInterval(interval);
-		displayText = "";
+		displayContent = null;
 		return;
 	}
 	// Fast mode - instant display
-	if (contentItem?.useTypewriter === false || contentItem.format !== "out") {
+	if (contentItem?.useTypewriter === false) {
 		nextItem(contentItem);
 		return;
 	}
 	const text = contentItem?.text;
+	// make a clone for anim
+	displayContent = Object.assign({}, contentItem);
+	displayContent.text = "";
 
 	let currentIndex = 0;
 	clearInterval(interval);
@@ -33,15 +37,18 @@ function typeText(contentItem: TerminalContentItem | null) {
 			}
 
 			const char = text[currentIndex];
-			displayText += char === "\n" ? "<br>" : char === "\t" ? "&emsp;" : char;
+			displayContent!.text += char;
 			currentIndex++;
 		},
-		Math.random() * (maxTypingDelay - minTypingDelay) + minTypingDelay,
+		(terminalContent?.speed || 1) *
+			Math.random() *
+			(maxTypingDelay - minTypingDelay) +
+			minTypingDelay,
 	);
 }
 
 $: {
-	displayText = "";
+	displayContent = null;
 	typeText(terminalContent);
 }
 
@@ -49,5 +56,7 @@ onDestroy(() => {
 	clearInterval(interval);
 });
 </script>
-  
-<div class="input">{@html displayText}</div>
+
+{#if displayContent !== null}
+<TerminalLine	content={displayContent} />
+{/if}

@@ -7,10 +7,19 @@ export type Outputter = {
 	text_o_vision: string;
 };
 
+export type DojoStatus = {
+	status: "loading" | "initialized" | "spawning" | "error";
+	error: string | null;
+};
+
 let lastProcessedText = "";
 let trimmedNewText = "";
 let timeout = Date.now();
 
+export const Dojo_Status = writable<DojoStatus>({
+	status: "loading",
+	error: null,
+});
 export const Dojo_PlayerId = writable<number>(23);
 export const Dojo_Outputter = writable<Outputter>(undefined);
 export const Dojo_Config =
@@ -23,21 +32,39 @@ Dojo_Config.subscribe(async (config) => {
 	if (config !== undefined) {
 		console.log("[DOJO]: CONFIG ", config);
 		if (existingSubscription === undefined) {
-			const [initialEntities, subscription] = await config.sub(23, (response) => {
-				if (response.error) {
-					console.error("Error setting up entity sync:", response.error);
-				} else if (response.data) {
-					if (response.data[0].models?.the_oruggin_trail?.Output !== undefined) {
-						Dojo_Outputter.set(
-							response.data[0].models.the_oruggin_trail.Output as Outputter,
-						);
+			try {
+				const [initialEntities, subscription] = await config.sub(23, (response) => {
+					if (response.error) {
+						console.error("Error setting up entity sync:", response.error);
+						Dojo_Status.set({
+							status: "error",
+							error: response.error.message || "SYNC FAILURE",
+						});
 						return;
 					}
-				}
-				console.log("[DOJO]: initial response", response);
-			});
-			console.log("[DOJO]: initialized");
-			existingSubscription = subscription;
+					if (response.data) {
+						if (response.data[0].models?.the_oruggin_trail?.Output !== undefined) {
+							Dojo_Outputter.set(
+								response.data[0].models.the_oruggin_trail.Output as Outputter,
+							);
+							return;
+						}
+					}
+					console.log("[DOJO]: initial response", response);
+				});
+				Dojo_Status.set({
+					status: "initialized",
+					error: null,
+				});
+				console.log("[DOJO]: initialized");
+				existingSubscription = subscription;
+			} catch (e) {
+				Dojo_Status.set({
+					status: "error",
+					error: (e as Error).message || "SYNC FAILURE",
+				});
+				console.error("Error setting up entity sync:", e);
+			}
 		}
 	}
 });

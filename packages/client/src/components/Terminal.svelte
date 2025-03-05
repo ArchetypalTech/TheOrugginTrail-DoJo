@@ -10,13 +10,9 @@ import { transferToken } from "$lib/tokens/interaction";
 import { onMount, tick } from "svelte";
 import { commandHandler } from "../lib/terminalCommands/commandHandler";
 import { get } from "svelte/store";
+import { Dojo_Status } from "$lib/stores/dojo_store";
+import TerminalLine from "./TerminalLine.svelte";
 
-const headerText = [
-	"The O'Ruggin Trail, no:23",
-	"from the good folk at",
-	"\n",
-	"Archetypal Tech",
-];
 let inputValue = "";
 let originalInputValue = "";
 let inputHistory: string[] = [];
@@ -63,12 +59,55 @@ function handleKeyDown(e: KeyboardEvent) {
 	}
 }
 
-onMount(async () => {
-	addTerminalContent({
-		text: 'type "spawn" to create a world, or "help"',
-		format: "shog",
-		useTypewriter: true,
-	});
+onMount(() => {
+	terminalInput.focus();
+	setTimeout(() => {
+		if (get(Dojo_Status).status !== "spawning") {
+			Dojo_Status.set({
+				status: "error",
+				error: "TIMEOUT",
+			});
+		}
+	}, 5000);
+});
+
+Dojo_Status.subscribe((status) => {
+	console.log(status);
+	if (status.status === "spawning") return;
+	if (status.status === "initialized") {
+		addTerminalContent({
+			text: [
+				"\n",
+				"The O'Ruggin Trail, no:23",
+				"from the good folk at",
+				"\n",
+				"Archetypal Tech ✯",
+				"\n\n\n\n\n\n\n\n\n\n",
+			].join("\n"),
+			format: "system",
+			useTypewriter: true,
+			speed: 1.4,
+			style: "text-align: center",
+		});
+		addTerminalContent({
+			text: 'type "spawn" to create a world, or "help"',
+			format: "shog",
+			useTypewriter: true,
+		});
+		Dojo_Status.set({
+			status: "spawning",
+			error: null,
+		});
+		return;
+	}
+	if (status.status === "error") {
+		addTerminalContent({
+			text: `FATAL+ERROR: ${status.error}`,
+			format: "error",
+			useTypewriter: false,
+		});
+		return;
+	}
 });
 
 async function submitForm(e: SubmitEvent) {
@@ -185,37 +224,20 @@ async function handleTokenIdInput(e: SubmitEvent) {
   aria-label="Terminal"
   role=""
   id="terminal"
-  class="font-mono overflow-y-auto h-full bg-black text-green-500 border border-green-500 rounded-md p-4 w-full"
+  class="font-mono overflow-y-auto h-full bg-black text-green-500 border rounded-md p-4 w-full"
+	style={`border-color: ${$Dojo_Status.status === "error" ? "var(--terminal-error)" : "var(--terminal-system)"}`}
 >
   <div id="scroller" class="flex items-end flex-col bottom-0 w-full">
-    <div class="flex flex-col text-center">
-      <div class="flex"><br /></div>
-      {#each headerText as headerLine}
-        <div class="min-h-6">{headerLine}</div>
-      {/each}
-      <div class="flex"><br /><br /></div>
-    </div>
-    <!-- <ul class="w-full"> -->
     {#each $terminalContent as content}
-      <div
-        class="terminal-line"
-        class:shog={content.format === "shog"}
-        class:out={content.format === "out"}
-        class:input={content.format === "input"}
-        class:hash={content.format === "hash"}
-        class:error={content.format === "error"}
-        class:system={content.format === "system"}
-      >
-        {content.text}
-      </div>
+      <TerminalLine {content} />
     {/each}
     <Typewriter
       terminalContent={$currentContentItem}
     />
     <!-- </ul> -->
+		{#if $Dojo_Status.status === "spawning"}
     <div id="scroller" class="w-full flex flex-row gap-2">
       <span>&#x3e;</span><input
-        autofocus
         class="bg-black text-green-700 w-full"
         type="text"
         bind:value={inputValue}
@@ -224,33 +246,11 @@ async function handleTokenIdInput(e: SubmitEvent) {
       />
       <div id="input-anchor" />
     </div>
+		{/if}
   </div>
 </form>
-
 <style>
   input {
     outline: none;
   }
-  .terminal-line {
-    font-size: 1.02em;
-  }
-  .terminal-line.hash {
-    color: #ffd700;
-    /* font-weight: bold; */
-  }
-  .terminal-line.out {
-    color: #309810;
-  }
-  .terminal-line.shog {
-    color: #309810;
-  }
-  .terminal-line.input {
-    color: #25642a;
-  }
-  .terminal-line.system {
-    color: #25642a;
-  }
-	.terminal-line.error {
-		color: #ff0000;
-	}
 </style>

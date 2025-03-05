@@ -1,11 +1,13 @@
 import { tick } from "svelte";
 import { get, writable } from "svelte/store";
-export type FormatType = "input" | "hash" | "error" | "out" | "shog" | "system";
 
+export type FormatType = "input" | "hash" | "error" | "out" | "shog" | "system";
 export type TerminalContentItem = {
 	text: string;
 	format: FormatType;
 	useTypewriter?: boolean;
+	speed?: number;
+	style?: string;
 };
 
 export const terminalContent = writable<TerminalContentItem[]>([]);

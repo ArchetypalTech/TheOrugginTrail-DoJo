@@ -1,7 +1,5 @@
 <script lang="ts">
 import { helpStore } from "$lib/stores/help_store";
-import { onMount } from "svelte";
-import Typewriter from "./Typewriter.svelte";
 
 let terminalElement: HTMLDivElement;
 let currentText: string;

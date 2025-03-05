@@ -24,7 +24,7 @@ onMount(async () => {
 });
 </script>
 
-<div class="w-screen h-screen relative bg-black overflow-hidden">
+<div class="w-screen h-screen relative bg-black overflow-hidden crt">
   {#if !hasError}
     <div id="viewport" class="absolute inset-0 z-0"></div>
     <CameraShake />
