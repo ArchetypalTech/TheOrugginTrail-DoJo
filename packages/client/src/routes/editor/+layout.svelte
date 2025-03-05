@@ -1,6 +1,5 @@
 <script lang="ts">
-  import "../styles/app.css";
-  import "../styles/crt.css";
+  import "../styles/editor.css";
 </script>
 
 <head>

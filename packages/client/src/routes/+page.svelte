@@ -1,27 +1,27 @@
 <script lang="ts">
-import { DebugTerminal, HelpTerminal, Terminal, Wallet } from "$components";
-import Ambient from "$components/Ambient.svelte";
-import CameraShake from "$components/CameraShake.svelte";
-import { helpStore } from "$lib/stores/help_store";
-import { WindowType, windowsStore } from "$lib/stores/windows_store";
-import { onMount } from "svelte";
-import { setupThree } from "../three";
+  import { DebugTerminal, HelpTerminal, Terminal, Wallet } from "$components";
+  import Ambient from "$components/Ambient.svelte";
+  import CameraShake from "$components/CameraShake.svelte";
+  import { helpStore } from "$lib/stores/help_store";
+  import { WindowType, windowsStore } from "$lib/stores/windows_store";
+  import { onMount } from "svelte";
+  import { setupThree } from "../three";
 
-let hasError = false;
-let ambientSoundComponent: { switchTone: () => void };
+  let hasError = false;
+  let ambientSoundComponent: { switchTone: () => void };
 
-function handleError(error: unknown) {
-	hasError = true;
-	console.error("Application error:", error);
-}
+  function handleError(error: unknown) {
+    hasError = true;
+    console.error("Application error:", error);
+  }
 
-onMount(async () => {
-	try {
-		setupThree();
-	} catch (error) {
-		handleError(error);
-	}
-});
+  onMount(async () => {
+    try {
+      setupThree();
+    } catch (error) {
+      handleError(error);
+    }
+  });
 </script>
 
 <div class="w-screen h-screen relative bg-black overflow-hidden">
@@ -66,7 +66,9 @@ onMount(async () => {
     </div>
   {/if}
 </div>
-<div class="absolute top-0 left-0 w-screen h-screen z-100 pointer-events-none crt" />
+<div
+  class="absolute top-0 left-0 w-screen h-screen z-100 pointer-events-none crt"
+/>
 
 <style>
   :global(:root) {
