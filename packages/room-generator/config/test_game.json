@@ -4,22 +4,22 @@
       "levelName": "test",
       "rooms": [
         {
-          "roomID": 7892581999139148090,
+          "roomID": "7892581999139148000",
           "roomName": "The Last Saloon",
           "roomDescription": "The neon sign flickered weakly against the dying light of the final stars.\n The establishment sat at the very edge of existence, where the universe's expansion had stretched reality thin as a piece of cosmic taffy.",
           "roomType": "Mountains",
           "biomeType": "Mountains",
           "objects": [
             {
-              "objID": 215772409139972109,
-              "type": "Door",
+              "objID": "215772409139972100",
+              "type": "Bale",
               "material": "Dirt",
               "objDescription": "Something bubbles and echoes towards your west",
               "direction": "W",
-              "destination": "Walking Eagle Pass",
+              "destination": "The Burning Planes",
               "actions": [
                 {
-                  "actionID": 21833044636746871315,
+                  "actionID": "21833044636746870000",
                   "type": "Open",
                   "enabled": true,
                   "revertable": false,
@@ -30,7 +30,7 @@
               ]
             },
             {
-              "objID": 445772409139972109,
+              "objID": "445772409139972100",
               "type": "Window",
               "material": "None",
               "objDescription": "Jacob, he's standing waiting for you to step through the Echo in the west",
@@ -38,36 +38,44 @@
               "destination": "The Alley Off Main Street",
               "actions": [
                 {
-                  "actionID": 95996044636746871315,
+                  "actionID": "95996044636746870000",
                   "type": "Pray",
                   "enabled": true,
                   "revertable": true,
                   "dBitText": "Go, what are you waiting for..",
                   "dBit": true,
-                  "affectsAction": 95996044636746871315
+                  "affectsAction": "95996044636746870000"
                 },
                 {
-                  "actionID": 25996044636746871315,
+                  "actionID": "25996044636746870000",
                   "type": "Look",
                   "enabled": true,
                   "revertable": false,
                   "dBitText": "Jacob looks back at you, you hear him thinking 'what are you waiting for', don't pray to me.",
                   "dBit": true,
-                  "affectsAction": 95996044636746871315
+                  "affectsAction": "95996044636746870000"
                 }
               ]
             }
+          ],
+          "objectIds": [
+            "215772409139972100",
+            "445772409139972100"
+          ],
+          "dirObjIds": [
+            "215772409139972100",
+            "445772409139972100"
           ]
         },
         {
-          "roomID": 8892581999139148090,
-          "roomName": "Walking Eagle Pass",
-          "roomDescription": "it winds through the mountains, the path is treacherous\ntoilet papered trees cover the steep\nvalley sides below you.\nOn closer inspection the TP might\nbe the remains of a cricket team\nor perhaps a lost and very dead KKK picnic group.\nIt's brass monkeys.",
+          "roomID": "8892581999139148000",
+          "roomName": "The Burning Planes",
+          "roomDescription": "winged wreckages are strewn across the planes\neither they landed embracing another or\notherwise tumbled under and over\n\nskeletons of passengers, their belongings\na backpack gives some color",
           "roomType": "Mountains",
           "biomeType": "Mountains",
           "objects": [
             {
-              "objID": 745772409139972109,
+              "objID": "745772409139972100",
               "type": "Path",
               "material": "Dirt",
               "objDescription": "path leading west",
@@ -75,7 +83,7 @@
               "destination": "Walking Eagle Pass",
               "actions": [
                 {
-                  "actionID": 14833044636746871315,
+                  "actionID": "14833044636746870000",
                   "type": "Open",
                   "enabled": true,
                   "revertable": false,
@@ -86,7 +94,7 @@
               ]
             },
             {
-              "objID": 14833044636746871320,
+              "objID": "14833044636746870000",
               "type": "Path",
               "material": "Metal",
               "objDescription": "Train",
@@ -94,7 +102,7 @@
               "destination": "The Last Saloon",
               "actions": [
                 {
-                  "actionID": 7479341928096534888,
+                  "actionID": "7479341928096535000",
                   "type": "Open",
                   "enabled": true,
                   "revertable": false,
@@ -105,7 +113,7 @@
               ]
             },
             {
-              "objID": 7479341928096534711,
+              "objID": "7479341928096535000",
               "type": "Path",
               "material": "Dirt",
               "objDescription": "path leading east",
@@ -113,7 +121,7 @@
               "destination": "The Alley Off Main Street",
               "actions": [
                 {
-                  "actionID": 9807140808976004456,
+                  "actionID": "9807140808976005000",
                   "type": "Open",
                   "enabled": false,
                   "revertable": false,
@@ -124,7 +132,7 @@
               ]
             },
             {
-              "objID": 383324005557581461,
+              "objID": "383324005557581440",
               "type": "Boulder",
               "material": "Stone",
               "objDescription": "a huge boulder blocks the pass east,\nit is full of the stony remains of creatures designed by an easily bored god and then discarded.\ndarwin may have some thoughts on this.\nsomeone has drawn a cock on it.",
@@ -132,27 +140,49 @@
               "destination": null,
               "actions": [
                 {
-                  "actionID": 5294932446722202844,
+                  "actionID": "5294932446722203000",
                   "type": "Disintegrate",
                   "enabled": true,
                   "revertable": false,
                   "dBitText": "the boulder shatters into dust and shrapnel,\npieces fly,\ndeer run startled,\ncows drop dead,\ncrows and squirrels drop out of the sky.\nsatisfying essentially.\na small fly takes a dump in your ear. you don't notice this luckily.",
                   "dBit": false,
-                  "affectsAction": 9807140808976004456
+                  "affectsAction": "9807140808976005000"
                 }
               ]
+            },
+            {
+              "objID": "2482204884394581",
+              "type": "Chest",
+              "material": "IKEA",
+              "objDescription": "Backpack",
+              "direction": "S",
+              "destination": null,
+              "actions": []
             }
+          ],
+          "objectIds": [
+            "745772409139972100",
+            "14833044636746870000",
+            "7479341928096535000",
+            "383324005557581440",
+            "2482204884394581"
+          ],
+          "dirObjIds": [
+            "745772409139972100",
+            "14833044636746870000",
+            "7479341928096535000",
+            "2482204884394581"
           ]
         },
         {
-          "roomID": 2103159215482208020,
+          "roomID": "2103159215482208000",
           "roomName": "The Alley Off Main Street",
           "roomDescription": "the alley composed of stinking mud sits between main street and the praries, seems that\nthe town uses uses it as dump, for both discarded humans and discarded, well, literal shit.\nall in all not somewhere wants to linger unless dead, or drunk and in that case probably\nbest to be dead drunk.\noddly it reminds you of home. this isnt a good thing.",
           "roomType": "Alley",
           "biomeType": "Prarie",
           "objects": [
             {
-              "objID": 16637690103936120658,
+              "objID": "16637690103936120000",
               "type": "Path",
               "material": "Shit",
               "objDescription": "path",
@@ -160,7 +190,7 @@
               "destination": "Walking Eagle Pass",
               "actions": [
                 {
-                  "actionID": 17581850991508748471,
+                  "actionID": "17581850991508748000",
                   "type": "Open",
                   "enabled": true,
                   "revertable": false,
@@ -170,17 +200,23 @@
                 }
               ]
             }
+          ],
+          "objectIds": [
+            "16637690103936120000"
+          ],
+          "dirObjIds": [
+            "16637690103936120000"
           ]
         },
         {
-          "roomID": 11107137240536497418,
+          "roomID": "11107137240536498000",
           "roomName": "Eli's Barn",
           "roomDescription": "the barn is old and smells of old hay and oddly dissolution\nthe floor is dirt and trampled dried horse shit scattered with straw and broken bottles\nthe smell is not unpleasent and reminds you faintly of petrol and old socks",
           "roomType": "Barn",
           "biomeType": "Prarie",
           "objects": [
             {
-              "objID": 10414226638441273874,
+              "objID": "10414226638441273000",
               "type": "Door",
               "material": "Wood",
               "objDescription": "an old wooden barn door, leads south",
@@ -188,7 +224,7 @@
               "destination": "Walking Eagle Pass",
               "actions": [
                 {
-                  "actionID": 4328927602301159032,
+                  "actionID": "4328927602301159000",
                   "type": "Open",
                   "enabled": true,
                   "revertable": false,
@@ -199,7 +235,7 @@
               ]
             },
             {
-              "objID": 4916953867006087388,
+              "objID": "4916953867006087000",
               "type": "Window",
               "material": "Glass",
               "objDescription": "a dusty window set at chest height in the west wall",
@@ -207,7 +243,7 @@
               "destination": "Eli's Basement",
               "actions": [
                 {
-                  "actionID": 14604306511083742153,
+                  "actionID": "14604306511083741000",
                   "type": "Open",
                   "enabled": true,
                   "revertable": false,
@@ -216,18 +252,18 @@
                   "affectsAction": null
                 },
                 {
-                  "actionID": 3629301349604561982,
+                  "actionID": "3629301349604562000",
                   "type": "Break",
                   "enabled": true,
                   "revertable": false,
                   "dBitText": "the window, smashes, glass flies everywhere, very very satisfying",
                   "dBit": true,
-                  "affectsAction": 14604306511083742153
+                  "affectsAction": "14604306511083741000"
                 }
               ]
             },
             {
-              "objID": 2400306486137228273,
+              "objID": "2400306486137228300",
               "type": "Door",
               "material": "Wood",
               "objDescription": "a wooden trap door, is set in the floor leading downwards",
@@ -235,7 +271,7 @@
               "destination": "Eli's Basement",
               "actions": [
                 {
-                  "actionID": 7672293217203074089,
+                  "actionID": "7672293217203074000",
                   "type": "Open",
                   "enabled": false,
                   "revertable": true,
@@ -246,7 +282,7 @@
               ]
             },
             {
-              "objID": 17975420477260050648,
+              "objID": "17975420477260050000",
               "type": "Bale",
               "material": "Hay",
               "objDescription": "a large dry bale of hay",
@@ -254,36 +290,47 @@
               "destination": null,
               "actions": [
                 {
-                  "actionID": 4600616935932793690,
+                  "actionID": "4600616935932794000",
                   "type": "Burn",
                   "enabled": false,
                   "revertable": false,
                   "dBitText": "the hay bursts into blue, yellow and orange flames with a speed and a heat so intense that you jump back loosing some eyebrows and gaining a small bit of wee",
                   "dBit": false,
-                  "affectsAction": 7672293217203074089
+                  "affectsAction": "7672293217203074000"
                 },
                 {
-                  "actionID": 6511208778142832924,
+                  "actionID": "6511208778142833000",
                   "type": "Soak",
                   "enabled": true,
                   "revertable": false,
                   "dBitText": "the hay soaks up the volatile liquid with gusto, the air smells potent",
                   "dBit": false,
-                  "affectsAction": 4600616935932793690
+                  "affectsAction": "4600616935932794000"
                 }
               ]
             }
+          ],
+          "objectIds": [
+            "10414226638441273000",
+            "4916953867006087000",
+            "2400306486137228300",
+            "17975420477260050000"
+          ],
+          "dirObjIds": [
+            "10414226638441273000",
+            "4916953867006087000",
+            "2400306486137228300"
           ]
         },
         {
-          "roomID": 13246886194600585633,
+          "roomID": "13246886194600585000",
           "roomName": "Eli's Basement",
           "roomDescription": "the basement is a converted root cellar, with a small stool bolted to the floor\nit is not a comforting room and reminds you of far to many movies that you probably never should have watched\nthe light is just enough that you don't have to see too much.\nit smells damp and somehow of bad faith.",
           "roomType": "Basement",
           "biomeType": "Prarie",
           "objects": [
             {
-              "objID": 4405246086034713577,
+              "objID": "4405246086034713600",
               "type": "Door",
               "material": "Wood",
               "objDescription": "a slightly charcoaled wooden trap door, leads upwards",
@@ -291,7 +338,7 @@
               "destination": "Eli's Barn",
               "actions": [
                 {
-                  "actionID": 16332049259031098349,
+                  "actionID": "16332049259031097000",
                   "type": "Open",
                   "enabled": true,
                   "revertable": false,
@@ -302,7 +349,7 @@
               ]
             },
             {
-              "objID": 15610790850353037754,
+              "objID": "15610790850353037000",
               "type": "Dynamite",
               "material": "TNT",
               "objDescription": "a stick of slightly sweaty dynamite almost like a caricature ot itself. It's fused and certainly unstable and capable of turning things including you into a fine meaty mist still holding exciteable explosives couldn't hurt right?",
@@ -310,7 +357,7 @@
               "destination": null,
               "actions": [
                 {
-                  "actionID": 12578911564611469734,
+                  "actionID": "12578911564611470000",
                   "type": "Explode",
                   "enabled": false,
                   "revertable": false,
@@ -319,7 +366,7 @@
                   "affectsAction": null
                 },
                 {
-                  "actionID": 6636732390253036532,
+                  "actionID": "6636732390253037000",
                   "type": "Light",
                   "enabled": true,
                   "revertable": false,
@@ -329,6 +376,13 @@
                 }
               ]
             }
+          ],
+          "objectIds": [
+            "4405246086034713600",
+            "15610790850353037000"
+          ],
+          "dirObjIds": [
+            "4405246086034713600"
           ]
         }
       ]

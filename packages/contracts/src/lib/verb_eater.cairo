@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -6,28 +5,28 @@
 
 pub mod verb_dispatcher {
     // use the_oruggin_trail::lib::interop_dispatch::interop_dispatcher as interop;
-    use the_oruggin_trail::lib::system::{
-        WorldSystemsTrait
-    };
+    use the_oruggin_trail::lib::system::{WorldSystemsTrait};
 
-    use the_oruggin_trail::systems::spawner::{ISpawner, ISpawnerDispatcher, ISpawnerDispatcherTrait};
+    use the_oruggin_trail::systems::spawner::{
+        ISpawner, ISpawnerDispatcher, ISpawnerDispatcherTrait,
+    };
     use the_oruggin_trail::systems::tokeniser::confessor::{Garble};
-    
+
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use dojo::model::{ModelStorage};
-    
+
     use the_oruggin_trail::lib::look::lookat;
     use the_oruggin_trail::lib::move::relocate as mv;
     use the_oruggin_trail::lib::act::pullstrings as act;
     use the_oruggin_trail::models::{
         output::{Output}, player::{Player}, room::{Room}, object::{Object}, inventory::{Inventory},
-        zrk_enums::{ActionType, ObjectType, object_type_to_str}
+        zrk_enums::{ActionType, ObjectType, object_type_to_str},
     };
     use the_oruggin_trail::constants::zrk_constants::{statusid as st};
     use the_oruggin_trail::lib::hash_utils::hashutils as h_util;
 
     pub fn handleGarble(ref world: IWorldDispatcher, pid: felt252, msg: Garble) {
-        let mut wrld: WorldStorage =  WorldStorageTrait::new(world, @"the_oruggin_trail");
+        let mut wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
         println!("HNDL: ---> {:?}", msg.vrb);
         let mut out: ByteArray =
             "Shoggoth is loveable by default, but it understands not your commands";
@@ -51,7 +50,7 @@ pub mod verb_dispatcher {
             ActionType::Spawn => {
                 let (contract_address, class_hash) = match wrld.dns(@"spawner") {
                     Option::Some((addr, hash)) => (addr, hash),
-                    Option::None => panic!("Contract not found")
+                    Option::None => panic!("Contract not found"),
                 };
 
                 let spawner: ISpawnerDispatcher = world.spawner_dispatcher();
@@ -59,13 +58,13 @@ pub mod verb_dispatcher {
                 if player.location == 0 {
                     spawner.setup();
                     // println!("spawned????");
-                    let spawn_rm_name: ByteArray = "Walking Eagle Pass";
+                    let spawn_rm_name: ByteArray = "The Last Saloon";
                     let spawn_id = h_util::str_hash(@spawn_rm_name);
                     spawner.spawn_player(pid, 0);
                     mv::enter_room(wrld, pid, spawn_id);
                     let desc: ByteArray = lookat::describe_room_short(wrld, spawn_id);
                     out = desc;
-                }else {
+                } else {
                     let desc: ByteArray = "you already did that. stop this foolishness";
                     out = desc;
                 }
@@ -94,7 +93,7 @@ pub mod verb_dispatcher {
                             desc =
                                 format!(
                                     "you put the {} in your trusty adventurors plastic bag",
-                                    item_desc
+                                    item_desc,
                                 );
                         } else {
                             new_obj_ids.append(ele);
@@ -113,10 +112,11 @@ pub mod verb_dispatcher {
                 if msg.dobj == ObjectType::None {
                     // let item_desc: ByteArray = object_type_to_str(msg.dobj);
                     desc = "hmmm, there isnt one of those here to drop. are you mad fam?";
-                }else {
+                } else {
                     let mut rm: Room = wrld.read_model(player.location.clone());
                     let mut inv: Inventory = wrld.read_model(player.inventory.clone());
-                    let mut new_inv_items: Array<felt252> = array![]; // New inventory without the dropped item
+                    let mut new_inv_items: Array<felt252> =
+                        array![]; // New inventory without the dropped item
                     let mut found: bool = false;
                     println!("inv items {:?}", inv.items.len());
                     for ele in inv.items {
@@ -129,7 +129,7 @@ pub mod verb_dispatcher {
                             desc =
                                 format!(
                                     "you drop the {} from your trusty adventurors plastic bag",
-                                    item_desc
+                                    item_desc,
                                 );
                             found = true;
                         } else {
@@ -168,7 +168,7 @@ pub mod verb_dispatcher {
         }
         // we probably need to hand off to another routine here to interpolate
         // some results and create a string for now though
-        wrld.write_model(@Output{playerId: pid, text_o_vision: out});
+        wrld.write_model(@Output { playerId: pid, text_o_vision: out });
         // set!(world, Output { playerId: pid, text_o_vision: out })
     }
 }
