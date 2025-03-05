@@ -77,7 +77,7 @@ const controller = new Controller({
 
 	// List of tokens to follow
 	tokens: {
-		erc20: [ORUG_CONFIG.token.erc20],
+		erc20: ORUG_CONFIG.token.erc20,
 		//erc721: [addrContract],
 	},
 	slot: "theoruggintrail",
