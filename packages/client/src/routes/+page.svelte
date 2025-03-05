@@ -24,20 +24,20 @@ onMount(async () => {
 });
 </script>
 
-<div class="w-screen h-screen relative bg-black overflow-hidden crt">
+<div class="w-screen h-screen relative bg-black overflow-hidden">
   {#if !hasError}
     <div id="viewport" class="absolute inset-0 z-0"></div>
     <CameraShake />
-    <Ambient
+    <!-- <Ambient
       bind:this={ambientSoundComponent}
       tonalFrequency={220}
       tonalFrequency2={330}
       transitionTime={2}
-    />
+    /> -->
 
-    <div class="relative z-10 w-screen h-full">
+    <div class="relative z-10 w-screen h-full flex flex-col items-center">
       <div
-        class="absolute w-[600px] h-2/3 min-w-[600px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col"
+        class="absolute w-[500px] h-2/3 min-w-[500px] flex flex-col top-3/4 -translate-y-1/2"
       >
         <Wallet />
         <Terminal />
@@ -66,6 +66,7 @@ onMount(async () => {
     </div>
   {/if}
 </div>
+<div class="absolute top-0 left-0 w-screen h-screen z-100 pointer-events-none crt" />
 
 <style>
   :global(:root) {

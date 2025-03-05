@@ -6,7 +6,7 @@ export let content: TerminalContentItem | null;
 
 {#if content !== null}
   <div
-    class="terminal-line"
+    class="terminal-line w-full"
     class:shog={content.format === "shog"}
     class:out={content.format === "out"}
     class:input={content.format === "input"}

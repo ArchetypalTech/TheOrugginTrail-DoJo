@@ -60,7 +60,7 @@ onDestroy(() => {
 </script>
 
 {#if import.meta.env.DEV}
-    <div class="fixed bottom-0 left-0 bg-black/50 text-green-500 p-2 font-mono text-sm z-50">
+    <div class="fixed bottom-0 left-0 bg-black/50 text-green-500 p-2 font-mono text-sm z-50 hidden">
         CameraShake Status: {debugStatus}
     </div>
 {/if} 

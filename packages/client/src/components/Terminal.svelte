@@ -225,32 +225,51 @@ async function handleTokenIdInput(e: SubmitEvent) {
   role=""
   id="terminal"
   class="font-mono overflow-y-auto h-full bg-black text-green-500 border rounded-md p-4 w-full"
-	style={`border-color: ${$Dojo_Status.status === "error" ? "var(--terminal-error)" : "var(--terminal-system)"}`}
+  style={`border-color: ${$Dojo_Status.status === "error" ? "var(--terminal-error)" : "var(--terminal-system)"}`}
 >
   <div id="scroller" class="flex items-end flex-col bottom-0 w-full">
     {#each $terminalContent as content}
       <TerminalLine {content} />
     {/each}
-    <Typewriter
-      terminalContent={$currentContentItem}
-    />
+    <Typewriter terminalContent={$currentContentItem} />
     <!-- </ul> -->
-		{#if $Dojo_Status.status === "spawning"}
-    <div id="scroller" class="w-full flex flex-row gap-2">
-      <span>&#x3e;</span><input
-        class="bg-black text-green-700 w-full"
-        type="text"
-        bind:value={inputValue}
-        bind:this={terminalInput}
-        on:keydown={(e) => handleKeyDown(e)}
-      />
-      <div id="input-anchor" />
-    </div>
-		{/if}
+    {#if $Dojo_Status.status === "spawning"}
+      <div id="scroller" class="w-full flex flex-row gap-2">
+        <span>&#x3e;</span><input
+          class="bg-black text-green-700 w-full"
+          type="text"
+          bind:value={inputValue}
+          bind:this={terminalInput}
+          on:keydown={(e) => handleKeyDown(e)}
+        />
+        <div id="input-anchor" />
+      </div>
+    {/if}
   </div>
 </form>
+
 <style>
   input {
     outline: none;
+  }
+
+  #terminal {
+    flex-direction: column-reverse;
+    max-height: 100%;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column-reverse;
+    min-width: 500px;
+    width: 500px;
+    max-width: 500px;
+  }
+
+  #scroller * {
+    overflow-anchor: none;
+  }
+
+  #input-anchor {
+    overflow-anchor: auto;
+    height: 1px;
   }
 </style>

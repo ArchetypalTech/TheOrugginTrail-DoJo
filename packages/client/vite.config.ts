@@ -4,10 +4,17 @@ import { sveltekit } from "@sveltejs/kit/vite";
 import { type UserConfig, defineConfig } from "vite";
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
-import { patchBindings } from "./scripts/vite-fix-bindings"; // Patcher for `models.gen.ts` starknet BigNumberish type import
+import { patchBindings } from "./scripts/vite-fix-bindings";
+import tailwindcss from "@tailwindcss/vite";
 
 const config: UserConfig = {
-	plugins: [sveltekit(), wasm(), topLevelAwait(), patchBindings()],
+	plugins: [
+		sveltekit(),
+		wasm(),
+		topLevelAwait(),
+		tailwindcss(),
+		patchBindings(), // Patcher for `models.gen.ts` starknet BigNumberish type import
+	],
 	build: {
 		target: "esnext",
 	},
