@@ -25,6 +25,90 @@ export function setupWorld(provider: DojoProvider) {
 		}
 	};
 
+	const build_designer_createActions_calldata = (t: Array<Action>): DojoCall => {
+		return {
+			contractName: "designer",
+			entrypoint: "create_actions",
+			calldata: [t],
+		};
+	};
+
+	const designer_createActions = async (snAccount: Account | AccountInterface, t: Array<Action>) => {
+		try {
+			return await provider.execute(
+				snAccount,
+				build_designer_createActions_calldata(t),
+				"the_oruggin_trail",
+			);
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	};
+
+	const build_designer_createObjects_calldata = (t: Array<Object>): DojoCall => {
+		return {
+			contractName: "designer",
+			entrypoint: "create_objects",
+			calldata: [t],
+		};
+	};
+
+	const designer_createObjects = async (snAccount: Account | AccountInterface, t: Array<Object>) => {
+		try {
+			return await provider.execute(
+				snAccount,
+				build_designer_createObjects_calldata(t),
+				"the_oruggin_trail",
+			);
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	};
+
+	const build_designer_createPlaces_calldata = (t: Array<Room>): DojoCall => {
+		return {
+			contractName: "designer",
+			entrypoint: "create_places",
+			calldata: [t],
+		};
+	};
+
+	const designer_createPlaces = async (snAccount: Account | AccountInterface, t: Array<Room>) => {
+		try {
+			return await provider.execute(
+				snAccount,
+				build_designer_createPlaces_calldata(t),
+				"the_oruggin_trail",
+			);
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	};
+
+	const build_designer_createTxt_calldata = (id: BigNumberish, ownedBy: BigNumberish, val: ByteArray): DojoCall => {
+		return {
+			contractName: "designer",
+			entrypoint: "create_txt",
+			calldata: [id, ownedBy, val],
+		};
+	};
+
+	const designer_createTxt = async (snAccount: Account | AccountInterface, id: BigNumberish, ownedBy: BigNumberish, val: ByteArray) => {
+		try {
+			return await provider.execute(
+				snAccount,
+				build_designer_createTxt_calldata(id, ownedBy, val),
+				"the_oruggin_trail",
+			);
+		} catch (error) {
+			console.error(error);
+			throw error;
+		}
+	};
+
 	const build_meatpuppet_listen_calldata = (cmd: Array<ByteArray>, pId: BigNumberish): DojoCall => {
 		return {
 			contractName: "meatpuppet",
@@ -138,6 +222,16 @@ export function setupWorld(provider: DojoProvider) {
 			buildCommandShoggothCalldata: build_meatpuppet_commandShoggoth_calldata,
 			listen: meatpuppet_listen,
 			buildListenCalldata: build_meatpuppet_listen_calldata,
+		},
+		designer: {
+			createActions: designer_createActions,
+			buildCreateActionsCalldata: build_designer_createActions_calldata,
+			createObjects: designer_createObjects,
+			buildCreateObjectsCalldata: build_designer_createObjects_calldata,
+			createPlaces: designer_createPlaces,
+			buildCreatePlacesCalldata: build_designer_createPlaces_calldata,
+			createTxt: designer_createTxt,
+			buildCreateTxtCalldata: build_designer_createTxt_calldata,
 		},
 		spawner: {
 			setup: spawner_setup,

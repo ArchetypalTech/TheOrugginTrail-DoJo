@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -9,6 +8,7 @@ pub mod systems {
     pub mod meatpuppet;
     pub mod tokeniser;
     pub mod spawner;
+    pub mod designer;
 }
 
 // pub mod generated {

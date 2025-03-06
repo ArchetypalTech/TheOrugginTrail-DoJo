@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -16,15 +15,15 @@ mod tests {
     // import test utils
     use the_oruggin_trail::{
         systems::{meatpuppet::{meatpuppet, IListenerDispatcher, IListenerDispatcherTrait}},
-        models::{zrk_enums::{MaterialType, ActionType}, output::{Output, output}}
+        models::{zrk_enums::{MaterialType, ActionType}, output::{Output, output}},
     };
 
     // #[test]
     // #[available_gas(30000000)]
     // fn test_semantic_parse_DOBJ_IOBJ() {
     //     let _ = starknet::contract_address_const::<0x0>();
-    //     let mut models = array![output::TEST_CLASS_HASH, 
-    //         prayers::TEST_CLASS_HASH, 
+    //     let mut models = array![output::TEST_CLASS_HASH,
+    //         prayers::TEST_CLASS_HASH,
     //         ears::TEST_CLASS_HASH,
     //         ];
     //     let world = spawn_test_world(models);
@@ -44,8 +43,8 @@ mod tests {
     #[available_gas(30000000)]
     fn test_semantic_parse_DOBJ() {
         // let _ = starknet::contract_address_const::<0x0>();
-        // let mut models = array![output::TEST_CLASS_HASH, 
-        //     prayers::TEST_CLASS_HASH, 
+        // let mut models = array![output::TEST_CLASS_HASH,
+        //     prayers::TEST_CLASS_HASH,
         //     ears::TEST_CLASS_HASH,
         //     ];
         // let world = spawn_test_world(models);
@@ -68,8 +67,8 @@ mod tests {
     #[available_gas(30000000)]
     fn test_semantic_parse_MOVE() {
         // let _ = starknet::contract_address_const::<0x0>();
-        // let mut models = array![output::TEST_CLASS_HASH, 
-        //     prayers::TEST_CLASS_HASH, 
+        // let mut models = array![output::TEST_CLASS_HASH,
+        //     prayers::TEST_CLASS_HASH,
         //     ears::TEST_CLASS_HASH,
         //     ];
         // let world = spawn_test_world(models);
@@ -87,7 +86,7 @@ mod tests {
     }
 
     /// Handling for Look
-    /// 
+    ///
     /// We want to see that the correct string hand been generated for
     /// cmds of the LOOK type. i.e. `LOOK AROUND` | `LOOK` wil generate a
     /// description string composed from the Object graph
@@ -118,11 +117,11 @@ mod tests {
     //     let actual = output.text_o_vision;
     //     assert_eq!(expected, actual, "Expected {:?} got {:?}", expected, actual);
     // }
-    
+
     #[test]
     #[available_gas(30000000)]
     fn test_listener_FIGHT() {
-        /// this is a stub as we have 
+        /// this is a stub as we have
         /// taken out the interop for now
         /// TODO: add interop back in
         let mut models = array![output::TEST_CLASS_HASH];
@@ -132,26 +131,23 @@ mod tests {
 
         // deploy systems contract
         let contract_address = world
-            .deploy_contract(
-                'salt',
-                 meatpuppet::TEST_CLASS_HASH.try_into().unwrap(),
-            );
+            .deploy_contract('salt', meatpuppet::TEST_CLASS_HASH.try_into().unwrap());
 
         world.grant_writer(Model::<Output>::selector(), contract_address);
 
         let sut = IListenerDispatcher { contract_address };
         let input: Array<ByteArray> = array!["fight", "the", "troll"];
         sut.listen(input, pid);
-    
+
         let expected: ByteArray = "Shoggoth is a good boy, he will fight you";
         let output = get!(world, 23, Output);
         let actual = output.text_o_vision;
         assert_eq!(expected, actual, "Expected {:?} got {:?}", expected, actual);
     }
     /// Handling for errors
-    /// 
-    /// We want to see the correct output string which is set on the 
-    /// Output model  
+    ///
+    /// We want to see the correct output string which is set on the
+    /// Output model
     #[test]
     #[available_gas(30000000)]
     fn test_listener_too_many_tokens() {
@@ -164,9 +160,7 @@ mod tests {
 
         // deploy systems contract
         let contract_address = world
-            .deploy_contract(
-                'salt', meatpuppet::TEST_CLASS_HASH.try_into().unwrap(),
-            );
+            .deploy_contract('salt', meatpuppet::TEST_CLASS_HASH.try_into().unwrap());
 
         world.grant_writer(Model::<Output>::selector(), contract_address);
 
@@ -190,7 +184,7 @@ mod tests {
             "14",
             "15",
             "16",
-            "17"
+            "17",
         ];
 
         sut.listen(failing_input, pid);
@@ -200,12 +194,12 @@ mod tests {
         let actual = output.text_o_vision;
         assert_eq!(expected, actual, "Expected {:?} got {:?}", expected, actual);
     }
-    
+
     #[test]
     #[available_gas(30000000)]
     fn test_listener_BADF00D() {
         // let caller = starknet::contract_address_const::<0x0>();
-        
+
         let ns = ["the_oruggin_trail"];
         let pid = 23;
         let mut models = array![output::TEST_CLASS_HASH];
@@ -213,26 +207,22 @@ mod tests {
 
         // deploy systems contract
         let contract_address = world
-            .deploy_contract(
-                'salt', meatpuppet::TEST_CLASS_HASH.try_into().unwrap(),
-            );
+            .deploy_contract('salt', meatpuppet::TEST_CLASS_HASH.try_into().unwrap());
 
         world.grant_writer(Model::<Output>::selector(), contract_address);
 
         let sut = IListenerDispatcher { contract_address };
 
-        let failing_input: Array<ByteArray> = array![
-            "foo",
-            "bar"
-        ];
+        let failing_input: Array<ByteArray> = array!["foo", "bar"];
 
         sut.listen(failing_input, pid);
 
         // this SHOULD in fact be the expected Err::BadFood output BUT
         // currently str tokens that lex to T<ActionType>::None are returned
         // as Err::BadImpl.
-        // let expected: ByteArray = "Whoa, slow down pilgrim. Enunciate... less noise... more signal";
-        let expected: ByteArray = "impl me";
+        // let expected: ByteArray = "Whoa, slow down pilgrim. Enunciate... less noise... more
+        // signal";
+        let expected: ByteArray = "I don't know what that means";
         let output = get!(world, 23, Output);
         let actual = output.text_o_vision;
         assert_eq!(expected, actual, "Expected {:?} got {:?}", expected, actual);
