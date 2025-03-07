@@ -17,7 +17,13 @@ export const POST: RequestHandler = async (event) => {
 			status: 500,
 		});
 	}
-	return SystemCalls[route]?.(command);
+	const res = await SystemCalls[route]?.(command);
+	if (res !== undefined) {
+		return res;
+	}
+	return new Response(JSON.stringify({ message: "Route Failure" }), {
+		status: 500,
+	});
 };
 
 /**

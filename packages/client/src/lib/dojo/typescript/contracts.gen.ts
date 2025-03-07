@@ -46,27 +46,6 @@ export function setupWorld(provider: DojoProvider) {
 		}
 	};
 
-	const build_designer_createObject_calldata = (t: models.Object): DojoCall => {
-		return {
-			contractName: "designer",
-			entrypoint: "create_object",
-			calldata: [t],
-		};
-	};
-
-	const designer_createObject = async (snAccount: Account | AccountInterface, t: models.Object) => {
-		try {
-			return await provider.execute(
-				snAccount,
-				build_designer_createObject_calldata(t),
-				"the_oruggin_trail",
-			);
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
-	};
-
 	const build_designer_createObjects_calldata = (t: Array<Object>): DojoCall => {
 		return {
 			contractName: "designer",
@@ -247,8 +226,6 @@ export function setupWorld(provider: DojoProvider) {
 		designer: {
 			createActions: designer_createActions,
 			buildCreateActionsCalldata: build_designer_createActions_calldata,
-			createObject: designer_createObject,
-			buildCreateObjectCalldata: build_designer_createObject_calldata,
 			createObjects: designer_createObjects,
 			buildCreateObjectsCalldata: build_designer_createObjects_calldata,
 			createRooms: designer_createRooms,

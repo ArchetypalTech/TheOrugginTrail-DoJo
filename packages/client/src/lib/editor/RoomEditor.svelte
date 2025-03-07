@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import type { Room } from "./types";
-  import { ROOM_TYPE_OPTIONS, BIOME_TYPE_OPTIONS } from "./types";
+  import type { Room } from "./schemas";
+  import { ROOM_TYPE_OPTIONS, BIOME_TYPE_OPTIONS } from "./schemas";
 
   export let room: Room;
 
@@ -10,7 +10,7 @@
   // Create a copy of the room for editing
   let editedRoom: Room;
 
-  // Initialize the edited room when the component mounts
+  // Initialize the edited room and extract description text
   onMount(() => {
     editedRoom = { ...room };
   });
@@ -46,11 +46,15 @@
     >
     <textarea
       id="roomDescription"
-      bind:value={editedRoom.roomDescription}
+      bind:value={editedRoom.roomDescription.text}
       on:input={handleChange}
       rows="4"
       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
     ></textarea>
+    <div class="text-xs flex flex-col hover:text-black/40 text-black/0">
+      <div class="text-nowrap">id: {editedRoom.roomDescription.id}</div>
+      <div class="text-nowrap">owner: {editedRoom.roomDescription.owner}</div>
+    </div>
   </div>
 
   <div class="form-group">
@@ -60,7 +64,7 @@
     <select
       id="roomType"
       bind:value={editedRoom.roomType}
-      on:change={handleChange}
+      on:input={handleChange}
       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
     >
       {#each ROOM_TYPE_OPTIONS as option}
@@ -76,7 +80,7 @@
     <select
       id="biomeType"
       bind:value={editedRoom.biomeType}
-      on:change={handleChange}
+      on:input={handleChange}
       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
     >
       {#each BIOME_TYPE_OPTIONS as option}
@@ -93,7 +97,6 @@
       type="text"
       id="roomID"
       bind:value={editedRoom.roomID}
-      on:input={handleChange}
       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
       readonly
     />

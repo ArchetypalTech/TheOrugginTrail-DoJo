@@ -71,6 +71,13 @@
 />
 
 <style>
+  html,
+  head,
+  body {
+    overflow: hidden;
+    position: relative;
+  }
+
   :global(:root) {
     --terminal-width: 30%;
     --available-space: calc(100% - var(--terminal-width));

@@ -57,17 +57,14 @@ pub mod verb_dispatcher {
 
                 if player.location == 0 {
                     spawner.setup();
-                    // println!("spawned????");
-                    let spawn_rm_name: ByteArray = "The Last Saloon";
-                    let spawn_id = h_util::str_hash(@spawn_rm_name);
-                    spawner.spawn_player(pid, 0);
-                    mv::enter_room(wrld, pid, spawn_id);
-                    let desc: ByteArray = lookat::describe_room_short(wrld, spawn_id);
-                    out = desc;
-                } else {
-                    let desc: ByteArray = "you already did that. stop this foolishness";
-                    out = desc;
                 }
+                // println!("spawned????");
+                // let spawn_rm_name: ByteArray = "The Last Saloon";
+                let spawn_id = 7892581999139148000; //h_util::str_hash(@spawn_rm_name);
+                spawner.spawn_player(pid, 0);
+                mv::enter_room(wrld, pid, spawn_id);
+                let desc: ByteArray = lookat::describe_room_short(wrld, spawn_id);
+                out = desc;
             },
             ActionType::Take => {
                 println!("take------->{:?}", msg);

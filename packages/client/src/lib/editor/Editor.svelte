@@ -7,13 +7,13 @@
     validateConfig,
     formatValidationError,
     transformConfig,
+    ensureInlineTextDefinitions,
   } from "./utils";
+  import { publishConfigToContract } from "./publisher";
   import RoomEditor from "./RoomEditor.svelte";
   import ObjectEditor from "./ObjectEditor.svelte";
   import ActionEditor from "./ActionEditor.svelte";
   import type { Room, Object, Action, Config } from "./types";
-  import type { DesignerCall } from "../systemCalls";
-  import testConfig from "@zorg/generator/config/test_game.json";
 
   // State
   let selectedObjectIndex: number | null = null;
@@ -22,6 +22,7 @@
   let errorMessage = "";
   let successMessage = "";
   let isPublishing = false;
+  let publishLog: CustomEvent[] = [];
 
   // Handle file upload
   let fileInput: HTMLInputElement;
@@ -37,12 +38,14 @@
     errorMessage = "";
 
     try {
+      // Load and validate the config
       const config = await loadConfigFromFile(file);
       const errors = validateConfig(config);
 
       if (errors.length > 0) {
         errorMessage = `Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`;
       } else {
+        // Ensure all text values are properly formatted as inline text definitions
         editorActions.loadConfig(config);
         successMessage = "Config loaded successfully";
         setTimeout(() => {
@@ -66,7 +69,10 @@
       return;
     }
 
-    saveConfigToFile(config);
+    // Ensure all text values are properly formatted as inline text definitions before saving
+    const configWithInlineTexts = ensureInlineTextDefinitions(config);
+
+    saveConfigToFile(configWithInlineTexts);
     successMessage = "Config saved successfully";
     setTimeout(() => {
       successMessage = "";
@@ -75,6 +81,7 @@
 
   // Handle publish to contract
   const handlePublish = async () => {
+    publishLog = [];
     const { config, errors } = editorActions.saveConfig();
 
     if (errors.length > 0) {
@@ -82,12 +89,15 @@
       return;
     }
 
+    // Ensure all text values are properly formatted as inline text definitions
+    const configWithInlineTexts = ensureInlineTextDefinitions(config);
+
     isPublishing = true;
     errorMessage = "";
     successMessage = "";
 
     try {
-      await publishConfigToContract(config);
+      await publishConfigToContract(configWithInlineTexts);
       successMessage = "World published to contract successfully";
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -98,109 +108,6 @@
         successMessage = "";
       }, 3000);
     }
-  };
-
-  // Helper function to publish config to contract
-  const publishConfigToContract = async (config: Config) => {
-    // First, create all text definitions
-    await createAllTextDefinitions(config);
-
-    // Then process each room in the config
-    for (const room of config.levels[0].rooms) {
-      // Create room
-      const roomData = [
-        room.roomID,
-        room.roomName,
-        room.roomType,
-        room.biomeType,
-        room.objectIds || [],
-        room.dirObjIds || [],
-      ];
-      await sendDesignerCall("create_rooms", [roomData]);
-
-      // Process objects and actions
-      await processRoomObjects(room);
-    }
-  };
-
-  // Helper function to create all text definitions first
-  const createAllTextDefinitions = async (config: Config) => {
-    for (const room of config.levels[0].rooms) {
-      // Create room text definition
-      await sendDesignerCall("create_txt", [
-        room.roomID, // ID for the text
-        0, // Owner ID (0 for system-owned)
-        room.roomDescription, // The actual text content
-      ]);
-
-      // Create text definitions for all objects and actions
-      for (const obj of room.objects) {
-        // Create object text definition
-        await sendDesignerCall("create_txt", [
-          obj.objID, // ID for the text
-          0, // Owner ID (0 for system-owned)
-          obj.objDescription, // The actual text content
-        ]);
-
-        // Create text definitions for all actions
-        for (const action of obj.actions) {
-          await sendDesignerCall("create_txt", [
-            action.actionID, // ID for the text
-            0, // Owner ID (0 for system-owned)
-            action.dBitText, // The actual text content
-          ]);
-        }
-      }
-    }
-  };
-
-  // Helper function to process room objects
-  const processRoomObjects = async (room: Room) => {
-    for (const obj of room.objects) {
-      // Create object
-      const objData = [
-        obj.objID,
-        obj.type,
-        obj.material,
-        obj.direction || "None",
-        obj.destination || "",
-        obj.actions.map((a: Action) => a.actionID),
-        0, // Additional parameter (placeholder)
-      ];
-      await sendDesignerCall("create_objects", [objData]);
-
-      // Process actions
-      await processObjectActions(obj);
-    }
-  };
-
-  // Helper function to process object actions
-  const processObjectActions = async (obj: Object) => {
-    for (const action of obj.actions) {
-      // Create action
-      const actionData = [
-        action.actionID,
-        action.type,
-        action.enabled,
-        action.revertable,
-        action.dBit,
-        action.affectsAction || "",
-        0, // Additional parameter (placeholder)
-      ];
-      await sendDesignerCall("create_actions", [actionData]);
-    }
-  };
-
-  // Helper function to send designer call
-  const sendDesignerCall = async (call: DesignerCall, args: unknown[]) => {
-    const formData = new FormData();
-    formData.append("route", "sendDesignerCall");
-    formData.append("command", JSON.stringify({ call, args }));
-
-    return fetch("/api", {
-      method: "POST",
-      body: formData,
-    });
   };
 
   // Handle room selection
@@ -293,10 +200,11 @@
 
   // Load the test game config on mount
   onMount(async () => {
+    window.addEventListener("designerCall", (e) => {
+      publishLog.push(e);
+    });
     try {
-      // Transform the test config using our Zod schema
-      const config = transformConfig(testConfig);
-      editorActions.loadConfig(config);
+      editorActions.initialize();
     } catch (error: unknown) {
       console.error("Error loading test game config:", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -305,7 +213,7 @@
   });
 </script>
 
-<div class="editor-container">
+<div class="editor-container text-sm">
   <header class="bg-gray-800 text-white p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold">Game Config Editor</h1>
     <div class="flex gap-2">
@@ -363,11 +271,18 @@
   {/if}
 
   {#if isPublishing}
-    <div class="flex justify-center items-center p-8">
+    <div class="flex flex-col justify-center items-center p-8">
       <div
         class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
       ></div>
       <span class="ml-4">Publishing to contract...</span>
+      {#each publishLog as log}
+        <div class="bg-gray-100 p-4 rounded flex-col flex">
+          <div class="font-mono text-xs">
+            {JSON.stringify(log.detail, null, 2)}
+          </div>
+        </div>
+      {/each}
     </div>
   {:else if isLoading}
     <div class="flex justify-center items-center p-8">

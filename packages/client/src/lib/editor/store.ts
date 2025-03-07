@@ -1,56 +1,14 @@
-import { writable, derived, get } from "svelte/store";
-import type {
-	EditorState,
-	Room,
-	Level,
-	Object,
-	Action,
-	ValidationError,
-	Config,
-} from "./types";
-import { validateConfig } from "./utils";
-import { generateUniqueId } from "./utils";
-import { CairoConverter } from "../../../../room-generator/src/converter";
-
-// Create a default empty level
-const createDefaultLevel = (): Level => ({
-	levelName: "New Level",
-	rooms: [createDefaultRoom()],
-});
-
-// Create a default empty room
-const createDefaultRoom = (): Room => ({
-	roomID: generateUniqueId(),
-	roomName: "New Room",
-	roomDescription: "Describe your room here...",
-	roomType: "Room",
-	biomeType: "Temporate",
-	objects: [],
-	objectIds: [],
-	dirObjIds: [],
-});
-
-// Create a default empty object
-const createDefaultObject = (): Object => ({
-	objID: generateUniqueId(),
-	type: "Door",
-	material: "Wood",
-	objDescription: "Describe your object here...",
-	direction: "N",
-	destination: null,
-	actions: [createDefaultAction()],
-});
-
-// Create a default empty action
-const createDefaultAction = (): Action => ({
-	actionID: generateUniqueId(),
-	type: "Open",
-	enabled: true,
-	revertable: false,
-	dBitText: "Describe what happens when this action is performed...",
-	dBit: true,
-	affectsAction: null,
-});
+import type { Config, EditorState, Action, Object, Room } from "./schemas";
+import { EditorStateSchema } from "./schemas";
+import { transformConfig, validateConfig } from "./utils";
+import { createGenericStore } from "./generic-store";
+import {
+	createDefaultLevel,
+	createDefaultRoom,
+	createDefaultObject,
+	createDefaultAction,
+} from "./defaults";
+import testConfig from "@zorg/generator/config/test_game.json";
 
 // Initialize the editor state
 const initialState: EditorState = {
@@ -60,35 +18,70 @@ const initialState: EditorState = {
 	errors: [],
 };
 
-// Create the editor store
-export const editorStore = writable<EditorState>(initialState);
+// Create the editor store using our generic store implementation
+export const editorStore = createGenericStore<EditorState>(
+	initialState,
+	EditorStateSchema,
+);
 
 // Derived store for the current room
-export const currentRoom = derived(editorStore, ($editorStore) => {
+export const currentRoom = editorStore.derive(($editorStore) => {
 	return $editorStore.currentLevel.rooms[$editorStore.currentRoomIndex];
 });
 
 // Helper functions to update the store
 export const editorActions = {
+	getAllRooms: () => {
+		return editorStore.get().currentLevel.rooms;
+	},
+	initialize: async () => {
+		const localConfig = await window.localStorage.getItem("editorConfig");
+		if (localConfig) {
+			const config = transformConfig(JSON.parse(localConfig));
+			editorActions.loadConfig(config);
+			return;
+		}
+
+		editorActions.loadConfig(transformConfig(testConfig));
+	},
 	// Load a game config from a JSON file
 	loadConfig: (config: Config) => {
-		editorStore.update((state) => {
-			// Validate the config using our Zod schema
-			const errors = validateConfig(config);
+		// Validate the config using our Zod schema
+		const errors = validateConfig(config);
 
-			return {
-				...state,
-				currentLevel: config.levels[0],
-				currentRoomIndex: 0,
-				isDirty: false,
-				errors,
-			};
-		});
+		// Ensure textDefinitions exists and has proper owner references
+		const level = { ...config.levels[0] };
+
+		editorStore.update((state) => ({
+			...state,
+			currentLevel: level,
+			currentRoomIndex: 0,
+			isDirty: false,
+			errors,
+		}));
+	},
+
+	autoSave: async () => {
+		const state = editorStore.get();
+		const config = {
+			levels: [state.currentLevel],
+		};
+
+		// Validate the config using our Zod schema
+		const errors = validateConfig(config);
+
+		if (errors.length > 0) {
+			console.error("Config has validation errors:", errors);
+			return;
+		}
+
+		await window.localStorage.setItem("editorConfig", JSON.stringify(config));
 	},
 
 	// Save the current config to a JSON file
 	saveConfig: () => {
-		const state = get(editorStore);
+		const state = editorStore.get();
+
 		const config = {
 			levels: [state.currentLevel],
 		};
@@ -105,26 +98,13 @@ export const editorActions = {
 		return { config, errors };
 	},
 
-	// Convert the current config to Cairo code
-	convertToCairo: () => {
-		const state = get(editorStore);
-		const config = {
-			levels: [state.currentLevel],
-		};
-
-		// We'll need to implement our own validation or expose the converter differently
-		const errors: ValidationError[] = [];
-
-		// For now, we'll just return a placeholder
-		return { cairo: "// Cairo code will be generated here", errors };
-	},
-
 	// Set the current room index
 	setCurrentRoomIndex: (index: number) => {
 		editorStore.update((state) => ({
 			...state,
 			currentRoomIndex: index,
 		}));
+		editorActions.autoSave();
 	},
 
 	// Add a new room
@@ -143,6 +123,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Update a room
@@ -160,6 +141,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Delete a room
@@ -178,6 +160,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Add an object to the current room
@@ -209,6 +192,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Update an object in the current room
@@ -243,6 +227,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Delete an object from the current room
@@ -276,6 +261,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Add an action to an object
@@ -312,6 +298,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Update an action in an object
@@ -348,6 +335,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 
 	// Delete an action from an object
@@ -383,6 +371,7 @@ export const editorActions = {
 				isDirty: true,
 			};
 		});
+		editorActions.autoSave();
 	},
 };
 

@@ -19,13 +19,6 @@
 
 @source "../node_modules/flowbite-svelte/dist";
 
-html,
-head,
-body {
-  overflow: hidden;
-  position: relative;
-}
-
 :root {
   --terminal-hash: #ffd700;
   --terminal-out: #36ad11;

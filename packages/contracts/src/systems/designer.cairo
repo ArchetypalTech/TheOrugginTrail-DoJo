@@ -5,7 +5,6 @@ use the_oruggin_trail::models::{
 
 #[starknet::interface]
 pub trait IDesigner<TContractState> {
-    fn create_object(ref self: TContractState, t: Object);
     fn create_objects(ref self: TContractState, t: Array<Object>);
     fn create_actions(ref self: TContractState, t: Array<Action>);
     fn create_rooms(ref self: TContractState, t: Array<Room>);
@@ -33,13 +32,6 @@ pub mod designer {
 
     #[abi(embed_v0)]
     pub impl DesignerImpl of IDesigner<ContractState> {
-        fn create_object(ref self: ContractState, t: Object) {
-            let mut world = self.world(@"the_oruggin_trail");
-            let mut a = ArrayTrait::new();
-            a.append(t);
-            store_objects(world.dispatcher, a);
-        }
-
         fn create_objects(ref self: ContractState, t: Array<Object>) {
             let mut world = self.world(@"the_oruggin_trail");
             store_objects(world.dispatcher, t);

@@ -4,6 +4,6 @@
 </script>
 
 <head>
-  <title>ZORG</title>
+  <title>EDITZORG</title>
 </head>
 <slot />

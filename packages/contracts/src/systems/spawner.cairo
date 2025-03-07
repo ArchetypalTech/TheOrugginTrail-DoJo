@@ -27,7 +27,7 @@ pub mod spawner {
     pub impl SpawnerImpl of ISpawner<ContractState> {
         fn setup(ref self: ContractState) {
             let mut world = self.world(@"the_oruggin_trail");
-            make_rooms(world.dispatcher);
+            // make_rooms(world.dispatcher);
         }
 
         fn spawn_player(ref self: ContractState, pid: felt252, start_room: felt252) {

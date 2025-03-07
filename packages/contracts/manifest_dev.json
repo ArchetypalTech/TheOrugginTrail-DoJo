@@ -1312,8 +1312,8 @@
   },
   "contracts": [
     {
-      "address": "0x22685036aee660290c13fded03d0e586b20e153c8a4324ed51dce56ca5c2460",
-      "class_hash": "0xdf126f498d60291d34fe84109d7624a4a73844fd7b5f55546323de4639ca4e",
+      "address": "0x1f2b4df7bca36320530878aaded4e7c5492f63db0964ec958f5e1b5ee0d9024",
+      "class_hash": "0x61325cb96b4e21a3f1dde50206a49bb97e7afd34570fa52720d8415c63012b6",
       "abi": [
         {
           "type": "impl",
@@ -1900,18 +1900,6 @@
           "items": [
             {
               "type": "function",
-              "name": "create_object",
-              "inputs": [
-                {
-                  "name": "t",
-                  "type": "the_oruggin_trail::models::object::Object"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
               "name": "create_objects",
               "inputs": [
                 {
@@ -2087,7 +2075,6 @@
       "tag": "the_oruggin_trail-designer",
       "selector": "0x5c5435fe69b57d9f47bd9c136c50e8cfa80258236cebecc4daceb4a9edd7027",
       "systems": [
-        "create_object",
         "create_objects",
         "create_actions",
         "create_rooms",
@@ -2096,8 +2083,8 @@
       ]
     },
     {
-      "address": "0x1b5ff5cecc3ef4012ff5d3bfe6e59372c4701c0accb504bd8065292bfb7aae7",
-      "class_hash": "0x126c49f713d5e810dfff42326c482b4cbfbb1344eb27de2bd3777b4339f3e06",
+      "address": "0x7606ad4421c639c6d2f4831c1ff52acf295231af5e8ccee0fd5da4507d2856e",
+      "class_hash": "0x81dc4f72a6cec273238e1c8f5a345c51d7fb1099c8345a40c0640b3b424cd3",
       "abi": [
         {
           "type": "impl",
@@ -2529,8 +2516,8 @@
       ]
     },
     {
-      "address": "0x1b3f70f8041b566813115a6ff1438fe71366df048d6e2345fc109511086b979",
-      "class_hash": "0x7f075a714974e61fa3f5387924dca29e65bfc35e316ae8959006aa7826a9e5f",
+      "address": "0x6a145dddea378e41ca82282160ecc4cbe76e0ba6a762a94e6a5eb80f652e014",
+      "class_hash": "0x7eace81c63029de8a2458a540e864ae56e64c40eb0fd0687e06cf3424fb5d01",
       "abi": [
         {
           "type": "impl",

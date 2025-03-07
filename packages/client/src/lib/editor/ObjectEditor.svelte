@@ -6,9 +6,9 @@
     MATERIAL_TYPE_OPTIONS,
     DIRECTION_OPTIONS,
   } from "./types";
+  import { editorActions } from "./store";
 
   export let object: Object;
-  export let roomNames: string[] = [];
 
   const dispatch = createEventDispatcher<{ update: Object }>();
 
@@ -70,11 +70,15 @@
     >
     <textarea
       id="objDescription"
-      bind:value={editedObject.objDescription}
+      bind:value={editedObject.objDescription.text}
       on:input={handleChange}
       rows="3"
       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
     ></textarea>
+    <div class="text-xs flex flex-col hover:text-black/40 text-black/0">
+      <div class="text-nowrap">id: {editedObject.objDescription.id}</div>
+      <div class="text-nowrap">owner: {editedObject.objDescription.owner}</div>
+    </div>
   </div>
 
   <div class="form-group">
@@ -105,8 +109,8 @@
       disabled={editedObject.direction === "None"}
     >
       <option value={null}>None</option>
-      {#each roomNames as roomName}
-        <option value={roomName}>{roomName}</option>
+      {#each editorActions.getAllRooms() as room}
+        <option value={room.roomID}>{room.roomName}</option>
       {/each}
     </select>
     <p class="mt-1 text-xs text-gray-500">

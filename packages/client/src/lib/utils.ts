@@ -1,3 +1,5 @@
+import { byteArray } from "starknet";
+
 /**
  * Determines the entity ID from an array of keys. If only one key is provided,
  * it's directly used as the entity ID. Otherwise, a poseidon hash of the keys is calculated.
@@ -50,8 +52,32 @@ export function getEntityIdFromKeys(keys: string | number): string {
  *   [791662, 1, 0, 3, 6, [], 0]
  * ]) // returns [2, 288709, 1, 0, 3, 6, 0, 0, 791662, 1, 0, 3, 6, 0, 0]
  */
+
+const convertIfString = (item: unknown) => {
+	if ((item as TempInt).name === "TempInt") {
+		if ((item as TempInt).value === "") {
+			return 0;
+		}
+		return parseInt((item as TempInt).value);
+	}
+	if ((item as ByteArray).name === "ByteArray") {
+		if ((item as ByteArray).value === "") {
+			return 0;
+		}
+		return byteArray.byteArrayFromString((item as ByteArray).value);
+	}
+	if (item === "") {
+		return 0;
+	}
+	// check if string is NOT all numbers
+	if (typeof item === "string" && !/^[0-9]+$/.test(item) && item !== "") {
+		return byteArray.byteArrayFromString(item);
+	}
+	return item;
+};
+
 export const toCairoArray = (args: unknown[]): unknown[] => {
-	console.log(args);
+	console.dir(args, 8);
 	if (args.length === 0) {
 		return [0]; // Empty array is represented as [0] in Cairo
 	}
@@ -65,13 +91,29 @@ export const toCairoArray = (args: unknown[]): unknown[] => {
 					if (item.length === 0) {
 						return 0;
 					}
-					return [item.length, ...item.flat()];
+					return [...item.flatMap(convertIfString)];
 				}
-				return item;
+				return convertIfString(item);
 			}),
 		];
 		result.push(...arr);
 	}
-	console.log(result);
+	console.dir(result, 8);
 	return result;
 };
+
+export class TempInt {
+	name = "TempInt";
+	value: string;
+	constructor(value: string) {
+		this.value = value;
+	}
+}
+
+export class ByteArray {
+	name = "ByteArray";
+	value: string;
+	constructor(value: string) {
+		this.value = value;
+	}
+}

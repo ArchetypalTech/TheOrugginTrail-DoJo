@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+button,
+input,
+select {
+  @apply p-2 bg-white/60;
+}
+
+select {
+  @apply border border-gray-300 rounded-md border-dashed;
+}
+
+textarea {
+  @apply bg-white min-h-[200px] p-2;
+}

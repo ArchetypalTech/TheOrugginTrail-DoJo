@@ -49,7 +49,11 @@ async function sendDesignerCall(props: string) {
 				" -> calldata ->",
 				calldata,
 			);
-			const response = ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+			const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+			await new Promise((r) => setTimeout(r, 500));
+			// await ORUG_CONFIG.katanaProvider.waitForTransaction(
+			// 	response.transaction_hash,
+			// );
 			return new Response(JSON.stringify(response), {
 				headers: {
 					"Content-Type": "application/json",
@@ -57,10 +61,17 @@ async function sendDesignerCall(props: string) {
 			});
 		}
 		// txt format: id: felt252, ownedBy: felt252, val: ByteArray
+		// 2nd arg needs to always be 0
+		console.log("LENGTH >>>>", (args[2] as string).length);
+		// console.log(args[2]);
+		// if (args[2].length > 16) {
+		args[2] = (args[2] as string).substring(0, 125);
+		// 	console.log("trimmed >>>>", args[2]);
+		// }
 		const data = [
 			args[0],
-			0,
-			byteArray.byteArrayFromString(args[1] as string),
+			args[1],
+			byteArray.byteArrayFromString(args[2] as string),
 		] as RawArgsArray;
 		const calldata = CallData.compile(data);
 		console.log(
@@ -69,7 +80,11 @@ async function sendDesignerCall(props: string) {
 			" -> calldata ->",
 			calldata,
 		);
-		const response = ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+		const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+		await new Promise((r) => setTimeout(r, 500));
+		// await ORUG_CONFIG.katanaProvider.waitForTransaction(
+		// 	response.transaction_hash,
+		// );
 		return new Response(JSON.stringify(response), {
 			headers: {
 				"Content-Type": "application/json",
@@ -77,6 +92,14 @@ async function sendDesignerCall(props: string) {
 		});
 	} catch (error) {
 		console.error("Error creating object:", error);
+		return new Response(
+			JSON.stringify({ error: `Error creating object: ${error.message}` }),
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
 	}
 }
 

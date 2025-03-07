@@ -1,53 +1,53 @@
-import type { Action, Object, Room, Level, Config } from './types';
+import type { Action, Object, Room, Level, Config } from "./types";
 
 interface ValidationError {
-    type: 'RoomID' | 'ObjectID' | 'ActionID' | 'AffectsActionID';
-    message: string;
-    details: {
-        id?: string;
-        roomName?: string;
-        objectType?: string;
-        actionType?: string;
-    };
+	type: "RoomID" | "ObjectID" | "ActionID" | "AffectsActionID";
+	message: string;
+	details: {
+		id?: string;
+		roomName?: string;
+		objectType?: string;
+		actionType?: string;
+	};
 }
 
 export class CairoConverter {
-    private convertDirection(dir: string): string {
-        const dirMap: Record<string, string> = {
-            'E': 'zrk::DirectionType::East',
-            'S': 'zrk::DirectionType::South',
-            'W': 'zrk::DirectionType::West',
-            'N': 'zrk::DirectionType::North',
-            'U': 'zrk::DirectionType::Up',
-            'D': 'zrk::DirectionType::Down',
-            'None': 'zrk::DirectionType::None'
-        };
-        return dirMap[dir] || 'zrk::DirectionType::None';
-    }
+	private convertDirection(dir: string): string {
+		const dirMap: Record<string, string> = {
+			E: "zrk::DirectionType::East",
+			S: "zrk::DirectionType::South",
+			W: "zrk::DirectionType::West",
+			N: "zrk::DirectionType::North",
+			U: "zrk::DirectionType::Up",
+			D: "zrk::DirectionType::Down",
+			None: "zrk::DirectionType::None",
+		};
+		return dirMap[dir] || "zrk::DirectionType::None";
+	}
 
-    private convertObjectType(type: string): string {
-        return `zrk::ObjectType::${type}`;
-    }
+	private convertObjectType(type: string): string {
+		return `zrk::ObjectType::${type}`;
+	}
 
-    private convertActionType(type: string): string {
-        return `zrk::ActionType::${type}`;
-    }
+	private convertActionType(type: string): string {
+		return `zrk::ActionType::${type}`;
+	}
 
-    private convertMaterialType(material: string): string {
-        return `zrk::MaterialType::${material}`;
-    }
+	private convertMaterialType(material: string): string {
+		return `zrk::MaterialType::${material}`;
+	}
 
-    private convertRoomType(type: string): string {
-        return `zrk::RoomType::${type}`;
-    }
+	private convertRoomType(type: string): string {
+		return `zrk::RoomType::${type}`;
+	}
 
-    private convertBiomeType(type: string): string {
-        return `zrk::BiomeType::${type}`;
-    }
+	private convertBiomeType(type: string): string {
+		return `zrk::BiomeType::${type}`;
+	}
 
-    private generateAction(action: Action, objId: string): string {
-        const actionVar = `action_${objId}_${action.actionID}`;
-        return `
+	private generateAction(action: Action, objId: string): string {
+		const actionVar = `action_${objId}_${action.actionID}`;
+		return `
         let mut ${actionVar} = Action{
             actionId: st::NONE, 
             actionType: ${this.convertActionType(action.type)},
@@ -61,36 +61,38 @@ export class CairoConverter {
 
         let action_id_${objId}_${action.actionID} = h_util::action_hash(@${actionVar});
         ${actionVar}.actionId = action_id_${objId}_${action.actionID};`;
-    }
+	}
 
-    private generateObject(obj: Object): string {
-        const objActions = obj.actions.map(action => this.generateAction(action, obj.objID)).join('\n');
-        
-        const objVar = `object_${obj.objID}`;
-        const objDefinition = obj.destination 
-            ? `
+	private generateObject(obj: Object): string {
+		const objActions = obj.actions
+			.map((action) => this.generateAction(action, obj.objID))
+			.join("\n");
+
+		const objVar = `object_${obj.objID}`;
+		const objDefinition = obj.destination
+			? `
         let destination = "${obj.destination}";
         let mut ${objVar} = Object{
             objectId: st::SETME, 
             objType: ${this.convertObjectType(obj.type)},
             matType: ${this.convertMaterialType(obj.material)},
-            dirType: ${this.convertDirection(obj.direction || 'None')},
+            dirType: ${this.convertDirection(obj.direction || "None")},
             destId: h_util::str_hash(@destination),
-            objectActionIds: array![${obj.actions.map(a => `action_id_${obj.objID}_${a.actionID}`).join(',')}],
+            objectActionIds: array![${obj.actions.map((a) => `action_id_${obj.objID}_${a.actionID}`).join(",")}],
             txtDefId: st::SETME 
         };`
-            : `
+			: `
         let mut ${objVar} = Object{
             objectId: st::SETME, 
             objType: ${this.convertObjectType(obj.type)},
             matType: ${this.convertMaterialType(obj.material)},
-            dirType: ${this.convertDirection(obj.direction || 'None')},
+            dirType: ${this.convertDirection(obj.direction || "None")},
             destId: st::NONE,
-            objectActionIds: array![${obj.actions.map(a => `action_id_${obj.objID}_${a.actionID}`).join(',')}],
+            objectActionIds: array![${obj.actions.map((a) => `action_id_${obj.objID}_${a.actionID}`).join(",")}],
             txtDefId: st::SETME 
         };`;
 
-        return `${objActions}
+		return `${objActions}
         ${objDefinition}
 
         let object_id_${obj.objID} = h_util::obj_hash(@${objVar}); 
@@ -100,49 +102,63 @@ export class CairoConverter {
         ${objVar}.txtDefId = td_id_b;
 
         store_txt(w, td_id_b, object_id_${obj.objID}, object_desc);`;
-    }
+	}
 
-    private generateRoom(room: Room): string {
-        const objects = room.objects.map(obj => this.generateObject(obj)).join('\n\n');
+	private generateRoom(room: Room): string {
+		const objects = room.objects
+			.map((obj) => this.generateObject(obj))
+			.join("\n\n");
 
-        // Create a map of all actions in the room for lookup
-        const actionMap = new Map<string, { objId: string, actionId: string }>();
-        room.objects.forEach(obj => {
-            obj.actions.forEach(action => {
-                actionMap.set(action.actionID, { objId: obj.objID, actionId: action.actionID });
-            });
-        });
+		// Create a map of all actions in the room for lookup
+		const actionMap = new Map<string, { objId: string; actionId: string }>();
+		room.objects.forEach((obj) => {
+			obj.actions.forEach((action) => {
+				actionMap.set(action.actionID, {
+					objId: obj.objID,
+					actionId: action.actionID,
+				});
+			});
+		});
 
-        // Generate action affects relationships
-        const actionAffects = room.objects
-            .flatMap(obj => obj.actions
-                .filter(action => action.affectsAction !== null)
-                .map(action => {
-                    const affectedAction = actionMap.get(action.affectsAction!);
-                    if (!affectedAction) {
-                        console.warn(`Warning: Action ${action.actionID} references non-existent action ${action.affectsAction}`);
-                        return '';
-                    }
-                    return `
+		// Generate action affects relationships
+		const actionAffects = room.objects
+			.flatMap((obj) =>
+				obj.actions
+					.filter((action) => action.affectsAction !== null)
+					.map((action) => {
+						const affectedAction = actionMap.get(action.affectsAction!);
+						if (!affectedAction) {
+							console.warn(
+								`Warning: Action ${action.actionID} references non-existent action ${action.affectsAction}`,
+							);
+							return "";
+						}
+						return `
         action_${obj.objID}_${action.actionID}.affectsActionId = action_id_${affectedAction.objId}_${affectedAction.actionId};
         action_${affectedAction.objId}_${affectedAction.actionId}.affectedByActionId = action_id_${obj.objID}_${action.actionID};`;
-                }))
-            .filter(line => line !== '')
-            .join('\n');
+					}),
+			)
+			.filter((line) => line !== "")
+			.join("\n");
 
-        const storeActions = room.objects
-            .map(obj => `store_actions(w, array![${obj.actions.map(a => `action_${obj.objID}_${a.actionID}`).join(',')}]);`)
-            .join('\n        ');
+		const storeActions = room.objects
+			.map(
+				(obj) =>
+					`store_actions(w, array![${obj.actions.map((a) => `action_${obj.objID}_${a.actionID}`).join(",")}]);`,
+			)
+			.join("\n        ");
 
-        const storeObjects = room.objects
-            .map(obj => `store_objects(w, array![object_${obj.objID}]);`)
-            .join('\n        ');
+		const storeObjects = room.objects
+			.map((obj) => `store_objects(w, array![object_${obj.objID}]);`)
+			.join("\n        ");
 
-        // Automatically collect object IDs based on their type
-        const staticObjects = room.objects.filter(obj => obj.destination === null);
-        const directionalObjects = room.objects.filter(obj => obj.destination !== null);
+		// Automatically collect object IDs based on their type
+		const staticObjects = room.objects.filter((obj) => obj.destination === null);
+		const directionalObjects = room.objects.filter(
+			(obj) => obj.destination !== null,
+		);
 
-        return `
+		return `
     fn gen_room_${room.roomID}(w: IWorldDispatcher, playerid: felt252) {
         ${objects}
         ${actionAffects}
@@ -160,123 +176,132 @@ export class CairoConverter {
             biomeType: ${this.convertBiomeType(room.biomeType)},
             txtDefId: _txt_id,
             shortTxt: place_name,
-            objectIds: array![${staticObjects.map(obj => `object_id_${obj.objID}`).join(',')}],
-            dirObjIds: array![${directionalObjects.map(obj => `object_id_${obj.objID}`).join(',')}],
+            objectIds: array![${staticObjects.map((obj) => `object_id_${obj.objID}`).join(",")}],
+            dirObjIds: array![${directionalObjects.map((obj) => `object_id_${obj.objID}`).join(",")}],
             players: array![]
         };
 
         store_txt(w, _txt_id, rmid, room_desc);
         store_places(w, array![place]);
     }`;
-    }
+	}
 
-    private generateMakeRooms(rooms: Room[]): string {
-        const roomCalls = rooms.map(room => `        let _ = gen_room_${room.roomID}(w, pl);`).join('\n');
-        return `
+	private generateMakeRooms(rooms: Room[]): string {
+		const roomCalls = rooms
+			.map((room) => `        let _ = gen_room_${room.roomID}(w, pl);`)
+			.join("\n");
+		return `
     fn make_rooms(w: IWorldDispatcher, pl: felt252) {
 ${roomCalls}
     }`;
-    }
+	}
 
-    private validateConfig(config: Config): ValidationError[] {
-        const errors: ValidationError[] = [];
-        
-        // Track all IDs for uniqueness checking
-        const roomIds = new Set<string>();
-        const objectIds = new Set<string>();
-        const actionIds = new Set<string>();
-        
-        // Track ALL actions globally
-        const allActionIds = new Set<string>();
+	private validateConfig(config: Config): ValidationError[] {
+		const errors: ValidationError[] = [];
 
-        // First pass: collect all action IDs
-        for (const level of config.levels) {
-            for (const room of level.rooms) {
-                if (roomIds.has(room.roomID)) {
-                    errors.push({
-                        type: 'RoomID',
-                        message: `Duplicate room ID found: ${room.roomID}`,
-                        details: {
-                            id: room.roomID,
-                            roomName: room.roomName
-                        }
-                    });
-                }
-                roomIds.add(room.roomID);
+		// Track all IDs for uniqueness checking
+		const roomIds = new Set<string>();
+		const objectIds = new Set<string>();
+		const actionIds = new Set<string>();
 
-                for (const obj of room.objects) {
-                    if (objectIds.has(obj.objID)) {
-                        errors.push({
-                            type: 'ObjectID',
-                            message: `Duplicate object ID found: ${obj.objID}`,
-                            details: {
-                                id: obj.objID,
-                                objectType: obj.type
-                            }
-                        });
-                    }
-                    objectIds.add(obj.objID);
+		// Track ALL actions globally
+		const allActionIds = new Set<string>();
 
-                    for (const action of obj.actions) {
-                        if (actionIds.has(action.actionID)) {
-                            errors.push({
-                                type: 'ActionID',
-                                message: `Duplicate action ID found: ${action.actionID}`,
-                                details: {
-                                    id: action.actionID,
-                                    actionType: action.type
-                                }
-                            });
-                        }
-                        actionIds.add(action.actionID);
-                        allActionIds.add(action.actionID);
-                    }
-                }
-            }
-        }
+		// First pass: collect all action IDs
+		for (const level of config.levels) {
+			for (const room of level.rooms) {
+				if (roomIds.has(room.roomID)) {
+					errors.push({
+						type: "RoomID",
+						message: `Duplicate room ID found: ${room.roomID}`,
+						details: {
+							id: room.roomID,
+							roomName: room.roomName,
+						},
+					});
+				}
+				roomIds.add(room.roomID);
 
-        // Second pass: validate affectsAction references against all known actions
-        for (const level of config.levels) {
-            for (const room of level.rooms) {
-                for (const obj of room.objects) {
-                    for (const action of obj.actions) {
-                        if (action.affectsAction !== null && !allActionIds.has(action.affectsAction)) {
-                            errors.push({
-                                type: 'AffectsActionID',
-                                message: `Invalid affectsAction reference: Action ${action.actionID} references non-existent action ${action.affectsAction}`,
-                                details: {
-                                    id: action.actionID,
-                                    actionType: action.type
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }
+				for (const obj of room.objects) {
+					if (objectIds.has(obj.objID)) {
+						errors.push({
+							type: "ObjectID",
+							message: `Duplicate object ID found: ${obj.objID}`,
+							details: {
+								id: obj.objID,
+								objectType: obj.type,
+							},
+						});
+					}
+					objectIds.add(obj.objID);
 
-        return errors;
-    }
+					for (const action of obj.actions) {
+						if (actionIds.has(action.actionID)) {
+							errors.push({
+								type: "ActionID",
+								message: `Duplicate action ID found: ${action.actionID}`,
+								details: {
+									id: action.actionID,
+									actionType: action.type,
+								},
+							});
+						}
+						actionIds.add(action.actionID);
+						allActionIds.add(action.actionID);
+					}
+				}
+			}
+		}
 
-    public convert(config: Config): string {
-        // Run validation
-        const validationErrors = this.validateConfig(config);
-        if (validationErrors.length > 0) {
-            console.error('Validation errors found:');
-            validationErrors.forEach(error => {
-                console.error(`[${error.type}] ${error.message}`);
-                if (Object.keys(error.details).length > 0) {
-                    console.error('Details:', error.details);
-                }
-            });
-            throw new Error('Configuration validation failed. Please fix the errors above.');
-        }
+		// Second pass: validate affectsAction references against all known actions
+		for (const level of config.levels) {
+			for (const room of level.rooms) {
+				for (const obj of room.objects) {
+					for (const action of obj.actions) {
+						if (
+							action.affectsAction !== null &&
+							!allActionIds.has(action.affectsAction)
+						) {
+							errors.push({
+								type: "AffectsActionID",
+								message: `Invalid affectsAction reference: Action ${action.actionID} references non-existent action ${action.affectsAction}`,
+								details: {
+									id: action.actionID,
+									actionType: action.type,
+								},
+							});
+						}
+					}
+				}
+			}
+		}
 
-        const rooms = config.levels[0].rooms;
-        const roomFunctions = rooms.map(room => this.generateRoom(room)).join('\n\n');
-        const makeRooms = this.generateMakeRooms(rooms);
+		return errors;
+	}
 
-        return `#[starknet::interface]
+	public convert(config: Config): string {
+		// Run validation
+		const validationErrors = this.validateConfig(config);
+		if (validationErrors.length > 0) {
+			console.error("Validation errors found:");
+			validationErrors.forEach((error) => {
+				console.error(`[${error.type}] ${error.message}`);
+				if (Object.keys(error.details).length > 0) {
+					console.error("Details:", error.details);
+				}
+			});
+			throw new Error(
+				"Configuration validation failed. Please fix the errors above.",
+			);
+		}
+
+		const rooms = config.levels[0].rooms;
+		const roomFunctions = rooms
+			.map((room) => this.generateRoom(room))
+			.join("\n\n");
+		const makeRooms = this.generateMakeRooms(rooms);
+
+		return `#[starknet::interface]
 pub trait ISpawner<T> {
     fn setup(ref self: T);
     fn spawn_player(ref self: T, pid: felt252, start_room: felt252);
@@ -360,5 +385,5 @@ ${makeRooms}
 
 ${roomFunctions}
 }`;
-    }
-} 
+	}
+}

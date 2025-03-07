@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -65,7 +64,7 @@ pub fn biome_type_to_str(biome_type: BiomeType) -> ByteArray {
 }
 
 
-/// Room Types 
+/// Room Types
 /// used by the description libs to autogen
 /// description strings by composition rather
 /// than being hardcoded
@@ -163,8 +162,8 @@ pub enum MaterialType {
 }
 
 /// MaterialType -> short_string or felt252
-/// 
-/// implements the Into trait and gives a <= 32 char i.e 32 * 8 bits  
+///
+/// implements the Into trait and gives a <= 32 char i.e 32 * 8 bits
 impl MT_to_Felt252 of Into<MaterialType, felt252> {
     fn into(self: MaterialType) -> felt252 {
         match self {
@@ -341,7 +340,7 @@ impl AT_to_Felt252 of Into<ActionType, felt252> {
             ActionType::Soak => 'soak',
             ActionType::Empty => 'empty',
             ActionType::Drop => 'drop',
-            ActionType::None => 'none'
+            ActionType::None => 'none',
         }
     }
 }
