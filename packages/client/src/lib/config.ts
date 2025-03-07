@@ -30,6 +30,11 @@ const endpoints = {
 
 const katanaProvider = new RpcProvider({
 	nodeUrl: env.VITE_KATANA_HTTP_RPC,
+	headers: {
+		//nocors
+		"Access-Control-Allow-Origin": "*",
+		mode: "no-cors",
+	},
 });
 
 // @dev: for future ref we can dynamically import manifest as well
@@ -45,6 +50,10 @@ const manifest = {
 		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-outputter"),
 		"the_oruggin_trail-outputter",
 	),
+	designer: getOrFail(
+		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-designer"),
+		"the_oruggin_trail-designer",
+	),
 	world: manifestJson.world,
 };
 
@@ -59,18 +68,29 @@ const wallet = (() => {
 	};
 })();
 
-const theOutputter = new Contract(
+const outputter = new Contract(
 	manifest.entity.abi,
 	manifest.entity.address,
 	katanaProvider,
 );
 
-theOutputter.connect(wallet.account);
+outputter.connect(wallet.account);
+
+const designer = new Contract(
+	manifest.designer.abi,
+	manifest.designer.address,
+	katanaProvider,
+);
+
+designer.connect(wallet.account);
 
 export const ORUG_CONFIG = {
 	endpoints,
 	katanaProvider,
-	theOutputter,
+	contracts: {
+		outputter,
+		designer,
+	},
 	wallet,
 	manifest,
 	token: {

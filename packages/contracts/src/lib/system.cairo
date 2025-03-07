@@ -1,20 +1,21 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
 use starknet::{ContractAddress, ClassHash};
-use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait, Resource, WorldStorage, WorldStorageTrait};
+use dojo::world::{
+    IWorldDispatcher, IWorldDispatcherTrait, Resource, WorldStorage, WorldStorageTrait,
+};
 
 use the_oruggin_trail::utils::misc::{ZERO};
 use the_oruggin_trail::systems::spawner::{ISpawnerDispatcher, ISpawnerDispatcherTrait};
+use the_oruggin_trail::systems::designer::{IDesignerDispatcher, IDesignerDispatcherTrait};
 
 use the_oruggin_trail::constants::zrk_constants::{ZrkSystemStrings, ZrkSystemStringsImpl};
 
 #[generate_trait]
 pub impl WorldSystemsTraitImpl of WorldSystemsTrait {
-
     fn contract_address(self: IWorldDispatcher, selector: @ByteArray) -> ContractAddress {
         let ns: ByteArray = ZrkSystemStringsImpl::ns();
         let world: WorldStorage = WorldStorageTrait::new(self, @ns);
@@ -29,7 +30,12 @@ pub impl WorldSystemsTraitImpl of WorldSystemsTrait {
 
     #[inline(always)]
     fn spawner_dispatcher(self: IWorldDispatcher) -> ISpawnerDispatcher {
-        (ISpawnerDispatcher{ contract_address: self.contract_address(@"spawner") })
+        (ISpawnerDispatcher { contract_address: self.contract_address(@"spawner") })
+    }
+
+    #[inline(always)]
+    fn designer_dispatcher(self: IWorldDispatcher) -> IDesignerDispatcher {
+        (IDesignerDispatcher { contract_address: self.contract_address(@"designer") })
     }
 
     #[inline(always)]

@@ -1312,8 +1312,8 @@
   },
   "contracts": [
     {
-      "address": "0x2729afbda274ee1f460be497b27592466fdd0c32ae88fa1a8b1a5b24f51bbe8",
-      "class_hash": "0x111c99537e5023714350da5b765e5046158ecb286790c933a3207e8d890f1dc",
+      "address": "0x22685036aee660290c13fded03d0e586b20e153c8a4324ed51dce56ca5c2460",
+      "class_hash": "0xdf126f498d60291d34fe84109d7624a4a73844fd7b5f55546323de4639ca4e",
       "abi": [
         {
           "type": "impl",
@@ -1900,6 +1900,18 @@
           "items": [
             {
               "type": "function",
+              "name": "create_object",
+              "inputs": [
+                {
+                  "name": "t",
+                  "type": "the_oruggin_trail::models::object::Object"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
               "name": "create_objects",
               "inputs": [
                 {
@@ -1924,7 +1936,7 @@
             },
             {
               "type": "function",
-              "name": "create_places",
+              "name": "create_rooms",
               "inputs": [
                 {
                   "name": "t",
@@ -2075,15 +2087,16 @@
       "tag": "the_oruggin_trail-designer",
       "selector": "0x5c5435fe69b57d9f47bd9c136c50e8cfa80258236cebecc4daceb4a9edd7027",
       "systems": [
+        "create_object",
         "create_objects",
         "create_actions",
-        "create_places",
+        "create_rooms",
         "create_txt",
         "upgrade"
       ]
     },
     {
-      "address": "0xb13bfdc4271ee8f7777ee0f1b7fe975361feefa8484619d59f2c1f4537308",
+      "address": "0x1b5ff5cecc3ef4012ff5d3bfe6e59372c4701c0accb504bd8065292bfb7aae7",
       "class_hash": "0x126c49f713d5e810dfff42326c482b4cbfbb1344eb27de2bd3777b4339f3e06",
       "abi": [
         {
@@ -2516,7 +2529,7 @@
       ]
     },
     {
-      "address": "0x616ce54d7e448a6dbd2d325a018f2c38ecf10ab660b8202741c477e46d7dffd",
+      "address": "0x1b3f70f8041b566813115a6ff1438fe71366df048d6e2345fc109511086b979",
       "class_hash": "0x7f075a714974e61fa3f5387924dca29e65bfc35e316ae8959006aa7826a9e5f",
       "abi": [
         {

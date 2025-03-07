@@ -115,4 +115,20 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 		//   useTypewriter: true,
 		// });
 	},
+	object: async () => {
+		try {
+			const formData = new FormData();
+			formData.append("route", "sendObject");
+
+			// call the /api endpoint to post a command
+			const response = await fetch("/api", {
+				method: "POST",
+				body: formData,
+			});
+			return response.json();
+		} catch (error) {
+			const e = error as Error;
+			return e.message;
+		}
+	},
 };
