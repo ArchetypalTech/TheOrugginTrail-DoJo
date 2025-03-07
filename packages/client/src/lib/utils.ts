@@ -1,4 +1,8 @@
-import { byteArray } from "starknet";
+import {
+	byteArray,
+	type BigNumberish,
+	type ByteArray as TByteArray,
+} from "starknet";
 
 /**
  * Determines the entity ID from an array of keys. If only one key is provided,
@@ -116,4 +120,65 @@ export class ByteArray {
 	constructor(value: string) {
 		this.value = value;
 	}
+}
+
+// export function removeHexPrefix(hex: string): string {
+// 	return hex.replace(/^0x/i, "");
+// }
+
+// export function addHexPrefix(hex: string): string {
+// 	return `0x${removeHexPrefix(hex)}`;
+// }
+
+// export function isShortString(str: string): boolean {
+// 	return str.length <= 31;
+// }
+
+// export function encodeShortString(str: string): string {
+// 	if (!isShortString(str)) throw new Error(`${str} is too long`);
+// 	return addHexPrefix(
+// 		str.replace(/./g, (char) => char.charCodeAt(0).toString(16)),
+// 	);
+// }
+
+// /**
+//  * convert a JS string to a Cairo ByteArray
+//  * @param targetString a JS string
+//  * @returns Cairo representation of a LongString
+//  * @example
+//  * ```typescript
+//  * const myByteArray: ByteArray = byteArrayFromString("ABCDEFGHI");
+//  * ```
+//  * Result is :
+//  * {
+//  *    data: [],
+//  *    pending_word: '0x414243444546474849',
+//  *    pending_word_len: 9
+//  * }
+//  */
+
+// export function splitLongString(longStr: string): string[] {
+// 	const regex = RegExp(`[^]{1,${31}}`, "g");
+// 	return longStr.match(regex) || [];
+// }
+
+// export function byteArrayFromString(targetString: string): TByteArray {
+// 	const shortStrings: string[] = splitLongString(targetString);
+// 	const remainder: string = shortStrings[shortStrings.length - 1];
+// 	const shortStringsEncoded: BigNumberish[] =
+// 		shortStrings.map(encodeShortString);
+
+// 	const [pendingWord, pendingWordLength] =
+// 		remainder === undefined || remainder.length === 31
+// 			? ["0x00", 0]
+// 			: [shortStringsEncoded.pop()!, remainder.length];
+
+// 	return {
+// 		data: shortStringsEncoded.length === 0 ? [] : shortStringsEncoded,
+// 		pending_word: pendingWord,
+// 		pending_word_len: pendingWordLength,
+// 	};
+// }
+export function escapeRegExp(text: string) {
+	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }

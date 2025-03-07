@@ -83,7 +83,7 @@ Dojo_Outputter.subscribe(async (output) => {
 
 	console.log("OUT: ", newText);
 
-	trimmedNewText = newText.trim();
+	trimmedNewText = decodeURI(newText.trim()).replaceAll("%2C", ",");
 
 	if (
 		trimmedNewText === lastProcessedText.trim() &&

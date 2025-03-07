@@ -20,7 +20,6 @@ export const publishConfigToContract = async (
 ): Promise<void> => {
 	// First, create all text definitions
 	await createAllTextDefinitions(config);
-	return;
 
 	// Then process each room in the config
 	for (const room of config.levels[0].rooms) {
@@ -41,7 +40,7 @@ export const publishConfigToContract = async (
 			await sendDesignerCall("create_rooms", [roomData]);
 
 			// Process objects and actions
-			// await processRoomObjects(config, room);
+			await processRoomObjects(config, room);
 		} catch (error) {
 			console.error("Error creating room:", error);
 			throw new Error(

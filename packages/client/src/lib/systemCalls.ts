@@ -1,12 +1,6 @@
-import {
-	CallData,
-	byteArray,
-	getCalldata,
-	shortString,
-	type RawArgsArray,
-} from "starknet";
+import { CallData, byteArray, type RawArgsArray } from "starknet";
 import { ORUG_CONFIG } from "./config";
-import { toCairoArray } from "./utils";
+import { escapeRegExp, toCairoArray } from "./utils";
 
 async function sendMessage(message: string) {
 	const cmds_raw = message.split(/\s+/);
@@ -68,21 +62,15 @@ async function sendDesignerCall(props: string) {
 		}
 		// txt format: id: felt252, ownedBy: felt252, val: ByteArray
 		// 2nd arg needs to always be 0
-		console.log("LENGTH >>>>", (args[2] as string).length);
-		// console.log(args[2]);
-		// if (args[2].length > 16) {
-		args[2] = (args[2] as string).substring(0, 125);
-		// 	console.log("trimmed >>>>", args[2]);
-		// }
-		const short = shortString.splitLongString(args[2] as string);
+		console.log("LENGTH >>>>", (args[2] as string).length, args[2]);
 
-		const data = [args[0], args[1], short] as RawArgsArray;
+		const data = [args[0], args[1], encodeURI(args[2] as string)] as RawArgsArray;
 		const calldata = CallData.compile(data);
 		console.log(
 			`sendDesignerCall[${call}](args):`,
 			args,
 			" -> calldata ->",
-			calldata,
+			data,
 		);
 		const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
 		await new Promise((r) => setTimeout(r, 500));
