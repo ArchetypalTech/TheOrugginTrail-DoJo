@@ -40,7 +40,7 @@ export const publishConfigToContract = async (
 			await sendDesignerCall("create_rooms", [roomData]);
 
 			// Process objects and actions
-			await processRoomObjects(config, room);
+			// await processRoomObjects(config, room);
 		} catch (error) {
 			console.error("Error creating room:", error);
 			throw new Error(

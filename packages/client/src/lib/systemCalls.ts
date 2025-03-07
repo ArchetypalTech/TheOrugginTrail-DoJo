@@ -68,11 +68,7 @@ async function sendDesignerCall(props: string) {
 		args[2] = (args[2] as string).substring(0, 125);
 		// 	console.log("trimmed >>>>", args[2]);
 		// }
-		const data = [
-			args[0],
-			args[1],
-			byteArray.byteArrayFromString(args[2] as string),
-		] as RawArgsArray;
+		const data = [args[0], args[1], args[2] as string] as RawArgsArray;
 		const calldata = CallData.compile(data);
 		console.log(
 			`sendDesignerCall[${call}](args):`,

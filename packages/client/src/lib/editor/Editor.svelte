@@ -6,7 +6,6 @@
     saveConfigToFile,
     validateConfig,
     formatValidationError,
-    transformConfig,
     ensureInlineTextDefinitions,
   } from "./utils";
   import { publishConfigToContract } from "./publisher";
