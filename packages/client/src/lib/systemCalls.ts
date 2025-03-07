@@ -40,9 +40,35 @@ async function sendDesignerCall(props: string) {
 	try {
 		const { call, args } = JSON.parse(props) as DesignerCallProps;
 		// reformat args to cairo array
-		const data = toCairoArray(args) as RawArgsArray;
+		if (call !== "create_txt") {
+			const data = toCairoArray(args) as RawArgsArray;
+			const calldata = CallData.compile(data);
+			console.log(
+				`sendDesignerCall[${call}](args):`,
+				args,
+				" -> calldata ->",
+				calldata,
+			);
+			const response = ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+			return new Response(JSON.stringify(response), {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+		}
+		// txt format: id: felt252, ownedBy: felt252, val: ByteArray
+		const data = [
+			args[0],
+			0,
+			byteArray.byteArrayFromString(args[1] as string),
+		] as RawArgsArray;
 		const calldata = CallData.compile(data);
-		console.log("sendDesignerCall(args):", args, " -> calldata ->", calldata);
+		console.log(
+			`sendDesignerCall[${call}](args):`,
+			args,
+			" -> calldata ->",
+			calldata,
+		);
 		const response = ORUG_CONFIG.contracts.designer.invoke(call, calldata);
 		return new Response(JSON.stringify(response), {
 			headers: {

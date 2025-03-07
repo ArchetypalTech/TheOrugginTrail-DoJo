@@ -51,6 +51,7 @@ export function getEntityIdFromKeys(keys: string | number): string {
  * ]) // returns [2, 288709, 1, 0, 3, 6, 0, 0, 791662, 1, 0, 3, 6, 0, 0]
  */
 export const toCairoArray = (args: unknown[]): unknown[] => {
+	console.log(args);
 	if (args.length === 0) {
 		return [0]; // Empty array is represented as [0] in Cairo
 	}
@@ -64,13 +65,13 @@ export const toCairoArray = (args: unknown[]): unknown[] => {
 					if (item.length === 0) {
 						return 0;
 					}
-					return [item.length, ...item];
+					return [item.length, ...item.flat()];
 				}
 				return item;
 			}),
 		];
 		result.push(...arr);
 	}
-
+	console.log(result);
 	return result;
 };
