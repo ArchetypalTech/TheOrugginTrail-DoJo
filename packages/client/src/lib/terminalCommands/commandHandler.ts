@@ -59,7 +59,7 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 async function sendCommand(command: string): Promise<string> {
 	try {
 		const formData = new FormData();
-		formData.append("entry", command);
+		formData.append("command", command);
 		formData.append("route", "sendMessage");
 
 		// call the /api endpoint to post a command

@@ -1,5 +1,6 @@
-import { CallData, byteArray, getCalldata } from "starknet";
+import { CallData, byteArray, getCalldata, type RawArgsArray } from "starknet";
 import { ORUG_CONFIG } from "./config";
+import { toCairoArray } from "./utils";
 
 async function sendMessage(message: string) {
 	const cmds_raw = message.split(/\s+/);
@@ -12,7 +13,7 @@ async function sendMessage(message: string) {
 	} = ORUG_CONFIG;
 	// create message as readable contract data
 	const calldata = CallData.compile([cmd_array, 23]);
-	console.log("sendMessage(cmds): ", cmds, "(calldata): ", calldata);
+	console.log("sendMessage(cmds): ", cmds, " -> calldata ->", calldata);
 
 	// ionvoke the contract as we are doing a write
 	const response = await outputter.invoke("listen", [calldata]);
@@ -24,32 +25,25 @@ async function sendMessage(message: string) {
 	});
 }
 
-type DesignerCall =
+export type DesignerCall =
 	| "create_objects"
 	| "create_actions"
 	| "create_rooms"
 	| "create_txt";
 
-const flattenArrays = (...args: unknown[]) => {
-	return [args.length, ...args.flat()];
+type DesignerCallProps = {
+	call: DesignerCall;
+	args: unknown[];
 };
 
-const randomId = () => Math.round(Math.random() * 1000000);
-
-async function createTestObject() {
-	const {
-		contracts: { designer },
-	} = ORUG_CONFIG;
-	console.log("createTestObject");
-	const data = flattenArrays(
-		[randomId(), 1, 0, 3, 6, [], 0],
-		[randomId(), 1, 0, 3, 6, [], 0],
-	);
-	console.log(data);
-	const calldata = CallData.compile(data);
-	console.log("calldata: ", calldata);
+async function sendDesignerCall(props: string) {
 	try {
-		const response = designer.invoke("create_objects", calldata);
+		const { call, args } = JSON.parse(props) as DesignerCallProps;
+		// reformat args to cairo array
+		const data = toCairoArray(args) as RawArgsArray;
+		const calldata = CallData.compile(data);
+		console.log("sendDesignerCall(args):", args, " -> calldata ->", calldata);
+		const response = ORUG_CONFIG.contracts.designer.invoke(call, calldata);
 		return new Response(JSON.stringify(response), {
 			headers: {
 				"Content-Type": "application/json",
@@ -62,5 +56,5 @@ async function createTestObject() {
 
 export const SystemCalls = {
 	sendMessage,
-	sendObject: createTestObject,
+	sendDesignerCall,
 };

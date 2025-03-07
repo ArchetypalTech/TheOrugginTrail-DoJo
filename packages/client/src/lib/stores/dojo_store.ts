@@ -50,7 +50,7 @@ Dojo_Config.subscribe(async (config) => {
 							return;
 						}
 					}
-					console.log("[DOJO]: initial response", response);
+					console.info("[DOJO]: initial response", response?.data?.[0]);
 				});
 				Dojo_Status.set({
 					status: "initialized",

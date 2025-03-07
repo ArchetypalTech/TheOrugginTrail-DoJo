@@ -116,9 +116,22 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 		// });
 	},
 	object: async () => {
+		const randomId = () => Math.round(Math.random() * 1000000);
+		const rnd = (min: number, max: number) =>
+			Math.floor(Math.random() * (max - min + 1) + min);
 		try {
+			const items = [
+				[randomId(), rnd(1, 6), rnd(1, 6), rnd(1, 6), rnd(1, 6), [], 0],
+				[randomId(), rnd(1, 6), rnd(1, 6), rnd(1, 6), rnd(1, 6), [], 0],
+				[randomId(), rnd(1, 6), rnd(1, 6), rnd(1, 6), rnd(1, 6), [], 0],
+			];
+
 			const formData = new FormData();
-			formData.append("route", "sendObject");
+			formData.append("route", "sendDesignerCall");
+			formData.append(
+				"command",
+				JSON.stringify({ call: "create_objects", args: items }),
+			);
 
 			// call the /api endpoint to post a command
 			const response = await fetch("/api", {
