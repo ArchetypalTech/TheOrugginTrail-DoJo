@@ -6,6 +6,7 @@
 pub mod verb_dispatcher {
     // use the_oruggin_trail::lib::interop_dispatch::interop_dispatcher as interop;
     use the_oruggin_trail::lib::system::{WorldSystemsTrait};
+    use starknet::{get_caller_address};
 
     use the_oruggin_trail::systems::spawner::{
         ISpawner, ISpawnerDispatcher, ISpawnerDispatcherTrait,
@@ -25,19 +26,38 @@ pub mod verb_dispatcher {
     use the_oruggin_trail::constants::zrk_constants::{statusid as st};
     use the_oruggin_trail::lib::hash_utils::hashutils as h_util;
 
-    pub fn handleGarble(ref world: IWorldDispatcher, pid: felt252, msg: Garble) {
+    pub fn handleGarble(ref world: IWorldDispatcher, player_id: felt252, msg: Garble) {
         let mut wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
         println!("HNDL: ---> {:?}", msg.vrb);
         let mut out: ByteArray =
             "Shoggoth is loveable by default, but it understands not your commands";
-        let mut player: Player = wrld.read_model(pid);
+
+        let address_player = get_caller_address();
+        let p_id: felt252 = address_player.into();
+        let mut player: Player = wrld.read_model(p_id);
         // println!("HNDL:------> {:?}", player);
+
+        // let player_model = wrld.read_model(p_id);
+        if (player.location == 0) {
+            let start_room = 7892581999139148;
+            let new_player = Player {
+                player_id: p_id, player_adr: address_player, location: start_room, inventory: p_id,
+            };
+            let inv = Inventory { owner_id: p_id, items: array![] };
+            wrld.write_model(@inv);
+            wrld.write_model(@new_player);
+            mv::enter_room(wrld, p_id, start_room);
+            let desc: ByteArray = lookat::describe_room_short(wrld, start_room);
+            wrld.write_model(@Output { playerId: p_id, text_o_vision: desc });
+            return;
+        }
+
         match msg.vrb {
             ActionType::Look => {
                 // Pass payer id into look handle
                 // let output: ByteArray = "Shoggoth stares into the void<\n>the void is staring
                 // back<\n>shoggoth is a good boy";
-                let output: ByteArray = lookat::stuff(world, msg, pid);
+                let output: ByteArray = lookat::stuff(world, msg, player_id);
                 out = output;
             },
             ActionType::Fight => {
@@ -48,22 +68,22 @@ pub mod verb_dispatcher {
                 out = stub;
             },
             ActionType::Spawn => {
-                let (contract_address, class_hash) = match wrld.dns(@"spawner") {
-                    Option::Some((addr, hash)) => (addr, hash),
-                    Option::None => panic!("Contract not found"),
-                };
+                // let (contract_address, class_hash) = match wrld.dns(@"spawner") {
+                //     Option::Some((addr, hash)) => (addr, hash),
+                //     Option::None => panic!("Contract not found"),
+                // };
 
-                let spawner: ISpawnerDispatcher = world.spawner_dispatcher();
+                // let spawner: ISpawnerDispatcher = world.spawner_dispatcher();
 
-                if player.location == 0 {
-                    spawner.setup();
-                }
-                // println!("spawned????");
-                // let spawn_rm_name: ByteArray = "The Last Saloon";
-                let spawn_id = 7892581999139148; //h_util::str_hash(@spawn_rm_name);
-                spawner.spawn_player(pid, 0);
-                mv::enter_room(wrld, pid, spawn_id);
-                let desc: ByteArray = lookat::describe_room_short(wrld, spawn_id);
+                // if player.location == 0 {
+                //     spawner.setup();
+                // }
+                // // println!("spawned????");
+                // // let spawn_rm_name: ByteArray = "The Last Saloon";
+                // let spawn_id = 7892581999139148; //h_util::str_hash(@spawn_rm_name);
+                // spawner.spawn_player(player_id, 0);
+                // mv::enter_room(wrld, player_id, spawn_id);
+                let desc: ByteArray = lookat::describe_room_short(wrld, player.location.clone());
                 out = desc;
             },
             ActionType::Take => {
@@ -151,21 +171,21 @@ pub mod verb_dispatcher {
                 out = txt;
             },
             ActionType::Move => {
-                let nxt_rm_id = mv::get_next_room(wrld, pid, msg);
+                let nxt_rm_id = mv::get_next_room(wrld, player_id, msg);
                 if nxt_rm_id == st::NONE {
                     out =
                         "no. you cannot go that way.\n\"reasons\" mumbles shoggoth into his hat\n she seems to be waving a hand shaped thing"
                 } else {
-                    mv::enter_room(wrld, pid, nxt_rm_id);
+                    mv::enter_room(wrld, player_id, nxt_rm_id);
                     let desc: ByteArray = lookat::describe_room_short(wrld, nxt_rm_id);
                     out = desc;
                 }
             },
-            _ => { out = act::on(world, pid, msg); },
+            _ => { out = act::on(world, player_id, msg); },
         }
         // we probably need to hand off to another routine here to interpolate
         // some results and create a string for now though
-        wrld.write_model(@Output { playerId: pid, text_o_vision: out });
-        // set!(world, Output { playerId: pid, text_o_vision: out })
+        wrld.write_model(@Output { playerId: player_id, text_o_vision: out });
+        // set!(world, Output { playerId: player_id, text_o_vision: out })
     }
 }

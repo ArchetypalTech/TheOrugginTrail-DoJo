@@ -417,6 +417,14 @@ export const actions = {
 
 	// Object operations
 	objects: {
+		getAllActionIDs: () => {
+			const actions = editorStore
+				.get()
+				.currentLevel.rooms.flatMap((room) =>
+					room.objects.flatMap((object) => object.actions),
+				);
+			return actions.map((action) => action.actionID);
+		},
 		/**
 		 * Add an object to the current room
 		 */

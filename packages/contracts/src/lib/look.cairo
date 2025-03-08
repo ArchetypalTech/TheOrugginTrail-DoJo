@@ -138,8 +138,7 @@ pub mod lookat {
     fn describe_room(world: WorldStorage, location: felt252) -> ByteArray {
         let room: Room = world.read_model(location);
         if room.roomType == RoomType::None {
-            let out: ByteArray =
-                "there is nothing to look at, this world has not yet spawned.... shoggoth stares...";
+            let out: ByteArray = "You are existing before the beginning and after the end.";
             out
         } else {
             let txtModel: Txtdef = world.read_model(room.txtDefId);

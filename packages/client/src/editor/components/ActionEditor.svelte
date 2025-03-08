@@ -2,6 +2,7 @@
   import { createEventDispatcher, onMount } from "svelte";
   import type { Action } from "$editor/lib/types";
   import { ACTION_TYPE_OPTIONS } from "$editor/lib/types";
+  import { actions } from "$editor/store";
 
   export let action: Action;
   export let availableActions: string[] = [];
@@ -110,7 +111,9 @@
       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
     >
       <option value={null}>None</option>
-      {#each availableActions.filter((id) => id !== editedAction.actionID) as actionId}
+      {#each actions.objects
+        .getAllActionIDs()
+        .filter((id) => id !== editedAction.actionID) as actionId}
         <option value={actionId}>{actionId}</option>
       {/each}
     </select>
