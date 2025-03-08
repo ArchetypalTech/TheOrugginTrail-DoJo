@@ -114,11 +114,11 @@
   @reference "tailwindcss";
 
   .state-notification-container {
-    @apply relative w-full z-50;
+    @apply fixed w-full z-50;
   }
 
   .state-notification-container.blocking {
-    @apply fixed top-0 left-0 w-full h-full flex justify-center items-center z-[9999];
+    @apply fixed top-0 left-0 w-full h-full flex justify-center items-center z-[9999] pointer-events-none;
   }
 
   .overlay {
@@ -127,6 +127,10 @@
 
   .notification {
     @apply max-w-[600px] z-10 shadow-md absolute top-2 left-2 pr-8;
+  }
+
+  .state-notification-container.blocking .notification {
+    @apply relative self-center m-auto;
   }
 
   .log-container {

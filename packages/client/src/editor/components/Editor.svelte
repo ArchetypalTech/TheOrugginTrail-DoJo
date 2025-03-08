@@ -1,12 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import {
-    editorStore,
-    editorActions,
-    notificationStore,
-    notificationActions,
-    actions,
-  } from "$editor/store";
+  import { editorStore, notificationStore, actions } from "$editor/store";
   import StateNotification from "./Notifications.svelte";
   import RoomEditor from "./RoomEditor.svelte";
   import ObjectEditor from "./ObjectEditor.svelte";
@@ -47,7 +41,7 @@
 
   // Handle save
   const handleSave = () => {
-    actions.config.saveConfig();
+    actions.config.saveConfigToFile();
   };
 
   // Handle publish to contract
@@ -161,27 +155,12 @@
   });
 </script>
 
-<!-- Unified Notification -->
-{#if $notificationStore.type !== "none"}
-  <StateNotification
-    type={$notificationStore.type === "publishing"
-      ? "loading"
-      : $notificationStore.type}
-    message={$notificationStore.message}
-    blocking={$notificationStore.blocking}
-    dismissable={!$notificationStore.blocking}
-    timeout={$notificationStore.timeout || null}
-    logs={$notificationStore.logs || null}
-    on:dismiss={actions.notifications.clear}
-  />
-{/if}
-
 <div class="editor-container text-sm">
-  <header class="p-4 mt-4 flex justify-between items-center">
+  <header class="p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold font-mono">EDITZORG</h1>
-    <div class="flex gap-2">
+    <div class="flex gap-2 font-semibold">
       <label class="btn btn-sm btn-primary">
-        Load Config
+        Import Config
         <input
           type="file"
           accept=".json"
@@ -191,7 +170,7 @@
         />
       </label>
       <button class="btn btn-sm btn-success" on:click={handleSave}
-        >Save Config</button
+        >Export Config</button
       >
       <button
         class="btn btn-sm btn-warning"
@@ -209,18 +188,18 @@
   {#if !$notificationStore.blocking}
     <div class="grid grid-cols-12 gap-4 p-4">
       <!-- Room List -->
-      <div class="col-span-2 bg-transparent p-4 rounded">
+      <div class="col-span-2 bg-transparent rounded">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Rooms</h2>
         </div>
         <ul class="flex flex-col gap-2">
-          <button class="btn btn-sm btn-primary" on:click={handleAddRoom}
+          <button class="btn btn-primary" on:click={handleAddRoom}
             >Add Room</button
           >
           {#each $editorStore.currentLevel.rooms as room, i}
             <li class="border-gray-700 border-b">
               <button
-                class="w-full text-left p-2 rounded {i ===
+                class="btn w-full text-left p-2 rounded {i ===
                 $editorStore.currentRoomIndex
                   ? 'bg-blue-500 text-white'
                   : 'bg-white hover:bg-gray-200'}"
@@ -237,7 +216,7 @@
       <div class="col-span-4 bg-gray-100 p-4 rounded">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Room Editor</h2>
-          <button class="btn btn-sm btn-danger" on:click={handleDeleteRoom}
+          <button class="btn btn-danger" on:click={handleDeleteRoom}
             >Delete Room</button
           >
         </div>
@@ -394,6 +373,21 @@
       </div>
     </div>
   {/if}
+
+  <!-- Unified Notification -->
+  {#if $notificationStore.type !== "none"}
+    <StateNotification
+      type={$notificationStore.type === "publishing"
+        ? "loading"
+        : $notificationStore.type}
+      message={$notificationStore.message}
+      blocking={$notificationStore.blocking}
+      dismissable={!$notificationStore.blocking}
+      timeout={$notificationStore.timeout || null}
+      logs={$notificationStore.logs || null}
+      on:dismiss={actions.notifications.clear}
+    />
+  {/if}
 </div>
 
 <style lang="postcss">
@@ -404,10 +398,10 @@
   }
 
   .btn {
-    @apply font-bold py-2 px-4 rounded;
+    @apply py-2 px-4 rounded;
   }
 
   .btn-sm {
-    @apply py-1 px-2 text-sm;
+    @apply py-1.5 px-2.5 text-sm;
   }
 </style>

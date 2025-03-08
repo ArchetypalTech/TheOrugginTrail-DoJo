@@ -6,7 +6,7 @@
     MATERIAL_TYPE_OPTIONS,
     DIRECTION_OPTIONS,
   } from "$editor/lib/types";
-  import { editorActions } from "$editor/store";
+  import { actions } from "$editor/store";
 
   export let object: Object;
 
@@ -109,7 +109,7 @@
       disabled={editedObject.direction === "None"}
     >
       <option value={null}>None</option>
-      {#each editorActions.getAllRooms() as room}
+      {#each actions.rooms.getAllRooms() as room}
         <option value={room.roomID}>{room.roomName}</option>
       {/each}
     </select>

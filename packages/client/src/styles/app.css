@@ -27,3 +27,11 @@
   --terminal-system: #4ade80;
   --terminal-error: #dc2626;
 }
+
+.btn-primary {
+  @apply hover:bg-[var(--terminal-out)] hover:text-white;
+}
+
+.btn-danger {
+  @apply hover:bg-[var(--terminal-error)] hover:text-white;
+}

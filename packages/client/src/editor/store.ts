@@ -20,15 +20,7 @@ import {
 } from "$editor/defaults";
 import testConfig from "@zorg/generator/config/test_game.json";
 import type { NotificationState } from "$editor/notifications";
-import {
-	initialNotificationState,
-	createErrorNotification,
-	createSuccessNotification,
-	createLoadingNotification,
-	createPublishingNotification,
-	clearNotification,
-	addLogToPublishingNotification,
-} from "$editor/notifications";
+import { initialNotificationState } from "$editor/notifications";
 import { publishConfigToContract } from "$editor/publisher";
 import { saveConfigToFile, loadConfigFromFile } from "$editor/utils";
 
@@ -120,40 +112,44 @@ export const currentRoom = derived(
 export const actions = {
 	// Notification related actions
 	notifications: {
-		/**
-		 * Clear the current notification
-		 */
 		clear: () => {
-			notificationStore.set(clearNotification());
+			notificationStore.set({ ...initialNotificationState });
 		},
-
-		/**
-		 * Show an error notification
-		 */
 		showError: (message: string, blocking = false) => {
-			notificationStore.set(createErrorNotification(message, blocking));
+			notificationStore.set({
+				type: "error",
+				message,
+				blocking,
+			});
 		},
-
-		/**
-		 * Show a success notification
-		 */
 		showSuccess: (message: string, timeout = 3000) => {
-			notificationStore.set(createSuccessNotification(message, timeout));
+			if (get(notificationStore).blocking) {
+				return;
+			}
+			notificationStore.set({
+				type: "success",
+				message,
+				blocking: false,
+				timeout,
+			});
 		},
-
-		/**
-		 * Show a loading notification
-		 */
 		showLoading: (message: string) => {
-			notificationStore.set(createLoadingNotification(message));
+			notificationStore.set({
+				type: "loading",
+				message,
+				blocking: true,
+			});
 		},
-
-		/**
-		 * Start a publishing notification with logs
-		 */
-		startPublishing: (message = "Publishing to contract...") => {
-			notificationStore.set(createPublishingNotification(message));
+		startPublishing: async (message = "Publishing to contract...") => {
+			console.log("STARTING PUBLISHING");
+			await notificationStore.set({
+				type: "publishing",
+				message,
+				blocking: true,
+				logs: [],
+			});
 			const currentNotification = get(notificationStore);
+			console.log("Current notification:", currentNotification);
 			return currentNotification.logs || [];
 		},
 
@@ -161,21 +157,21 @@ export const actions = {
 		 * Add a log entry to a publishing notification
 		 */
 		addPublishingLog: (log: CustomEvent) => {
-			notificationStore.update((state) =>
-				addLogToPublishingNotification(state, log),
-			);
+			notificationStore.update((state) => {
+				if (state.type !== "publishing" || !state.logs) {
+					console.warn("Cannot add log to non-publishing notification");
+					return state;
+				}
+				return {
+					...state,
+					logs: [...state.logs, log],
+				};
+			});
 		},
 	},
 
 	// Editor initialization and config operations
 	config: {
-		/**
-		 * Get all rooms from the current level
-		 */
-		getAllRooms: () => {
-			return editorStore.get().currentLevel.rooms;
-		},
-
 		/**
 		 * Initialize the editor with a config
 		 */
@@ -266,8 +262,6 @@ export const actions = {
 
 			// Ensure text definitions are properly formatted and download the file
 			if (errors.length === 0) {
-				const configWithInlineTexts = ensureInlineTextDefinitions(config);
-				saveConfigToFile(configWithInlineTexts);
 				actions.notifications.showSuccess("Config saved successfully");
 			} else {
 				actions.notifications.showError(
@@ -277,6 +271,20 @@ export const actions = {
 
 			// Return config and errors for external use
 			return { config, errors };
+		},
+
+		saveConfigToFile: async () => {
+			const { config, errors } = await editorActions.saveConfig();
+			// Ensure text definitions are properly formatted and download the file
+			if (errors.length === 0) {
+				const configWithInlineTexts = ensureInlineTextDefinitions(config);
+				saveConfigToFile(configWithInlineTexts);
+				actions.notifications.showSuccess("Config saved successfully");
+			} else {
+				actions.notifications.showError(
+					`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
+				);
+			}
 		},
 
 		/**
@@ -329,14 +337,11 @@ export const actions = {
 				return false;
 			}
 
-			// Ensure all text values are properly formatted as inline text definitions
-			const configWithInlineTexts = ensureInlineTextDefinitions(config);
-
-			// Start publishing
-			actions.notifications.startPublishing();
-
 			try {
+				const configWithInlineTexts = ensureInlineTextDefinitions(config);
+				await actions.notifications.startPublishing();
 				await publishConfigToContract(configWithInlineTexts);
+				actions.notifications.clear();
 				actions.notifications.showSuccess(
 					"World published to contract successfully",
 				);
@@ -353,6 +358,12 @@ export const actions = {
 
 	// Room operations
 	rooms: {
+		/**
+		 * Get all rooms from the current level
+		 */
+		getAllRooms: () => {
+			return editorStore.get().currentLevel.rooms;
+		},
 		/**
 		 * Set the current room index
 		 */
@@ -487,44 +498,4 @@ export const actions = {
 			});
 		},
 	},
-};
-
-// For backward compatibility, maintain the old separate action objects
-// but implement them using the new unified actions
-export const editorActions = {
-	getAllRooms: actions.config.getAllRooms,
-	initialize: actions.config.initialize,
-	loadConfig: actions.config.loadConfig,
-	autoSave: actions.config.autoSave,
-	saveConfig: actions.config.saveConfig,
-	setCurrentRoomIndex: actions.rooms.setCurrentIndex,
-	addRoom: actions.rooms.add,
-	updateRoom: actions.rooms.update,
-	deleteRoom: actions.rooms.delete,
-	addObject: actions.objects.add,
-	updateObject: actions.objects.update,
-	deleteObject: actions.objects.delete,
-	addAction: actions.objects.addAction,
-	updateAction: actions.objects.updateAction,
-	deleteAction: actions.objects.deleteAction,
-};
-
-export const notificationActions = {
-	clearNotification: actions.notifications.clear,
-	showError: actions.notifications.showError,
-	showSuccess: actions.notifications.showSuccess,
-	showLoading: actions.notifications.showLoading,
-	startPublishing: actions.notifications.startPublishing,
-	addPublishingLog: actions.notifications.addPublishingLog,
-	loadConfigFromFile: actions.config.loadConfigFromFile,
-	saveConfigToFile: actions.config.saveConfig,
-	publishToContract: actions.config.publishToContract,
-};
-
-// Export helper functions for creating default objects
-export {
-	createDefaultLevel,
-	createDefaultRoom,
-	createDefaultObject,
-	createDefaultAction,
 };
