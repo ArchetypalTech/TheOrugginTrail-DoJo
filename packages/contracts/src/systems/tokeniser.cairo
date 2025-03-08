@@ -1,13 +1,10 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
 pub mod tokeniser {
-    use the_oruggin_trail::models::{
-        zrk_enums::{ActionType, ObjectType, MaterialType, DirectionType}
-    };
+    use the_oruggin_trail::models::{zrk_enums::{ActionType, ObjectType, DirectionType}};
 
     /// Convert a string to an ActionType
     /// this really should use hashes, i.e felt type
@@ -30,7 +27,7 @@ pub mod tokeniser {
             ActionType::Fight
         } else if s == "spawn" {
             ActionType::Spawn
-        }  else if s == "take" || s == "get" {
+        } else if s == "take" || s == "get" {
             ActionType::Take
         } else if s == "help" {
             ActionType::Help
@@ -91,27 +88,25 @@ pub mod tokeniser {
 }
 
 pub mod confessor {
-    use the_oruggin_trail::models::{
-        zrk_enums::{ActionType, ObjectType, MaterialType, DirectionType}
-    };
+    use the_oruggin_trail::models::{zrk_enums::{ActionType, ObjectType, DirectionType}};
     use the_oruggin_trail::constants::zrk_constants::ErrCode as ec;
     use super::tokeniser as lexer;
 
     /// Garble, the main semantic message type
-    /// 
+    ///
     /// it mainly is VRB, THING, THING (ie kick ball at troll)
     /// it can also be a MOVE, DIR (ie go north, or north) etc
     /// the later systems need to handle this specialisation
     #[derive(Serde, Copy, Drop, Introspect, Debug, PartialEq)]
     pub struct Garble {
-      pub vrb: ActionType,
-      pub dir: DirectionType,
-      pub dobj: ObjectType,
-      pub iobj: ObjectType,
+        pub vrb: ActionType,
+        pub dir: DirectionType,
+        pub dobj: ObjectType,
+        pub iobj: ObjectType,
     }
 
     /// The Confessor - mumble your shameful desires here and receive a message
-    /// 
+    ///
     /// the main entrance of the parsing system, takes an array of str
     /// and then lexes and runs semantic analysis on the lexed tokens
     /// to extract meaning and create a simple message type that can be
@@ -133,7 +128,7 @@ pub mod confessor {
     }
 
     /// map a verb to a response
-    /// 
+    ///
     /// objects that respond to vrbs get a corresponding action
     /// type. i.e. a kick will map to a break action
     /// so if want a breakable window then we add a break action
@@ -156,12 +151,12 @@ pub mod confessor {
     }
 
     fn bullshit() -> Result<Garble, ec> {
-          Result::Err(ec::BadFood)
+        Result::Err(ec::BadFood)
     }
 
     /// General VERBS
-    /// 
-    /// non movement and non looking verbs, i.e the general case 
+    ///
+    /// non movement and non looking verbs, i.e the general case
     fn parse_action(cmd: @Array<ByteArray>, at: ActionType) -> Result<Garble, ec> {
         // let mut do: ObjectType = ObjectType::None;
         // let mut io: ObjectType = ObjectType::None;
@@ -175,14 +170,21 @@ pub mod confessor {
 
         if do == ObjectType::None && cmd.len() < 2 {
             if at == ActionType::Spawn || at == ActionType::Help {
-               Result::Ok( Garble{ vrb: at, dir: DirectionType::None, dobj: ObjectType::None, iobj: ObjectType::None} ) 
+                Result::Ok(
+                    Garble {
+                        vrb: at,
+                        dir: DirectionType::None,
+                        dobj: ObjectType::None,
+                        iobj: ObjectType::None,
+                    },
+                )
             } else {
                 println!("parse Err-------->");
                 Result::Err(ec::NulCmdO(at))
             }
         } else if do != ObjectType::None && !lng_frm {
             Result::Ok(
-                Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: ObjectType::None, }
+                Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: ObjectType::None },
             )
         } else {
             long_form(cmd, at)
@@ -190,7 +192,7 @@ pub mod confessor {
     }
 
     fn long_form(cmd: @Array<ByteArray>, at: ActionType) -> Result<Garble, ec> {
-        //! verb, [the], thing, (at | to | with), [the], thing  
+        //! verb, [the], thing, (at | to | with), [the], thing
         //! this currently checks for direct article by assuming that if tok[2] is
         //! an object then there is a direct article, we should probaly actually check
         //! so that we can give better errors.
@@ -198,7 +200,7 @@ pub mod confessor {
         //! we dont really know if it's a `the` so we just use the final
         //! token as a direct object. The same is true for the `at` preposition
         //! in case vrb, ~the~, thing, ..., ~thing~
-        //! again we don't actually check. We should    
+        //! again we don't actually check. We should
         let s_ = cmd.at(1);
         let s = s_.clone();
         let do = lexer::str_to_OT(s);
@@ -209,41 +211,26 @@ pub mod confessor {
 
         if io != ObjectType::None && do != ObjectType::None {
             //! vrb, ~the~, thing, ..., thing
-            Result::Ok(Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: io, })
+            Result::Ok(Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: io })
         } else {
             //! vrb, ~the~, thing, ..., ~thing~
             if io == ObjectType::None {
                 Result::Ok(
-                    Garble{
-                        vrb: at,
-                        dir: DirectionType::None,
-                        dobj: do,
-                        iobj: ObjectType::None,
-                    }
+                    Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: ObjectType::None },
                 )
             } else {
-               //! vrb, the, ?thing, ..., thing 
+                //! vrb, the, ?thing, ..., thing
                 let s_ = cmd.at(2);
                 let s = s_.clone();
-                let do = lexer::str_to_OT(s);       
+                let do = lexer::str_to_OT(s);
                 if do != ObjectType::None {
-                    Result::Ok(
-                        Garble { 
-                            vrb: at, 
-                            dir: DirectionType::None, 
-                            dobj: do, 
-                            iobj: io, 
-                        }
-                    )
+                    Result::Ok(Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: io })
                 } else {
                     //! vrb, the, ~thing~, ..., ~thing~
                     Result::Ok(
-                        Garble { 
-                            vrb: at, 
-                            dir: DirectionType::None, 
-                            dobj: io, 
-                            iobj: ObjectType::None, 
-                        }
+                        Garble {
+                            vrb: at, dir: DirectionType::None, dobj: io, iobj: ObjectType::None,
+                        },
                     )
                 }
             }
@@ -251,7 +238,7 @@ pub mod confessor {
     }
 
     /// LOOK command
-    /// 
+    ///
     /// can be LOOK or LOOK AT THING, EXAMINE THING
     fn parse_look(cmd: @Array<ByteArray>) -> Result<Garble, ec> {
         //! LOOK is a single action but it can be specialised to look at things
@@ -266,7 +253,7 @@ pub mod confessor {
                     dir: DirectionType::None,
                     dobj: t0,
                     iobj: ObjectType::None,
-                }
+                },
             )
         } else {
             Result::Ok(
@@ -275,17 +262,17 @@ pub mod confessor {
                     dir: DirectionType::None,
                     dobj: ObjectType::None,
                     iobj: ObjectType::None,
-                }
+                },
             )
         }
     }
 
     /// MOVE/GO commands
-    /// 
+    ///
     /// can be GO TO THE NORTH, NORTH, GO NORTH, MOVE NORTH etc
     fn parse_moves(cmd: @Array<ByteArray>) -> Result<Garble, ec> {
         let mut t: DirectionType = DirectionType::None;
-        // we know we have a move type 
+        // we know we have a move type
         if cmd.len() > 1 {
             //! long form movement command
             let s = cmd.at(cmd.len() - 1);
@@ -303,8 +290,8 @@ pub mod confessor {
         } else {
             Result::Ok(
                 Garble {
-                    vrb: ActionType::Move, dir: t, dobj: ObjectType::None, iobj: ObjectType::None
-                }
+                    vrb: ActionType::Move, dir: t, dobj: ObjectType::None, iobj: ObjectType::None,
+                },
             )
         }
     }

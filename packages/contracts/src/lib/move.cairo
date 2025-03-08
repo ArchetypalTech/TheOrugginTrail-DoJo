@@ -1,24 +1,23 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
 pub mod relocate {
-    use dojo::world::{IWorldDispatcher, WorldStorage};
+    use dojo::world::{ // IWorldDispatcher,
+    WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
-        output::{Output}, 
-        player::{Player}, 
-        zrk_enums::{ActionType, ObjectType}, 
-        room::{Room},
-        object::{Object},
-        action::{Action}
+        // output::{Output},
+        player::{Player}, zrk_enums::{ActionType // , ObjectType
+        }, room::{Room}, object::{Object},
+        action::{Action},
     };
-    use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec, statusid as st};
-    use the_oruggin_trail::lib::{
-        err_handler::err_dispatcher as err_dispatch, 
-        look::lookat};
+    use the_oruggin_trail::constants::zrk_constants::{ // ErrCode as ec,
+    statusid as st};
+    // use the_oruggin_trail::lib::{
+    // err_handler::err_dispatcher as err_dispatch,
+    // look::lookat};
     use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
 
     /// TODO:
@@ -33,14 +32,14 @@ pub mod relocate {
     }
 
     /// get the next room
-    /// 
+    ///
     /// we check if the exits contains the correct direction
     /// then if this direction is open and enabled
-    /// 
+    ///
     /// TODO
     /// we also nned to add checking for path/exit blocked by objects
-    pub fn get_next_room(world: WorldStorage, pid: felt252, msg: Garble ) -> felt252 {
-        let mut next_rm: felt252 = st::NONE;
+    pub fn get_next_room(world: WorldStorage, pid: felt252, msg: Garble) -> felt252 {
+        // let mut next_rm: felt252 = st::NONE;
         // fetch the room
         let pl: Player = world.read_model(pid);
         let curr_rm = pl.location.clone();
@@ -72,10 +71,10 @@ pub mod relocate {
     }
 
     fn _can_move(world: WorldStorage, exit: @Object, msg: Garble) -> bool {
-       // get the actions and look for open
-       let mut idx: u32 = 0;
-       let mut canMove: bool = false;
-       let action_ids: Array<felt252> = exit.objectActionIds.clone();
+        // get the actions and look for open
+        let mut idx: u32 = 0;
+        let mut canMove: bool = false;
+        let action_ids: Array<felt252> = exit.objectActionIds.clone();
         while idx < action_ids.len() {
             let action_id = action_ids.at(idx).clone();
             let action: Action = world.read_model(action_id);
@@ -87,5 +86,4 @@ pub mod relocate {
         };
         canMove
     }
-     
 }

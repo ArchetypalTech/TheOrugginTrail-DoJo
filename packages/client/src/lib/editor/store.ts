@@ -1,6 +1,11 @@
 import type { Config, EditorState, Action, Object, Room } from "./schemas";
 import { EditorStateSchema } from "./schemas";
-import { transformConfig, validateConfig } from "./utils";
+import {
+	transformConfig,
+	validateConfig,
+	formatValidationError,
+	ensureInlineTextDefinitions,
+} from "./utils";
 import { createGenericStore } from "./generic-store";
 import {
 	createDefaultLevel,
@@ -9,6 +14,19 @@ import {
 	createDefaultAction,
 } from "./defaults";
 import testConfig from "@zorg/generator/config/test_game.json";
+import type { NotificationState } from "./notificationState";
+import {
+	initialNotificationState,
+	createErrorNotification,
+	createSuccessNotification,
+	createLoadingNotification,
+	createPublishingNotification,
+	clearNotification,
+	addLogToPublishingNotification,
+	NotificationStateSchema,
+} from "./notificationState";
+import { publishConfigToContract } from "./publisher";
+import { saveConfigToFile, loadConfigFromFile } from "./utils";
 
 // Initialize the editor state
 const initialState: EditorState = {
@@ -22,6 +40,12 @@ const initialState: EditorState = {
 export const editorStore = createGenericStore<EditorState>(
 	initialState,
 	EditorStateSchema,
+);
+
+// Create a notification store
+export const notificationStore = createGenericStore<NotificationState>(
+	initialNotificationState,
+	NotificationStateSchema,
 );
 
 // Derived store for the current room
@@ -372,6 +396,109 @@ export const editorActions = {
 			};
 		});
 		editorActions.autoSave();
+	},
+};
+
+// Notification actions
+export const notificationActions = {
+	setNotification: (state: NotificationState) => {
+		notificationStore.set(state);
+	},
+
+	clearNotification: () => {
+		notificationStore.set(clearNotification());
+	},
+
+	showError: (message: string, blocking = false) => {
+		notificationStore.set(createErrorNotification(message, blocking));
+	},
+
+	showSuccess: (message: string, timeout = 3000) => {
+		notificationStore.set(createSuccessNotification(message, timeout));
+	},
+
+	showLoading: (message: string) => {
+		notificationStore.set(createLoadingNotification(message));
+	},
+
+	startPublishing: (message = "Publishing to contract...") => {
+		notificationStore.set(createPublishingNotification(message));
+		return notificationStore.get().logs || [];
+	},
+
+	addPublishingLog: (log: CustomEvent) => {
+		notificationStore.update((state) =>
+			addLogToPublishingNotification(state, log),
+		);
+	},
+
+	// File operations with notification feedback
+	loadConfigFromFile: async (file: File) => {
+		notificationActions.showLoading("Loading configuration...");
+
+		try {
+			const config = await loadConfigFromFile(file);
+			const errors = validateConfig(config);
+
+			if (errors.length > 0) {
+				notificationActions.showError(
+					`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
+				);
+				return null;
+			}
+
+			editorActions.loadConfig(config);
+			notificationActions.showSuccess("Config loaded successfully");
+			return config;
+		} catch (error: unknown) {
+			const errorMsg = error instanceof Error ? error.message : String(error);
+			notificationActions.showError(`Error loading config: ${errorMsg}`);
+			return null;
+		}
+	},
+
+	saveConfigToFile: () => {
+		const { config, errors } = editorActions.saveConfig();
+
+		if (errors.length > 0) {
+			notificationActions.showError(
+				`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
+			);
+			return false;
+		}
+
+		// Ensure all text values are properly formatted as inline text definitions before saving
+		const configWithInlineTexts = ensureInlineTextDefinitions(config);
+		saveConfigToFile(configWithInlineTexts);
+		notificationActions.showSuccess("Config saved successfully");
+		return true;
+	},
+
+	publishToContract: async () => {
+		const { config, errors } = editorActions.saveConfig();
+
+		if (errors.length > 0) {
+			notificationActions.showError(
+				`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
+			);
+			return false;
+		}
+
+		// Ensure all text values are properly formatted as inline text definitions
+		const configWithInlineTexts = ensureInlineTextDefinitions(config);
+
+		// Start publishing
+		notificationActions.startPublishing();
+
+		try {
+			await publishConfigToContract(configWithInlineTexts);
+			notificationActions.showSuccess("World published to contract successfully");
+			return true;
+		} catch (error) {
+			const errorMsg = error instanceof Error ? error.message : String(error);
+			notificationActions.showError(`Error publishing to contract: ${errorMsg}`);
+			return false;
+		}
 	},
 };
 

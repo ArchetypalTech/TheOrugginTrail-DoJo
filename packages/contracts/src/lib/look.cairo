@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -6,18 +5,21 @@
 
 //! Handle LOOK type actions
 pub mod lookat {
-    use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
-    use the_oruggin_trail::systems::tokeniser::{tokeniser as lexer, confessor, confessor::Garble};
+    // use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
+    use the_oruggin_trail::systems::tokeniser::{// tokeniser as lexer, confessor,
+    confessor::Garble};
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
         player::Player, room::Room,
         zrk_enums::{
-            RoomType, room_type_to_str, BiomeType, biome_type_to_str, MaterialType,
-            material_type_to_str, ObjectType, object_type_to_str, DirectionType,
-            direction_type_to_str
+            RoomType, room_type_to_str, BiomeType, biome_type_to_str, // MaterialType,
+            material_type_to_str,
+            // ObjectType,
+            object_type_to_str, // DirectionType,
+            direction_type_to_str,
         },
-        txtdef::Txtdef, object::Object
+        txtdef::Txtdef, object::Object,
     };
 
     /// look at stuff
@@ -26,10 +28,10 @@ pub mod lookat {
     /// the general case is assumed to be for a room
     /// currently we just do the full description this should seperate into examination
     /// for objects etc.
-        pub fn stuff(mut world: IWorldDispatcher, thing: Garble, pid: felt252) -> ByteArray {
+    pub fn stuff(mut world: IWorldDispatcher, thing: Garble, pid: felt252) -> ByteArray {
         //get the player object
         // we are always player 23 right now
-        let wrld: WorldStorage =  WorldStorageTrait::new(world, @"the_oruggin_trail");
+        let wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
         let player: Player = wrld.read_model(pid);
         let location: felt252 = player.location;
         let mut output: ByteArray = describe_room(wrld, location);
@@ -72,7 +74,7 @@ pub mod lookat {
                 material_type_to_str(exit.matType),
                 object_type_to_str(exit.objType),
                 dir_connective.clone(),
-                direction_type_to_str(exit.dirType)
+                direction_type_to_str(exit.dirType),
             );
             out.append(@desc);
             idx += 1;
@@ -120,7 +122,7 @@ pub mod lookat {
             connective_txt_type,
             room_type_to_str(room.roomType),
             connective_txt_biome,
-            biome_type_to_str(room.biomeType)
+            biome_type_to_str(room.biomeType),
         )
     }
 

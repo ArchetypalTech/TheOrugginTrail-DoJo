@@ -1,112 +1,42 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { editorStore, editorActions } from "./store";
   import {
-    loadConfigFromFile,
-    saveConfigToFile,
-    validateConfig,
-    formatValidationError,
-    ensureInlineTextDefinitions,
-  } from "./utils";
-  import { publishConfigToContract } from "./publisher";
+    editorStore,
+    editorActions,
+    notificationStore,
+    notificationActions,
+  } from "./store";
+  import StateNotification from "./StateNotification.svelte";
   import RoomEditor from "./RoomEditor.svelte";
   import ObjectEditor from "./ObjectEditor.svelte";
   import ActionEditor from "./ActionEditor.svelte";
-  import type { Room, Object, Action, Config } from "./types";
+  import type { Room, Object, Action } from "./types";
 
   // State
   let selectedObjectIndex: number | null = null;
   let selectedActionIndex: number | null = null;
-  let isLoading = false;
-  let errorMessage = "";
-  let successMessage = "";
-  let isPublishing = false;
-  let publishLog: CustomEvent[] = [];
 
   // Handle file upload
   let fileInput: HTMLInputElement;
 
   const handleFileUpload = async () => {
     if (!fileInput.files || fileInput.files.length === 0) {
-      errorMessage = "No file selected";
+      notificationActions.showError("No file selected");
       return;
     }
 
     const file = fileInput.files[0];
-    isLoading = true;
-    errorMessage = "";
-
-    try {
-      // Load and validate the config
-      const config = await loadConfigFromFile(file);
-      const errors = validateConfig(config);
-
-      if (errors.length > 0) {
-        errorMessage = `Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`;
-      } else {
-        // Ensure all text values are properly formatted as inline text definitions
-        editorActions.loadConfig(config);
-        successMessage = "Config loaded successfully";
-        setTimeout(() => {
-          successMessage = "";
-        }, 3000);
-      }
-    } catch (error: unknown) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      errorMessage = `Error loading config: ${errorMsg}`;
-    } finally {
-      isLoading = false;
-    }
+    await notificationActions.loadConfigFromFile(file);
   };
 
   // Handle save
   const handleSave = () => {
-    const { config, errors } = editorActions.saveConfig();
-
-    if (errors.length > 0) {
-      errorMessage = `Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`;
-      return;
-    }
-
-    // Ensure all text values are properly formatted as inline text definitions before saving
-    const configWithInlineTexts = ensureInlineTextDefinitions(config);
-
-    saveConfigToFile(configWithInlineTexts);
-    successMessage = "Config saved successfully";
-    setTimeout(() => {
-      successMessage = "";
-    }, 3000);
+    notificationActions.saveConfigToFile();
   };
 
   // Handle publish to contract
   const handlePublish = async () => {
-    publishLog = [];
-    const { config, errors } = editorActions.saveConfig();
-
-    if (errors.length > 0) {
-      errorMessage = `Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`;
-      return;
-    }
-
-    // Ensure all text values are properly formatted as inline text definitions
-    const configWithInlineTexts = ensureInlineTextDefinitions(config);
-
-    isPublishing = true;
-    errorMessage = "";
-    successMessage = "";
-
-    try {
-      await publishConfigToContract(configWithInlineTexts);
-      successMessage = "World published to contract successfully";
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      errorMessage = `Error publishing to contract: ${errorMsg}`;
-    } finally {
-      isPublishing = false;
-      setTimeout(() => {
-        successMessage = "";
-      }, 3000);
-    }
+    await notificationActions.publishToContract();
   };
 
   // Handle room selection
@@ -199,22 +129,25 @@
 
   // Load the test game config on mount
   onMount(async () => {
-    window.addEventListener("designerCall", (e) => {
-      publishLog.push(e);
+    window.addEventListener("designerCall", (e: Event) => {
+      const customEvent = e as CustomEvent;
+      notificationActions.addPublishingLog(customEvent);
     });
     try {
       editorActions.initialize();
     } catch (error: unknown) {
       console.error("Error loading test game config:", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
-      errorMessage = `Error loading test game config: ${errorMsg}`;
+      notificationActions.showError(
+        `Error loading test game config: ${errorMsg}`
+      );
     }
   });
 </script>
 
 <div class="editor-container text-sm">
-  <header class="bg-gray-800 text-white p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold">Game Config Editor</h1>
+  <header class="p-4 mt-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold font-mono">EDITZORG</h1>
     <div class="flex gap-2">
       <label class="btn btn-sm btn-primary">
         Load Config
@@ -232,76 +165,44 @@
       <button
         class="btn btn-sm btn-warning"
         on:click={handlePublish}
-        disabled={isPublishing}
+        disabled={$notificationStore.type === "publishing"}
       >
-        {isPublishing ? "Publishing..." : "Publish to Contract"}
+        {$notificationStore.type === "publishing"
+          ? "Publishing..."
+          : "Publish to Contract"}
       </button>
     </div>
   </header>
 
-  {#if errorMessage}
-    <div
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-    >
-      <span class="block sm:inline">{errorMessage}</span>
-      <button
-        class="absolute top-0 right-0 px-4 py-3"
-        on:click={() => (errorMessage = "")}
-      >
-        <span class="sr-only">Close</span>
-        <span class="text-xl">&times;</span>
-      </button>
-    </div>
+  <!-- Unified Notification -->
+  {#if $notificationStore.type !== "none"}
+    <StateNotification
+      type={$notificationStore.type === "publishing"
+        ? "loading"
+        : $notificationStore.type}
+      message={$notificationStore.message}
+      blocking={$notificationStore.blocking}
+      dismissable={!$notificationStore.blocking}
+      timeout={$notificationStore.timeout || null}
+      logs={$notificationStore.logs || null}
+      on:dismiss={notificationActions.clearNotification}
+    />
   {/if}
 
-  {#if successMessage}
-    <div
-      class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-    >
-      <span class="block sm:inline">{successMessage}</span>
-      <button
-        class="absolute top-0 right-0 px-4 py-3"
-        on:click={() => (successMessage = "")}
-      >
-        <span class="sr-only">Close</span>
-        <span class="text-xl">&times;</span>
-      </button>
-    </div>
-  {/if}
-
-  {#if isPublishing}
-    <div class="flex flex-col justify-center items-center p-8">
-      <div
-        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-      ></div>
-      <span class="ml-4">Publishing to contract...</span>
-      {#each publishLog as log}
-        <div class="bg-gray-100 p-4 rounded flex-col flex">
-          <div class="font-mono text-xs">
-            {JSON.stringify(log.detail, null, 2)}
-          </div>
-        </div>
-      {/each}
-    </div>
-  {:else if isLoading}
-    <div class="flex justify-center items-center p-8">
-      <div
-        class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-      ></div>
-    </div>
-  {:else}
+  <!-- Main Editor UI -->
+  {#if !$notificationStore.blocking}
     <div class="grid grid-cols-12 gap-4 p-4">
       <!-- Room List -->
-      <div class="col-span-2 bg-gray-100 p-4 rounded">
+      <div class="col-span-2 bg-transparent p-4 rounded">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Rooms</h2>
+        </div>
+        <ul class="flex flex-col gap-2">
           <button class="btn btn-sm btn-primary" on:click={handleAddRoom}
             >Add Room</button
           >
-        </div>
-        <ul class="space-y-2">
           {#each $editorStore.currentLevel.rooms as room, i}
-            <li>
+            <li class="border-gray-700 border-b">
               <button
                 class="w-full text-left p-2 rounded {i ===
                 $editorStore.currentRoomIndex
@@ -340,13 +241,13 @@
       <div class="col-span-3 bg-gray-100 p-4 rounded">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Objects</h2>
-          <button class="btn btn-sm btn-primary" on:click={handleAddObject}
-            >Add Object</button
-          >
         </div>
         {#if $editorStore.currentLevel.rooms.length > 0}
           <div class="grid grid-cols-1 gap-4">
-            <ul class="space-y-2 mb-4">
+            <ul class="flex flex-col gap-2">
+              <button class="btn btn-sm btn-primary" on:click={handleAddObject}
+                >Add Object</button
+              >
               {#each $editorStore.currentLevel.rooms[$editorStore.currentRoomIndex].objects as object, i}
                 <li>
                   <button

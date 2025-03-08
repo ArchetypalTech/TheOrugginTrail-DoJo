@@ -1,10 +1,7 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
-
-
 
 /// The main Interface for the system
 ///
@@ -18,9 +15,7 @@ pub trait IListener<T> {
 
     // for interop with other worlds but doesnt have to be, could just be listen
     // but it sounds cooler
-    fn command_shoggoth(
-        ref self: T, victim: felt252, wish: Array<ByteArray>
-    ) -> ByteArray;
+    fn command_shoggoth(ref self: T, victim: felt252, wish: Array<ByteArray>) -> ByteArray;
 }
 
 /// Impl of the listener
@@ -34,27 +29,33 @@ pub mod meatpuppet {
     use super::{IListener};
     // use super::action_dispatcher as ad;
     use the_oruggin_trail::lib::verb_eater::verb_dispatcher as ad;
-    use the_oruggin_trail::models::{output::{Output}, player::{Player}, zrk_enums::{ActionType, ObjectType}};
-    use the_oruggin_trail::systems::tokeniser::{tokeniser as lexer, confessor, confessor::Garble};
+    use the_oruggin_trail::models::{
+        output::{Output} // , player::{Player}, zrk_enums::{ActionType, ObjectType}
+    };
+    use the_oruggin_trail::systems::tokeniser::{ // tokeniser as lexer,
+        confessor // , confessor::Garble
+    };
 
     use the_oruggin_trail::constants::zrk_constants::ErrCode as ec;
-    use the_oruggin_trail::lib::insult_meat::insulter as badmouth;
+    // use the_oruggin_trail::lib::insult_meat::insulter as badmouth;
     use the_oruggin_trail::lib::err_handler::err_dispatcher as err_dispatch;
 
-    use the_oruggin_trail::lib::hash_utils::hashutils as h_util;
+    // use the_oruggin_trail::lib::hash_utils::hashutils as h_util;
 
     // use the_oruggin_trail::lib::store::{Store, StoreTrait};
 
-    use the_oruggin_trail::lib::system::{WorldSystemsTrait};
+    // use the_oruggin_trail::lib::system::{WorldSystemsTrait};
     // use the_oruggin_trail::systems::spawner::{ISpawnerDispatcher};
 
-    use the_oruggin_trail::lib::look::lookat;
-    
-    use dojo::model::{ModelStorage, ModelValueStorage};
-    use dojo::world::{IWorldDispatcher, WorldStorage};
+    // use the_oruggin_trail::lib::look::lookat;
+
+    use dojo::model::{ModelStorage // , ModelValueStorage
+    };
+    use dojo::world::{ // IWorldDispatcher,
+    WorldStorage};
     //use super::pull_strings as move;
-    
-    use the_oruggin_trail::lib::move::relocate as move;
+
+    // use the_oruggin_trail::lib::move::relocate as move;
 
     // use planetary_interface::interfaces::planetary::{
     //     PlanetaryInterface, PlanetaryInterfaceTrait, IPlanetaryActionsDispatcherTrait,
@@ -69,7 +70,7 @@ pub mod meatpuppet {
 
     #[abi(embed_v0)]
     /// ListenImpl
-    /// 
+    ///
     /// this needs a means of interogating the world to see
     /// if the player exists already and if not then we should
     /// spawn the player in the some defualt start location
@@ -78,9 +79,9 @@ pub mod meatpuppet {
             //! we use this as an error flag to kick us into error
             //! catching routines later as we run the parses over
             //! the command string
-            
+
             let mut world: WorldStorage = self.world(@"the_oruggin_trail");
-            
+
             // world.write_model(@Output{playerId: 23, text_o_vision: "..."});
 
             let mut isErr: ec = ec::None;
@@ -102,16 +103,16 @@ pub mod meatpuppet {
                         // this should really return err and a string
                         ad::handleGarble(ref wrld_dispatcher, p_id, r);
                     },
-                    Result::Err(r) => {
+                    Result::Err(_r) => {
                         // this should really return err and a string
                         err_dispatch::error_handle(ref wrld_dispatcher, p_id, isErr);
-                    }
+                    },
                 }
             }
         }
 
         fn command_shoggoth(
-            ref self: ContractState, victim: felt252, wish: Array<ByteArray>
+            ref self: ContractState, victim: felt252, wish: Array<ByteArray>,
         ) -> ByteArray {
             // call into the main listen
             // the output is generated in the listen handler
@@ -131,16 +132,19 @@ pub mod meatpuppet {
 }
 
 pub mod pull_strings {
-    use dojo::world::{IWorldDispatcher};
-    use the_oruggin_trail::models::{output::{Output}, player::{Player}, zrk_enums::{ActionType, ObjectType}};
-    use the_oruggin_trail::constants::zrk_constants::ErrCode as ec;
-    use the_oruggin_trail::lib::err_handler::err_dispatcher as err_dispatch;
+    // use dojo::world::{IWorldDispatcher};
+    use the_oruggin_trail::models::{
+        output::{Output}, player::{Player} // zrk_enums::{ActionType, ObjectType},
+    };
+    // use the_oruggin_trail::constants::zrk_constants::ErrCode as ec;
+    // use the_oruggin_trail::lib::err_handler::err_dispatcher as err_dispatch;
 
     use dojo::model::{ModelStorage};
     use dojo::world::{WorldStorage};
 
     use the_oruggin_trail::lib::look::lookat;
-    // use the_oruggin_trail::lib::system::{WorldSystemsTrait, ISpawnerDispatcher, ISpawnerDispatcherTrait};
+    // use the_oruggin_trail::lib::system::{WorldSystemsTrait, ISpawnerDispatcher,
+    // ISpawnerDispatcherTrait};
 
     pub fn enter_room(ref world: WorldStorage, ref player: Player, rm_id: felt252) {
         println!("PULL_STRINGS:------> enter_room");
@@ -149,9 +153,8 @@ pub mod pull_strings {
         // set!(world, (player));
 
         let out = lookat::describe_room_short(world, rm_id);
-        world.write_model(@Output{playerId: player.player_id, text_o_vision: out});
+        world.write_model(@Output { playerId: player.player_id, text_o_vision: out });
         // set!(world, Output { playerId: player.player_id, text_o_vision: out })
     }
-
 }
 

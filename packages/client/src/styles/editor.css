@@ -13,3 +13,11 @@ select {
 textarea {
   @apply bg-white min-h-[200px] p-2;
 }
+
+.btn-primary {
+  @apply bg-gray-500/20 text-black hover:bg-gray-900 focus:ring-orange-500 hover:text-white;
+}
+
+h2 {
+  @apply font-semibold text-black/30;
+}

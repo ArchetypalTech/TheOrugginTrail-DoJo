@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -10,25 +9,24 @@ pub mod hashutils {
     use core::clone::Clone;
     use core::poseidon::PoseidonTrait;
     use core::poseidon::poseidon_hash_span;
-    use core::hash::{HashStateTrait, HashStateExTrait};
+    use core::hash::{HashStateTrait// , HashStateExTrait
+    };
 
-    use the_oruggin_trail::models::{
-        room::{Room}, object::{Object}, action::{Action},
-        zrk_enums::{
-            MaterialType, ObjectType, ActionType, TxtDefType, DirectionType, RoomType, BiomeType
-        }
+    use the_oruggin_trail::models::{room::{Room}, object::{Object}, action::{Action}// zrk_enums::{
+    //     MaterialType, ObjectType, ActionType, TxtDefType, DirectionType, RoomType, BiomeType
+    // }
     };
 
     use the_oruggin_trail::constants::zrk_constants::{flags};
 
 
     /// ObjectType hashing
-    /// 
+    ///
     /// Should/can it be a trait? Probably
     /// We hash all the values othert than objectId as this
     /// is returned and we then store the object with this
-    /// i.e. h => h(obj.*; if obj.* != id) 
-   pub fn obj_hash(obj: @Object) -> felt252 {
+    /// i.e. h => h(obj.*; if obj.* != id)
+    pub fn obj_hash(obj: @Object) -> felt252 {
         let local: Object = obj.clone();
         let mut hash = PoseidonTrait::new()
             .update(local.objType.into())
@@ -47,9 +45,7 @@ pub mod hashutils {
     pub fn place_hash(plc: @Room) -> felt252 {
         let local: Room = plc.clone();
         let shrt: Array<felt252> = ba_to_felt(@local.shortTxt);
-        let mut hash = PoseidonTrait::new()
-            .update(poseidon_hash_span(shrt.span()))
-            .finalize();
+        let mut hash = PoseidonTrait::new().update(poseidon_hash_span(shrt.span())).finalize();
 
         if flags::DEBUG {
             println!("room: {:?}", hash);
