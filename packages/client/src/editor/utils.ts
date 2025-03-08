@@ -8,6 +8,8 @@ import type {
 	RoomType,
 	BiomeType,
 	TextDefinition,
+} from "$editor/lib/schemas";
+import {
 	ConfigSchema,
 	transformWithSchema,
 	validateWithSchema,
@@ -78,13 +80,121 @@ export const ensureInlineTextDefinitions = (config: Config): Config => {
  * Transform raw JSON data to match our expected Config format
  */
 export const transformConfig = (rawConfig: unknown): Config => {
+	console.log("Raw config before transformation:", rawConfig);
+
+	// Ensure rawConfig has the expected structure with levels
+	let configToTransform = rawConfig;
+
+	// If the JSON is just a level, wrap it in a config structure
+	if (
+		configToTransform &&
+		typeof configToTransform === "object" &&
+		!(("levels" in configToTransform) as object)
+	) {
+		console.log("Converting single level to config with levels array");
+		configToTransform = { levels: [configToTransform] };
+	}
+
+	// If it's just an array of rooms, create a proper level and config structure
+	if (Array.isArray(configToTransform)) {
+		console.log("Converting array to config with levels and rooms");
+		configToTransform = {
+			levels: [
+				{
+					id: generateUniqueId(),
+					rooms: configToTransform,
+				},
+			],
+		};
+	}
+
 	// First do a basic transformation
-	let transformedConfig = transformWithSchema(ConfigSchema, rawConfig);
+	try {
+		let transformedConfig = transformWithSchema(ConfigSchema, configToTransform);
+		console.log("After schema transformation:", transformedConfig);
 
-	// Convert string text values to inline text definitions
-	transformedConfig = ensureInlineTextDefinitions(transformedConfig);
+		// Convert string text values to inline text definitions
+		transformedConfig = ensureInlineTextDefinitions(transformedConfig);
+		console.log("After ensuring inline text definitions:", transformedConfig);
 
-	return transformedConfig;
+		return transformedConfig;
+	} catch (error) {
+		console.error("Error transforming config:", error);
+
+		// Fallback handling - try to recover with a minimal valid config
+		console.warn("Attempting fallback transformation to recover data");
+
+		// If we have room data in an unexpected format, try to extract and create a valid config
+		try {
+			if (configToTransform && typeof configToTransform === "object") {
+				// Try to extract rooms from various possible formats
+				let rooms = [];
+
+				if ("rooms" in (configToTransform as any)) {
+					rooms = (configToTransform as any).rooms;
+				} else if (
+					"levels" in (configToTransform as any) &&
+					Array.isArray((configToTransform as any).levels) &&
+					(configToTransform as any).levels[0] &&
+					"rooms" in (configToTransform as any).levels[0]
+				) {
+					rooms = (configToTransform as any).levels[0].rooms;
+				}
+
+				if (rooms && Array.isArray(rooms) && rooms.length > 0) {
+					const minimalConfig = {
+						levels: [
+							{
+								id: generateUniqueId(),
+								rooms: rooms.map((room) => ({
+									roomID: room.roomID || generateUniqueId(),
+									roomName: room.roomName || "Unnamed Room",
+									roomDescription: {
+										id: generateUniqueId(),
+										owner: room.roomID || generateUniqueId(),
+										text: room.roomDescription?.text || "",
+									},
+									roomType: room.roomType || "None",
+									biomeType: room.biomeType || "None",
+									objectIds: room.objectIds || [],
+									dirObjIds: room.dirObjIds || [],
+									objects: (room.objects || []).map((obj) => ({
+										objID: obj.objID || generateUniqueId(),
+										type: obj.type || "None",
+										material: obj.material || "None",
+										direction: obj.direction || "None",
+										destination: obj.destination || "",
+										objDescription: {
+											id: generateUniqueId(),
+											owner: obj.objID || generateUniqueId(),
+											text: obj.objDescription?.text || "",
+										},
+										actions: (obj.actions || []).map((act) => ({
+											actionID: act.actionID || generateUniqueId(),
+											type: act.type || "None",
+											dBitText: act.dBitText || "",
+											dBit: act.dBit || false,
+											enabled: act.enabled !== undefined ? act.enabled : true,
+											revertable: act.revertable || false,
+											affectsAction: act.affectsAction || "",
+										})),
+									})),
+								})),
+							},
+						],
+					};
+
+					console.log("Created fallback config:", minimalConfig);
+					return minimalConfig as Config;
+				}
+			}
+		} catch (fallbackError) {
+			console.error("Fallback transformation also failed:", fallbackError);
+		}
+
+		// If all else fails, re-throw the original error
+		throw error;
+	}
 };
 
 /**

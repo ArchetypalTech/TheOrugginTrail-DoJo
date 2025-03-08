@@ -5,6 +5,7 @@
     editorActions,
     notificationStore,
     notificationActions,
+    actions,
   } from "$editor/store";
   import StateNotification from "./Notifications.svelte";
   import RoomEditor from "./RoomEditor.svelte";
@@ -21,27 +22,42 @@
 
   const handleFileUpload = async () => {
     if (!fileInput.files || fileInput.files.length === 0) {
-      notificationActions.showError("No file selected");
+      actions.notifications.showError("No file selected");
       return;
     }
 
     const file = fileInput.files[0];
-    await notificationActions.loadConfigFromFile(file);
+    console.log("Selected file:", file.name);
+
+    try {
+      const config = await actions.config.loadConfigFromFile(file);
+
+      if (config) {
+        // Reset selection state after loading
+        selectedObjectIndex = null;
+        selectedActionIndex = null;
+      }
+    } catch (error) {
+      console.error("Error in handleFileUpload:", error);
+      actions.notifications.showError(
+        `Failed to load file: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
   };
 
   // Handle save
   const handleSave = () => {
-    notificationActions.saveConfigToFile();
+    actions.config.saveConfig();
   };
 
   // Handle publish to contract
   const handlePublish = async () => {
-    await notificationActions.publishToContract();
+    await actions.config.publishToContract();
   };
 
   // Handle room selection
   const handleRoomSelect = (index: number) => {
-    editorActions.setCurrentRoomIndex(index);
+    actions.rooms.setCurrentIndex(index);
     selectedObjectIndex = null;
     selectedActionIndex = null;
   };
@@ -59,7 +75,7 @@
 
   // Add a new room
   const handleAddRoom = () => {
-    editorActions.addRoom();
+    actions.rooms.add();
     selectedObjectIndex = null;
     selectedActionIndex = null;
   };
@@ -67,7 +83,7 @@
   // Delete the current room
   const handleDeleteRoom = () => {
     if (confirm("Are you sure you want to delete this room?")) {
-      editorActions.deleteRoom($editorStore.currentRoomIndex);
+      actions.rooms.delete($editorStore.currentRoomIndex);
       selectedObjectIndex = null;
       selectedActionIndex = null;
     }
@@ -75,7 +91,7 @@
 
   // Add a new object to the current room
   const handleAddObject = () => {
-    editorActions.addObject();
+    actions.objects.add();
     selectedObjectIndex =
       $editorStore.currentLevel.rooms[$editorStore.currentRoomIndex].objects
         .length - 1;
@@ -85,7 +101,7 @@
   // Delete an object from the current room
   const handleDeleteObject = (index: number) => {
     if (confirm("Are you sure you want to delete this object?")) {
-      editorActions.deleteObject(index);
+      actions.objects.delete(index);
       selectedObjectIndex = null;
       selectedActionIndex = null;
     }
@@ -93,7 +109,7 @@
 
   // Add a new action to an object
   const handleAddAction = (objectIndex: number) => {
-    editorActions.addAction(objectIndex);
+    actions.objects.addAction(objectIndex);
     selectedActionIndex =
       $editorStore.currentLevel.rooms[$editorStore.currentRoomIndex].objects[
         objectIndex
@@ -103,19 +119,19 @@
   // Delete an action from an object
   const handleDeleteAction = (objectIndex: number, actionIndex: number) => {
     if (confirm("Are you sure you want to delete this action?")) {
-      editorActions.deleteAction(objectIndex, actionIndex);
+      actions.objects.deleteAction(objectIndex, actionIndex);
       selectedActionIndex = null;
     }
   };
 
   // Update a room
   const handleUpdateRoom = (room: Room) => {
-    editorActions.updateRoom($editorStore.currentRoomIndex, room);
+    actions.rooms.update($editorStore.currentRoomIndex, room);
   };
 
   // Update an object
   const handleUpdateObject = (objectIndex: number, object: Object) => {
-    editorActions.updateObject(objectIndex, object);
+    actions.objects.update(objectIndex, object);
   };
 
   // Update an action
@@ -124,26 +140,41 @@
     actionIndex: number,
     action: Action
   ) => {
-    editorActions.updateAction(objectIndex, actionIndex, action);
+    actions.objects.updateAction(objectIndex, actionIndex, action);
   };
 
   // Load the test game config on mount
   onMount(async () => {
     window.addEventListener("designerCall", (e: Event) => {
       const customEvent = e as CustomEvent;
-      notificationActions.addPublishingLog(customEvent);
+      actions.notifications.addPublishingLog(customEvent);
     });
     try {
-      editorActions.initialize();
+      actions.config.initialize();
     } catch (error: unknown) {
       console.error("Error loading test game config:", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
-      notificationActions.showError(
+      actions.notifications.showError(
         `Error loading test game config: ${errorMsg}`
       );
     }
   });
 </script>
+
+<!-- Unified Notification -->
+{#if $notificationStore.type !== "none"}
+  <StateNotification
+    type={$notificationStore.type === "publishing"
+      ? "loading"
+      : $notificationStore.type}
+    message={$notificationStore.message}
+    blocking={$notificationStore.blocking}
+    dismissable={!$notificationStore.blocking}
+    timeout={$notificationStore.timeout || null}
+    logs={$notificationStore.logs || null}
+    on:dismiss={actions.notifications.clear}
+  />
+{/if}
 
 <div class="editor-container text-sm">
   <header class="p-4 mt-4 flex justify-between items-center">
@@ -173,21 +204,6 @@
       </button>
     </div>
   </header>
-
-  <!-- Unified Notification -->
-  {#if $notificationStore.type !== "none"}
-    <StateNotification
-      type={$notificationStore.type === "publishing"
-        ? "loading"
-        : $notificationStore.type}
-      message={$notificationStore.message}
-      blocking={$notificationStore.blocking}
-      dismissable={!$notificationStore.blocking}
-      timeout={$notificationStore.timeout || null}
-      logs={$notificationStore.logs || null}
-      on:dismiss={notificationActions.clearNotification}
-    />
-  {/if}
 
   <!-- Main Editor UI -->
   {#if !$notificationStore.blocking}
@@ -384,9 +400,7 @@
   @reference "tailwindcss";
 
   .editor-container {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    @apply p-4 flex flex-col gap-4 h-full;
   }
 
   .btn {

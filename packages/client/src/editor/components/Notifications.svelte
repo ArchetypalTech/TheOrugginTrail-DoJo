@@ -97,7 +97,7 @@
         <div class="mt-4 log-container">
           {#each logs.reverse() as log}
             <div
-              class="bg-gray-50 p-3 rounded mb-2 flex-col flex first-of-type:bg-gray-100"
+              class="bg-gray-50 p-3 rounded mb-2 flex-col flex not-first-of-type:opacity-50"
             >
               <div class="font-mono text-xs">
                 {JSON.stringify(log.detail, null, 2)}
@@ -114,44 +114,23 @@
   @reference "tailwindcss";
 
   .state-notification-container {
-    position: relative;
-    width: 100%;
-    z-index: 50;
+    @apply relative w-full z-50;
   }
 
   .state-notification-container.blocking {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+    @apply fixed top-0 left-0 w-full h-full flex justify-center items-center z-[9999];
   }
 
   .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    @apply absolute top-0 left-0 w-full h-full bg-black/50;
   }
 
   .notification {
-    max-width: 600px;
-    z-index: 10;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    @apply max-w-[600px] z-10 shadow-md absolute top-2 left-2 pr-8;
   }
 
   .log-container {
-    max-height: 300px;
-    overflow-y: auto;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    margin-top: 8px;
-    padding-top: 8px;
+    @apply max-h-[300px] overflow-y-auto border-t mt-2 pt-2;
   }
 
   @keyframes spin {
@@ -165,5 +144,9 @@
 
   .animate-spin {
     animation: spin 1s linear infinite;
+  }
+
+  button {
+    @apply bg-transparent border-none;
   }
 </style>
