@@ -4,68 +4,30 @@
 			"levelName": "test",
 			"rooms": [
 				{
-					"roomID": "7892581999139148000",
+					"roomID": "7892581999139148",
 					"roomName": "The Last Saloon",
 					"roomDescription": {
-						"id": "189225681418384364",
-						"owner": "7892581999139148000",
-						"text": "The neon sign flickered weakly against the dying light of the final stars.\n The establishment sat at the very edge of existence, where the universe's expansion had stretched reality thin as a piece of cosmic taffy."
+						"id": "1234581999139148",
+						"owner": "7892581999139148",
+						"text": "a neon sign flickers weakly against the dying light of the final stars\n\nthis establishment is sat at the very edge of existence, where reality is stretched thin as a piece of cosmic taffy"
 					},
-					"roomType": "Mountains",
-					"biomeType": "Mountains",
+					"roomType": "Room",
+					"biomeType": "Prarie",
 					"objects": [
 						{
-							"objID": "338722913829963421",
+							"objID": "8036631752425715",
 							"type": "Path",
 							"material": "Wood",
 							"objDescription": {
-								"id": "4721773671604782",
-								"owner": "338722913829963421",
+								"id": "2505716401375812",
+								"owner": "8036631752425715",
 								"text": "Describe your object here..."
 							},
-							"direction": "W",
-							"destination": "16513410301121134701",
+							"direction": "S",
+							"destination": "1813360010128938",
 							"actions": [
 								{
-									"actionID": "3675700558203973",
-									"type": "Follow",
-									"enabled": true,
-									"revertable": false,
-									"dBitText": "Describe what happens when this action is performed...",
-									"dBit": true,
-									"affectsAction": null
-								}
-							]
-						}
-					],
-					"objectIds": ["338722913829963421"],
-					"dirObjIds": ["338722913829963421"]
-				},
-				{
-					"roomID": "16513410301121134701",
-					"roomName": "New Room",
-					"roomDescription": {
-						"id": "30405105912888952551",
-						"owner": "16513410301121134701",
-						"text": "winged wreckages are strewn across the planes\neither they landed embracing another or\notherwise tumbled under and over\n\nskeletons of passengers, their belongings\na backpack gives some color"
-					},
-					"roomType": "Room",
-					"biomeType": "Temporate",
-					"objects": [
-						{
-							"objID": "34984403411705016440",
-							"type": "Chest",
-							"material": "Wood",
-							"objDescription": {
-								"id": "2813779357570510069",
-								"owner": "34984403411705016440",
-								"text": "Describe your object here..."
-							},
-							"direction": "W",
-							"destination": "7892581999139148000",
-							"actions": [
-								{
-									"actionID": "31871078122008067412",
+									"actionID": "1767285373179196",
 									"type": "Open",
 									"enabled": true,
 									"revertable": false,
@@ -75,9 +37,43 @@
 								}
 							]
 						}
-					],
-					"objectIds": ["34984403411705016440"],
-					"dirObjIds": ["34984403411705016440"]
+					]
+				},
+				{
+					"roomID": "1813360010128938",
+					"roomName": "Airport",
+					"roomDescription": {
+						"id": "1926452155387459",
+						"owner": "1813360010128938",
+						"text": "winged wreckages are strewn across the planes\neither they landed embracing another or\notherwise tumbled under and over\n\nskeletons of passengers, their belongings\na backpack gives some color"
+					},
+					"roomType": "Room",
+					"biomeType": "Temporate",
+					"objects": [
+						{
+							"objID": "2930275921402090",
+							"type": "Door",
+							"material": "Metal",
+							"objDescription": {
+								"id": "1751502535148699",
+								"owner": "2930275921402090",
+								"text": "Describe your object here..."
+							},
+							"direction": "N",
+							"destination": "7892581999139148",
+							"actions": [
+								{
+									"actionID": "1217229823394771",
+									"type": "Open",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								}
+							]
+						}
+					]
 				}
 			]
 		}

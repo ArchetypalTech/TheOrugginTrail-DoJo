@@ -276,9 +276,9 @@ export const actions = {
 		saveConfigToFile: async () => {
 			const { config, errors } = await actions.config.saveConfig();
 			// Ensure text definitions are properly formatted and download the file
+			const configWithInlineTexts = ensureInlineTextDefinitions(config);
+			saveConfigToFile(configWithInlineTexts);
 			if (errors.length === 0) {
-				const configWithInlineTexts = ensureInlineTextDefinitions(config);
-				saveConfigToFile(configWithInlineTexts);
 				actions.notifications.showSuccess("Config saved successfully");
 			} else {
 				actions.notifications.showError(
@@ -298,6 +298,7 @@ export const actions = {
 
 				// Check if the config has the expected structure
 				if (!config || !config.levels || !config.levels[0]) {
+					actions.notifications.clear();
 					actions.notifications.showError("Invalid config file: Missing level data");
 					return null;
 				}
@@ -305,6 +306,7 @@ export const actions = {
 				const errors = validateConfig(config);
 
 				if (errors.length > 0) {
+					actions.notifications.clear();
 					actions.notifications.showError(
 						`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
 					);
@@ -314,11 +316,13 @@ export const actions = {
 				// Force the level to be properly cloned to ensure reactivity
 				const configClone = JSON.parse(JSON.stringify(config));
 				actions.config.loadConfig(configClone);
+				actions.notifications.clear();
 				actions.notifications.showSuccess("Config loaded successfully");
 				return config;
 			} catch (error: unknown) {
 				console.error("Error loading config:", error);
 				const errorMsg = error instanceof Error ? error.message : String(error);
+				actions.notifications.clear();
 				actions.notifications.showError(`Error loading config: ${errorMsg}`);
 				return null;
 			}
@@ -422,11 +426,6 @@ export const actions = {
 				const newObject = createDefaultObject();
 
 				room.objects.push(newObject);
-				room.objectIds.push(newObject.objID);
-
-				if (newObject.direction !== "None") {
-					room.dirObjIds.push(newObject.objID);
-				}
 			});
 		},
 
@@ -437,12 +436,6 @@ export const actions = {
 			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				room.objects[objectIndex] = object;
-
-				// Recalculate objectIds and dirObjIds
-				room.objectIds = room.objects.map((obj) => obj.objID);
-				room.dirObjIds = room.objects
-					.filter((obj) => obj.direction !== "None")
-					.map((obj) => obj.objID);
 			});
 			actions.config.autoSave();
 		},
@@ -454,12 +447,6 @@ export const actions = {
 			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				room.objects.splice(objectIndex, 1);
-
-				// Recalculate objectIds and dirObjIds
-				room.objectIds = room.objects.map((obj) => obj.objID);
-				room.dirObjIds = room.objects
-					.filter((obj) => obj.direction !== "None")
-					.map((obj) => obj.objID);
 			});
 		},
 

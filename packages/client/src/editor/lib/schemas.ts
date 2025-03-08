@@ -6,7 +6,7 @@ import {
 	type MaterialType,
 	type RoomType,
 	type BiomeType,
-} from "$lib/dojo/typescript/models.gen";
+} from "$lib/dojo_bindings/typescript/models.gen";
 export type { ObjectType, ActionType, MaterialType, RoomType, BiomeType };
 // Helper function to convert camelCase to spaced words
 function formatLabel(value: string): string {
@@ -169,10 +169,9 @@ export const ActionSchema = z.object({
 	type: ActionTypeEnum,
 	enabled: z.boolean(),
 	revertable: z.boolean(),
-	dBitText: z.string(), // Allow either string or text definition
+	dBitText: z.string(),
 	dBit: z.boolean(),
 	affectsAction: z.string().nullable(),
-	textDefinitionId: z.string().optional(), // Keep for backward compatibility
 });
 export type Action = z.infer<typeof ActionSchema>;
 
@@ -181,11 +180,10 @@ export const ObjectSchema = z.object({
 	objID: z.string(),
 	type: ObjectTypeEnum,
 	material: MaterialTypeEnum,
-	objDescription: TextDefinitionSchema, // Allow either string or text definition
+	objDescription: TextDefinitionSchema,
 	direction: DirectionEnum.nullable(),
 	destination: z.string().nullable(),
 	actions: z.array(ActionSchema),
-	textDefinitionId: z.string().optional(), // Keep for backward compatibility
 });
 export type Object = z.infer<typeof ObjectSchema>;
 
@@ -193,17 +191,15 @@ export type Object = z.infer<typeof ObjectSchema>;
 export const RoomSchema = z.object({
 	roomID: z.string(),
 	roomName: z.string(),
-	roomDescription: TextDefinitionSchema, // Allow either string or text definition
+	roomDescription: TextDefinitionSchema,
 	roomType: RoomTypeEnum,
 	biomeType: BiomeTypeEnum,
 	objects: z.array(ObjectSchema),
-	objectIds: z.array(z.string()),
-	dirObjIds: z.array(z.string()),
-	textDefinitionId: z.string().optional(), // Keep for backward compatibility
+	objectIds: z.array(z.string()).optional(),
+	dirObjIds: z.array(z.string()).optional(),
 });
 export type Room = z.infer<typeof RoomSchema>;
 
-// Define the Level schema - no more textDefinitions array
 export const LevelSchema = z.object({
 	levelName: z.string(),
 	rooms: z.array(RoomSchema),

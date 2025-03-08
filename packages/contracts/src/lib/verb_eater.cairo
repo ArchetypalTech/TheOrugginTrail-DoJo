@@ -60,7 +60,7 @@ pub mod verb_dispatcher {
                 }
                 // println!("spawned????");
                 // let spawn_rm_name: ByteArray = "The Last Saloon";
-                let spawn_id = 7892581999139148000; //h_util::str_hash(@spawn_rm_name);
+                let spawn_id = 7892581999139148; //h_util::str_hash(@spawn_rm_name);
                 spawner.spawn_player(pid, 0);
                 mv::enter_room(wrld, pid, spawn_id);
                 let desc: ByteArray = lookat::describe_room_short(wrld, spawn_id);

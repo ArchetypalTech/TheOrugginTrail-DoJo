@@ -5,7 +5,10 @@ import {
 	ToriiQueryBuilder,
 	type StandardizedQueryResult,
 } from "@dojoengine/sdk";
-import { type SchemaType, schema } from "./dojo/typescript/models.gen";
+import {
+	type SchemaType,
+	schema,
+} from "$lib/dojo_bindings/typescript/models.gen";
 
 /**
  * ## Initializes the Dojo SDK and configuration

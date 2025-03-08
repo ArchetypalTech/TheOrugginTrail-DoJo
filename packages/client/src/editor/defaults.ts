@@ -6,6 +6,7 @@ import type {
 	TextDefinition,
 } from "./lib/schemas";
 import { generateUniqueId } from "./utils";
+import randomName from "@scaleway/random-name";
 
 /**
  * Create a default TextDefinition
@@ -45,7 +46,7 @@ export const createDefaultObject = (): Object => {
 		type: "Door",
 		material: "Wood",
 		objDescription: createDefaultTextDefinition(
-			"Describe your object here...",
+			"this is the only one, it's one of a kind",
 			objectId,
 		),
 		direction: "N",
@@ -59,18 +60,21 @@ export const createDefaultObject = (): Object => {
  */
 export const createDefaultRoom = (): Room => {
 	const roomId = generateUniqueId();
+	const roomName = `Room of ${randomName("", " ")
+		.split(" ")
+		.map((word) => word[0].toUpperCase() + word.slice(1))
+		.join(" ")}`;
+	// capitalize the first letter of the room name
 	return {
 		roomID: roomId,
-		roomName: "New Room",
+		roomName,
 		roomDescription: createDefaultTextDefinition(
-			"Describe your room here...",
+			"you have no idea where this is, but it's somewhere...",
 			roomId,
 		),
 		roomType: "Room",
 		biomeType: "Temporate",
 		objects: [],
-		objectIds: [],
-		dirObjIds: [],
 	};
 };
 

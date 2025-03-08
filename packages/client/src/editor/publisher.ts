@@ -1,5 +1,5 @@
 import type { Config, Room, Object, Action } from "./lib/schemas";
-// import type { Action } from "$lib/dojo/typescript/models.gen.ts";
+// import type { Action } from "$lib/dojo_bindings/typescript/models.gen.ts";
 import {
 	roomTypeToIndex,
 	biomeTypeToIndex,
@@ -28,6 +28,10 @@ export const publishConfigToContract = async (
 		// Create room
 		console.log("Creating room:", room);
 		try {
+			const objectIds = room.objects.map((obj) => obj.objID);
+			const dirObjIds = room.objects
+				.filter((obj) => obj.direction !== "None")
+				.map((obj) => obj.objID);
 			const roomData = [
 				new TempInt(room.roomID),
 				roomTypeToIndex(room.roomType), // Map to index
@@ -35,8 +39,8 @@ export const publishConfigToContract = async (
 				// Use text definition ID from the roomDescription object if available
 				new TempInt(room.roomDescription.id),
 				new ByteArray(room.roomName),
-				room.objectIds.map((id) => new TempInt(id)) || [],
-				room.dirObjIds.map((id) => new TempInt(id)) || [],
+				objectIds.map((id) => new TempInt(id)) || [],
+				dirObjIds.map((id) => new TempInt(id)) || [],
 				0,
 			];
 			await dispatchDesignerCall("create_rooms", [roomData]);

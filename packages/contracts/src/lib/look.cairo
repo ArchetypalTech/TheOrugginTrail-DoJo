@@ -6,16 +6,16 @@
 //! Handle LOOK type actions
 pub mod lookat {
     // use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
-    use the_oruggin_trail::systems::tokeniser::{// tokeniser as lexer, confessor,
-    confessor::Garble};
+    use the_oruggin_trail::systems::tokeniser::{ // tokeniser as lexer, confessor,
+        confessor::Garble,
+    };
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
         player::Player, room::Room,
         zrk_enums::{
             RoomType, room_type_to_str, BiomeType, biome_type_to_str, // MaterialType,
-            material_type_to_str,
-            // ObjectType,
+            material_type_to_str, // ObjectType,
             object_type_to_str, // DirectionType,
             direction_type_to_str,
         },
@@ -28,11 +28,11 @@ pub mod lookat {
     /// the general case is assumed to be for a room
     /// currently we just do the full description this should seperate into examination
     /// for objects etc.
-    pub fn stuff(mut world: IWorldDispatcher, thing: Garble, pid: felt252) -> ByteArray {
+    pub fn stuff(mut world: IWorldDispatcher, message: Garble, player_id: felt252) -> ByteArray {
         //get the player object
         // we are always player 23 right now
         let wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
-        let player: Player = wrld.read_model(pid);
+        let player: Player = wrld.read_model(player_id);
         let location: felt252 = player.location;
         let mut output: ByteArray = describe_room(wrld, location);
         output
@@ -144,11 +144,11 @@ pub mod lookat {
         } else {
             let txtModel: Txtdef = world.read_model(room.txtDefId);
             let txt: ByteArray = txtModel.text;
-            let connective_txt: ByteArray = "the";
-            let place_type: ByteArray = room_type_to_str(room.roomType);
+            // let connective_txt: ByteArray = "the";
+            // let place_type: ByteArray = room_type_to_str(room.roomType);
             let exit_txt: ByteArray = collate_exits(world, location);
             let obj_txt: ByteArray = collate_objects(world, location);
-            format!("{} {} {}\n{}\n{}", connective_txt.clone(), place_type, txt, exit_txt, obj_txt)
+            format!("{}\n{}\n{}", txt, exit_txt, obj_txt)
         }
     }
 }
