@@ -37,19 +37,20 @@ type DesignerCallProps = {
 };
 
 async function sendDesignerCall(props: string) {
+	const { call, args } = JSON.parse(props) as DesignerCallProps;
 	try {
-		const { call, args } = JSON.parse(props) as DesignerCallProps;
 		// reformat args to cairo array
 		if (call !== "create_txt") {
 			const data = toCairoArray(args) as RawArgsArray;
 			const calldata = CallData.compile(data);
-			console.log(
-				`sendDesignerCall[${call}](args):`,
-				args,
-				" -> calldata ->",
-				calldata,
-			);
+			// console.log(
+			// 	`sendDesignerCall[${call}](args):`,
+			// 	args,
+			// 	" -> calldata ->",
+			// 	calldata,
+			// );
 			const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+			// we do a manual wait because the waitForTransaction is super slow
 			await new Promise((r) => setTimeout(r, 500));
 			// await ORUG_CONFIG.katanaProvider.waitForTransaction(
 			// 	response.transaction_hash,
@@ -62,35 +63,35 @@ async function sendDesignerCall(props: string) {
 		}
 		// txt format: id: felt252, ownedBy: felt252, val: ByteArray
 		// 2nd arg needs to always be 0
-		console.log("LENGTH >>>>", (args[2] as string).length, args[2]);
+		// console.log("LENGTH >>>>", (args[2] as string).length, args[2]);
 
-		const data = [args[0], args[1], encodeURI(args[2] as string)] as RawArgsArray;
+		const safeEncoded = encodeURI(args[2] as string);
+		const convertedString = byteArray.byteArrayFromString(safeEncoded);
+
+		const data = [args[0], args[1], convertedString] as RawArgsArray;
 		const calldata = CallData.compile(data);
-		console.log(
-			`sendDesignerCall[${call}](args):`,
-			args,
-			" -> calldata ->",
-			data,
-		);
+		// console.log(
+		// 	`sendDesignerCall[${call}](args):`,
+		// 	args,
+		// 	" -> calldata ->",
+		// 	data,
+		// );
 		const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+		// we do a manual wait because the waitForTransaction is super slow
 		await new Promise((r) => setTimeout(r, 500));
 		// await ORUG_CONFIG.katanaProvider.waitForTransaction(
 		// 	response.transaction_hash,
 		// );
+
 		return new Response(JSON.stringify(response), {
 			headers: {
 				"Content-Type": "application/json",
 			},
+			status: 200,
 		});
 	} catch (error) {
-		console.error("Error creating object:", error);
-		return new Response(
-			JSON.stringify({ error: `Error creating object: ${error.message}` }),
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			},
+		throw new Error(
+			`[${(error as Error).message}] @ sendDesignerCall[${call}](args): ${JSON.stringify(args)} `,
 		);
 	}
 }

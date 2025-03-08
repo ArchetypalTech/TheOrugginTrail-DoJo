@@ -2,12 +2,12 @@ import type {
 	Config,
 	ValidationError,
 	Direction,
-	ObjectType,
-	ActionType,
-	MaterialType,
-	RoomType,
-	BiomeType,
 	TextDefinition,
+	OBJECT_TYPES,
+	ACTION_TYPES,
+	MATERIAL_TYPES,
+	ROOM_TYPES,
+	BIOME_TYPES,
 } from "$editor/lib/schemas";
 import {
 	ConfigSchema,
@@ -279,11 +279,11 @@ export const directionToIndex = (
  * Convert an ObjectType enum value to its index
  */
 export const objectTypeToIndex = (
-	type: ObjectType | null | undefined,
+	type: (typeof OBJECT_TYPES)[number] | null | undefined,
 ): number => {
 	if (!type) return 0;
 	const values = Object.values(ObjectTypeEnum.enum);
-	const index = values.indexOf(type as ObjectType);
+	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
 	return index;
 };
@@ -292,11 +292,11 @@ export const objectTypeToIndex = (
  * Convert an ActionType enum value to its index
  */
 export const actionTypeToIndex = (
-	type: ActionType | null | undefined,
+	type: (typeof ACTION_TYPES)[number] | null | undefined,
 ): number => {
 	if (!type) return 0;
 	const values = Object.values(ActionTypeEnum.enum);
-	const index = values.indexOf(type as ActionType);
+	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
 	return index;
 };
@@ -305,11 +305,11 @@ export const actionTypeToIndex = (
  * Convert a MaterialType enum value to its index
  */
 export const materialTypeToIndex = (
-	type: MaterialType | null | undefined,
+	type: (typeof MATERIAL_TYPES)[number] | null | undefined,
 ): number => {
 	if (!type) return 0;
 	const values = Object.values(MaterialTypeEnum.enum);
-	const index = values.indexOf(type as MaterialType);
+	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
 	return index;
 };
@@ -317,10 +317,12 @@ export const materialTypeToIndex = (
 /**
  * Convert a RoomType enum value to its index
  */
-export const roomTypeToIndex = (type: RoomType | null | undefined): number => {
+export const roomTypeToIndex = (
+	type: (typeof ROOM_TYPES)[number] | null | undefined,
+): number => {
 	if (!type) return 0;
 	const values = Object.values(RoomTypeEnum.enum);
-	const index = values.indexOf(type as RoomType);
+	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
 	return index;
 };
@@ -329,11 +331,11 @@ export const roomTypeToIndex = (type: RoomType | null | undefined): number => {
  * Convert a BiomeType enum value to its index
  */
 export const biomeTypeToIndex = (
-	type: BiomeType | null | undefined,
+	type: (typeof BIOME_TYPES)[number] | null | undefined,
 ): number => {
 	if (!type) return 0;
 	const values = Object.values(BiomeTypeEnum.enum);
-	const index = values.indexOf(type as BiomeType);
+	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
 	return index;
 };

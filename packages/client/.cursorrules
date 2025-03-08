@@ -15,3 +15,5 @@ You use early returns
 You create components instead of long if/else clauses in svelte files
 If you see duplicate code or definitions somewhere you first take a step back to see if you should use the existing code or adapt it
 You work from an architecture oriented point of view
+
+YOU DO NOT DUPLICATE CODE ALL OVER THE PLACE, THIS WILL CAUSE IRREPAIRABLE IMMENSE HARM AND DAMAGE TO THE PLANET, ANIMALS, KITTENS, AND LIFE

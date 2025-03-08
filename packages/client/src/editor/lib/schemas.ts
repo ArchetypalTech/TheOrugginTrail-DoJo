@@ -1,5 +1,13 @@
 import { z } from "zod";
-import { schema } from "$lib/dojo/typescript/models.gen";
+import {
+	schema,
+	type ObjectType,
+	type ActionType,
+	type MaterialType,
+	type RoomType,
+	type BiomeType,
+} from "$lib/dojo/typescript/models.gen";
+export type { ObjectType, ActionType, MaterialType, RoomType, BiomeType };
 // Helper function to convert camelCase to spaced words
 function formatLabel(value: string): string {
 	// Special cases for directional labels
@@ -31,7 +39,7 @@ console.log(manifest);
 
 // Define enum values as const arrays - single source of truth
 export const DIRECTIONS = ["None", "N", "S", "E", "W", "U", "D"] as const;
-export const OBJECT_TYPES = [
+export const OBJECT_TYPES: [string, ...(keyof ObjectType)[]] = [
 	"None",
 	"Ball",
 	"Window",
@@ -49,7 +57,7 @@ export const OBJECT_TYPES = [
 	"Boulder",
 	"Bale",
 ] as const;
-export const ACTION_TYPES = [
+export const ACTION_TYPES: [string, ...(keyof ActionType)[]] = [
 	"None",
 	"Move",
 	"Look",
@@ -79,7 +87,7 @@ export const ACTION_TYPES = [
 	"Close",
 	"Drop",
 ] as const;
-export const MATERIAL_TYPES = [
+export const MATERIAL_TYPES: [string, ...(keyof MaterialType)[]] = [
 	"None",
 	"Wood",
 	"Dirt",
@@ -95,7 +103,7 @@ export const MATERIAL_TYPES = [
 	"TNT",
 	"Hay",
 ] as const;
-export const ROOM_TYPES = [
+export const ROOM_TYPES: [string, ...(keyof RoomType)[]] = [
 	"None",
 	"WoodCabin",
 	"Store",
@@ -111,7 +119,7 @@ export const ROOM_TYPES = [
 	"Pass",
 	"Alley",
 ] as const;
-export const BIOME_TYPES = [
+export const BIOME_TYPES: [string, ...(keyof BiomeType)[]] = [
 	"None",
 	"Forest",
 	"Tundra",
@@ -129,19 +137,10 @@ export const DirectionEnum = z.enum(DIRECTIONS);
 export type Direction = (typeof DIRECTIONS)[number];
 
 export const ObjectTypeEnum = z.enum(OBJECT_TYPES);
-export type ObjectType = (typeof OBJECT_TYPES)[number];
-
 export const ActionTypeEnum = z.enum(ACTION_TYPES);
-export type ActionType = (typeof ACTION_TYPES)[number];
-
 export const MaterialTypeEnum = z.enum(MATERIAL_TYPES);
-export type MaterialType = (typeof MATERIAL_TYPES)[number];
-
 export const RoomTypeEnum = z.enum(ROOM_TYPES);
-export type RoomType = (typeof ROOM_TYPES)[number];
-
 export const BiomeTypeEnum = z.enum(BIOME_TYPES);
-export type BiomeType = (typeof BIOME_TYPES)[number];
 
 // Define the validation error schema
 export const ValidationErrorSchema = z.object({

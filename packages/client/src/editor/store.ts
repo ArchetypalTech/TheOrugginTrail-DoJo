@@ -274,7 +274,7 @@ export const actions = {
 		},
 
 		saveConfigToFile: async () => {
-			const { config, errors } = await editorActions.saveConfig();
+			const { config, errors } = await actions.config.saveConfig();
 			// Ensure text definitions are properly formatted and download the file
 			if (errors.length === 0) {
 				const configWithInlineTexts = ensureInlineTextDefinitions(config);

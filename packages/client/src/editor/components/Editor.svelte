@@ -139,10 +139,6 @@
 
   // Load the test game config on mount
   onMount(async () => {
-    window.addEventListener("designerCall", (e: Event) => {
-      const customEvent = e as CustomEvent;
-      actions.notifications.addPublishingLog(customEvent);
-    });
     try {
       actions.config.initialize();
     } catch (error: unknown) {

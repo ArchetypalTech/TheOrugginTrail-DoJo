@@ -10,6 +10,7 @@ import {
 } from "./utils";
 import type { DesignerCall } from "../lib/systemCalls";
 import { ByteArray, TempInt } from "$lib/utils";
+import { actions } from "./store";
 
 /**
  * Publishes a game configuration to the contract
@@ -38,7 +39,7 @@ export const publishConfigToContract = async (
 				room.dirObjIds.map((id) => new TempInt(id)) || [],
 				0,
 			];
-			await sendDesignerCall("create_rooms", [roomData]);
+			await dispatchDesignerCall("create_rooms", [roomData]);
 
 			// Process objects and actions
 			await processRoomObjects(config, room);
@@ -61,7 +62,7 @@ export const createAllTextDefinitions = async (
 	// Process each room to create text definitions
 	for (const room of config.levels[0].rooms) {
 		// Create room text definition
-		await sendDesignerCall("create_txt", [
+		await dispatchDesignerCall("create_txt", [
 			room.roomDescription.id, // ID for the text
 			room.roomID, // Owner ID
 			room.roomDescription.text, // The actual text content
@@ -70,7 +71,7 @@ export const createAllTextDefinitions = async (
 		// Create text definitions for all objects and actions
 		for (const obj of room.objects) {
 			// Create object text definition
-			await sendDesignerCall("create_txt", [
+			await dispatchDesignerCall("create_txt", [
 				obj.objDescription.id, // ID for the text
 				obj.objID, // Owner ID
 				obj.objDescription.text, // The actual text content
@@ -100,7 +101,7 @@ export const processRoomObjects = async (
 			new TempInt(obj.objDescription.id),
 		];
 		console.log("Creating object:", objData);
-		await sendDesignerCall("create_objects", [objData]);
+		await dispatchDesignerCall("create_objects", [objData]);
 
 		// Process actions
 		await processObjectActions(config, obj);
@@ -146,7 +147,7 @@ export const processObjectActions = async (
 			0, //affectedByActionId
 		];
 		console.log("Creating action:", actionData);
-		await sendDesignerCall("create_actions", [actionData]);
+		await dispatchDesignerCall("create_actions", [actionData]);
 	}
 };
 
@@ -156,11 +157,10 @@ export const processObjectActions = async (
  * @param args The arguments for the call
  * @returns The response from the API
  */
-export const sendDesignerCall = async (call: DesignerCall, args: unknown[]) => {
-	window.dispatchEvent(
-		new CustomEvent("designerCall", { detail: { call, args } }),
-	);
-
+export const dispatchDesignerCall = async (
+	call: DesignerCall,
+	args: unknown[],
+) => {
 	const formData = new FormData();
 	formData.append("route", "sendDesignerCall");
 	formData.append("command", JSON.stringify({ call, args }));
@@ -169,12 +169,19 @@ export const sendDesignerCall = async (call: DesignerCall, args: unknown[]) => {
 			method: "POST",
 			body: formData,
 		});
-		if (!response.ok) {
+		if (!response.ok || response.status !== 200) {
 			throw new Error("Failed to send designer call");
 		}
+		actions.notifications.addPublishingLog(
+			new CustomEvent("designerCall", { detail: { call, args } }),
+		);
 		return response.json();
 	} catch (error) {
+		actions.notifications.addPublishingLog(
+			new CustomEvent("error", {
+				detail: { error: { message: error.message }, call, args },
+			}),
+		);
 		console.error("Error sending designer call:", error);
-		throw error;
 	}
 };

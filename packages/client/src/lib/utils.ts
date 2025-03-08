@@ -81,7 +81,7 @@ const convertIfString = (item: unknown) => {
 };
 
 export const toCairoArray = (args: unknown[]): unknown[] => {
-	console.dir(args, 8);
+	// console.dir(args, 8);
 	if (args.length === 0) {
 		return [0]; // Empty array is represented as [0] in Cairo
 	}
@@ -102,7 +102,7 @@ export const toCairoArray = (args: unknown[]): unknown[] => {
 		];
 		result.push(...arr);
 	}
-	console.dir(result, 8);
+	// console.dir(result, 8);
 	return result;
 };
 

@@ -12,14 +12,18 @@ export const POST: RequestHandler = async (event) => {
 	const route = data.get("route") as keyof typeof SystemCalls;
 	// log recieving POST
 	console.log(`Send message to katana (${route}):`, route, "[command]", command);
-	if (SystemCalls[route] === undefined) {
-		return new Response(JSON.stringify({ message: "Route Failure" }), {
-			status: 500,
-		});
-	}
-	const res = await SystemCalls[route]?.(command);
-	if (res !== undefined) {
-		return res;
+	if (SystemCalls[route] !== undefined) {
+		try {
+			const res = await SystemCalls[route]?.(command);
+			if (res !== undefined) {
+				return res;
+			}
+		} catch (error) {
+			console.error("Error sending message to katana:", error);
+			return new Response(JSON.stringify({ message: (error as Error).message }), {
+				status: 500,
+			});
+		}
 	}
 	return new Response(JSON.stringify({ message: "Route Failure" }), {
 		status: 500,

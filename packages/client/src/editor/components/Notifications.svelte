@@ -98,6 +98,7 @@
           {#each logs.reverse() as log}
             <div
               class="bg-gray-50 p-3 rounded mb-2 flex-col flex not-first-of-type:opacity-50"
+              class:log-error={log.detail.error}
             >
               <div class="font-mono text-xs">
                 {JSON.stringify(log.detail, null, 2)}
@@ -152,5 +153,9 @@
 
   button {
     @apply bg-transparent border-none;
+  }
+
+  .log-error {
+    @apply text-red-500;
   }
 </style>
