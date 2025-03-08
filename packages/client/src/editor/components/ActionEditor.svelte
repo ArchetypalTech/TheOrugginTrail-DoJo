@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import type { Action } from "$editor/lib/types";
+  import type { Action } from "$editor/lib/schemas";
   import { ACTION_TYPE_OPTIONS } from "$editor/lib/types";
   import { actions } from "$editor/store";
 
@@ -132,10 +132,6 @@
       bind:value={editedAction.actionID}
       on:input={handleChange}
       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-      readonly
     />
-    <p class="mt-1 text-xs text-gray-500">
-      This ID is generated automatically and should not be changed.
-    </p>
   </div>
 </div>

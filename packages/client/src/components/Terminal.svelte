@@ -86,12 +86,12 @@
         ].join("\n"),
         format: "system",
         useTypewriter: true,
-        speed: 1.4,
+        speed: 4,
         style: "text-align: center",
       });
       addTerminalContent({
-        text: 'type "spawn" to enter the world, or "help"',
-        format: "shog",
+        text: 'type [command] [target], or type "help"',
+        format: "input",
         useTypewriter: true,
       });
       Dojo_Status.set({

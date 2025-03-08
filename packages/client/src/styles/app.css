@@ -4,6 +4,8 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *)); */
+
 @theme {
   --color-primary-50: #fff5f2;
   --color-primary-100: #fff1ee;
@@ -22,16 +24,9 @@
 :root {
   --terminal-hash: #ffd700;
   --terminal-out: #36ad11;
-  --terminal-shog: #309810;
+  --terminal-shog: #06b6d4;
   --terminal-input: #25642a;
   --terminal-system: #4ade80;
   --terminal-error: #dc2626;
-}
-
-.btn-primary {
-  @apply hover:bg-[var(--terminal-out)] hover:text-white;
-}
-
-.btn-danger {
-  @apply hover:bg-[var(--terminal-error)] hover:text-white;
+  --terminal-magenta: #d946ef;
 }

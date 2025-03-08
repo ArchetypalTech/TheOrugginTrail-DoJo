@@ -45,7 +45,7 @@
         : type === "warning"
           ? "bg-yellow-100 border-yellow-400 text-yellow-700"
           : type === "loading"
-            ? "bg-blue-50 border-blue-300 text-blue-700"
+            ? "logger"
             : "bg-gray-100 border-gray-400 text-gray-700";
 
   // Determine icon based on type if not provided
@@ -74,7 +74,7 @@
       <div class="flex items-center">
         {#if type === "loading"}
           <div
-            class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-500 mr-3"
+            class="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 mr-3"
           ></div>
         {:else if displayIcon}
           <span class="mr-3">{displayIcon}</span>
@@ -97,7 +97,7 @@
         <div class="mt-4 log-container">
           {#each logs.reverse() as log}
             <div
-              class="bg-gray-50 p-3 rounded mb-2 flex-col flex not-first-of-type:opacity-50"
+              class="logger-item p-3 rounded mb-2 flex-col flex not-first-of-type:opacity-50"
               class:log-error={log.detail.error}
             >
               <div class="font-mono text-xs">
@@ -135,7 +135,7 @@
   }
 
   .log-container {
-    @apply max-h-[300px] overflow-y-auto border-t mt-2 pt-2;
+    @apply max-h-[300px] overflow-y-auto mt-2 pt-2;
   }
 
   @keyframes spin {

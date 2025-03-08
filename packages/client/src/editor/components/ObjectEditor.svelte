@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import type { Object } from "$editor/lib/types";
+  import type { Object } from "$editor/lib/schemas";
   import {
     OBJECT_TYPE_OPTIONS,
     MATERIAL_TYPE_OPTIONS,

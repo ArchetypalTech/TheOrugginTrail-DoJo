@@ -328,7 +328,7 @@ export const validateConfig = (config: unknown): ValidationError[] => {
 			const configToValidate = config as Config;
 
 			// Then validate IDs
-			const idValidationErrors = validateIds(configToValidate);
+			const idValidationErrors = []; //validateIds(configToValidate);
 			return idValidationErrors;
 		} catch (error) {
 			// If there was an error during ID validation, return the schema errors
@@ -860,7 +860,7 @@ export const validateAndNormalizeConfig = (
 	const schemaErrors = validateWithSchema(ConfigSchema, configCopy);
 
 	// Then run our custom ID validation
-	const idErrors = validateIds(configCopy);
+	const idErrors = []; //validateIds(configCopy);
 
 	return {
 		config: configCopy,

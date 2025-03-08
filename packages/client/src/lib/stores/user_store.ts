@@ -2,6 +2,7 @@ import { get, writable } from "svelte/store";
 
 const initialState = {
 	typewriter_effect: true,
+	dark_mode: false,
 };
 type UserStore = typeof initialState;
 

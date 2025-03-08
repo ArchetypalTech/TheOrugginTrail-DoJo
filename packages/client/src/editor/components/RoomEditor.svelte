@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import type { Room } from "$editor/lib/types";
+  import type { Room } from "$editor/lib/schemas";
   import { ROOM_TYPE_OPTIONS, BIOME_TYPE_OPTIONS } from "$editor/lib/types";
 
   export let room: Room;

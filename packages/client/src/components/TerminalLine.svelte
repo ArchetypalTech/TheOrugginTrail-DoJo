@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { TerminalContentItem } from "$lib/stores/terminal_store";
+  import type { TerminalContentItem } from "$lib/stores/terminal_store";
 
-export let content: TerminalContentItem | null;
+  export let content: TerminalContentItem | null;
 </script>
 
 {#if content !== null}
@@ -9,6 +9,10 @@ export let content: TerminalContentItem | null;
     class="terminal-line w-full"
     class:shog={content.format === "shog"}
     class:out={content.format === "out"}
+    class:textFreak={content.format === "out" ||
+      content.format === "system" ||
+      content.format === "hash" ||
+      content.format === "shog"}
     class:input={content.format === "input"}
     class:hash={content.format === "hash"}
     class:error={content.format === "error"}
@@ -34,12 +38,12 @@ export let content: TerminalContentItem | null;
     color: var(--terminal-shog);
   }
   .terminal-line.input {
-    color: var(--terminal-input); 
+    color: var(--terminal-input);
   }
   .terminal-line.system {
     color: var(--terminal-system);
   }
-	.terminal-line.error {
-		color: var(--terminal-error);
-	}
+  .terminal-line.error {
+    color: var(--terminal-error);
+  }
 </style>

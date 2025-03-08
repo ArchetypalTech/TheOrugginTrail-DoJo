@@ -5,7 +5,8 @@
   import RoomEditor from "./RoomEditor.svelte";
   import ObjectEditor from "./ObjectEditor.svelte";
   import ActionEditor from "./ActionEditor.svelte";
-  import type { Room, Object, Action } from "$editor/lib/types";
+  import type { Room, Object, Action } from "$editor/lib/schemas";
+  import { user_store } from "$lib/stores/user_store";
 
   // State
   let selectedObjectIndex: number | null = null;
@@ -155,7 +156,7 @@
   <header class="p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold font-mono">EDITZORG</h1>
     <div class="flex gap-2 font-semibold">
-      <label class="btn btn-sm btn-primary">
+      <label class="btn btn-sm btn-success">
         Import Config
         <input
           type="file"
@@ -177,6 +178,14 @@
           ? "Publishing..."
           : "Publish to Contract"}
       </button>
+      <button
+        class="btn"
+        on:click={() => {
+          $user_store.dark_mode = !$user_store.dark_mode;
+        }}
+      >
+        {$user_store.dark_mode ? "☀️" : "🌑"}
+      </button>
     </div>
   </header>
 
@@ -185,20 +194,15 @@
     <div class="grid grid-cols-12 gap-4 p-4">
       <!-- Room List -->
       <div class="col-span-2 bg-transparent rounded">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Rooms</h2>
-        </div>
         <ul class="flex flex-col gap-2">
-          <button class="btn btn-primary" on:click={handleAddRoom}
+          <button class="btn btn-sm btn-primary" on:click={handleAddRoom}
             >Add Room</button
           >
           {#each $editorStore.currentLevel.rooms as room, i}
             <li class="border-gray-700 border-b">
               <button
-                class="btn w-full text-left p-2 rounded {i ===
-                $editorStore.currentRoomIndex
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white hover:bg-gray-200'}"
+                class="btn w-full text-left p-2 rounded"
+                class:btn-active={i === $editorStore.currentRoomIndex}
                 on:click={() => handleRoomSelect(i)}
               >
                 {room.roomName}
@@ -209,12 +213,10 @@
       </div>
 
       <!-- Room Editor -->
-      <div class="col-span-4 bg-gray-100 p-4 rounded">
+      <div class="room-editor col-span-4 bg-gray-100 p-4 rounded">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Room Editor</h2>
-          <button class="btn btn-danger" on:click={handleDeleteRoom}
-            >Delete Room</button
-          >
+          <h2 class="text-lg font-semibold">Room</h2>
+          <button class="btn btn-danger" on:click={handleDeleteRoom}>❌</button>
         </div>
         {#if $editorStore.currentLevel.rooms.length > 0}
           <RoomEditor
@@ -229,10 +231,7 @@
       </div>
 
       <!-- Object List and Editor -->
-      <div class="col-span-3 bg-gray-100 p-4 rounded">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Objects</h2>
-        </div>
+      <div class="object-editor col-span-3 rounded">
         {#if $editorStore.currentLevel.rooms.length > 0}
           <div class="grid grid-cols-1 gap-4">
             <ul class="flex flex-col gap-2">
@@ -242,10 +241,8 @@
               {#each $editorStore.currentLevel.rooms[$editorStore.currentRoomIndex].objects as object, i}
                 <li>
                   <button
-                    class="w-full text-left p-2 rounded {i ===
-                    selectedObjectIndex
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white hover:bg-gray-200'}"
+                    class="btn w-full text-left p-2 rounded"
+                    class:btn-active={i === selectedObjectIndex}
                     on:click={() => handleObjectSelect(i)}
                   >
                     {object.type} ({object.material})
@@ -254,16 +251,16 @@
               {/each}
             </ul>
             {#if selectedObjectIndex !== null}
-              <div class="bg-white p-4 rounded">
+              <div class="object-inspector bg-gray-50 p-4 rounded">
                 <div class="flex justify-between items-center mb-4">
-                  <h3 class="font-semibold">Edit Object</h3>
+                  <h2 class="text-lg font-semibold">Object</h2>
                   <button
                     class="btn btn-sm btn-danger"
                     on:click={() => {
                       if (selectedObjectIndex !== null) {
                         handleDeleteObject(selectedObjectIndex);
                       }
-                    }}>Delete</button
+                    }}>❌</button
                   >
                 </div>
                 {#if selectedObjectIndex !== null}
@@ -271,9 +268,6 @@
                     object={$editorStore.currentLevel.rooms[
                       $editorStore.currentRoomIndex
                     ].objects[selectedObjectIndex]}
-                    roomNames={$editorStore.currentLevel.rooms.map(
-                      (r) => r.roomName
-                    )}
                     on:update={(e) => {
                       if (selectedObjectIndex !== null) {
                         handleUpdateObject(selectedObjectIndex, e.detail);
@@ -290,30 +284,27 @@
       </div>
 
       <!-- Action List and Editor -->
-      <div class="col-span-3 bg-gray-100 p-4 rounded">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Actions</h2>
-          {#if selectedObjectIndex !== null}
-            <button
-              class="btn btn-sm btn-primary"
-              on:click={() => {
-                if (selectedObjectIndex !== null) {
-                  handleAddAction(selectedObjectIndex);
-                }
-              }}>Add Action</button
-            >
-          {/if}
-        </div>
+      <div class="action-editor col-span-3 rounded">
         {#if selectedObjectIndex !== null}
           <div class="grid grid-cols-1 gap-4">
             <ul class="space-y-2 mb-4">
+              {#if selectedObjectIndex !== null}
+                <li>
+                  <button
+                    class="btn btn-sm btn-primary w-full p-2 rounded"
+                    on:click={() => {
+                      if (selectedObjectIndex !== null) {
+                        handleAddAction(selectedObjectIndex);
+                      }
+                    }}>Add Action</button
+                  >
+                </li>
+              {/if}
               {#each $editorStore.currentLevel.rooms[$editorStore.currentRoomIndex].objects[selectedObjectIndex].actions as action, i}
                 <li>
                   <button
-                    class="w-full text-left p-2 rounded {i ===
-                    selectedActionIndex
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-white hover:bg-gray-200'}"
+                    class="btn w-full text-left p-2 rounded"
+                    class:btn-active={i === selectedActionIndex}
                     on:click={() => handleActionSelect(i)}
                   >
                     {action.type} ({action.enabled ? "Enabled" : "Disabled"})
@@ -322,9 +313,9 @@
               {/each}
             </ul>
             {#if selectedActionIndex !== null && selectedObjectIndex !== null}
-              <div class="bg-white p-4 rounded">
+              <div class="action-inspector bg-gray-50 p-4 rounded">
                 <div class="flex justify-between items-center mb-4">
-                  <h3 class="font-semibold">Edit Action</h3>
+                  <h2 class="text-lg font-semibold">Action</h2>
                   <button
                     class="btn btn-sm btn-danger"
                     on:click={() => {
@@ -337,7 +328,7 @@
                           selectedActionIndex
                         );
                       }
-                    }}>Delete</button
+                    }}>❌</button
                   >
                 </div>
                 <ActionEditor
@@ -364,7 +355,7 @@
             {/if}
           </div>
         {:else}
-          <p>No object selected.</p>
+          <div class="text-center text-black/20">No object selected.</div>
         {/if}
       </div>
     </div>
@@ -385,19 +376,3 @@
     />
   {/if}
 </div>
-
-<style lang="postcss">
-  @reference "tailwindcss";
-
-  .editor-container {
-    @apply p-4 flex flex-col gap-4 h-full;
-  }
-
-  .btn {
-    @apply py-2 px-4 rounded;
-  }
-
-  .btn-sm {
-    @apply py-1.5 px-2.5 text-sm;
-  }
-</style>

@@ -26,7 +26,7 @@
 
 <div class="w-screen h-screen relative bg-black overflow-hidden">
   {#if !hasError}
-    <div id="viewport" class="absolute inset-0 z-0"></div>
+    <div id="viewport" class="absolute inset-0 z-0 slowPulse"></div>
     <CameraShake />
     <!-- <Ambient
       bind:this={ambientSoundComponent}
@@ -71,13 +71,6 @@
 />
 
 <style>
-  html,
-  head,
-  body {
-    overflow: hidden;
-    position: relative;
-  }
-
   :global(:root) {
     --terminal-width: 30%;
     --available-space: calc(100% - var(--terminal-width));
