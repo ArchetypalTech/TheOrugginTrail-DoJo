@@ -1,20 +1,26 @@
-import type { Config, EditorState, Action, Object, Room } from "./schemas";
-import { EditorStateSchema } from "./schemas";
+import type {
+	Config,
+	EditorState,
+	Action,
+	Object,
+	Room,
+} from "$editor/lib/schemas";
+import { EditorStateSchema } from "$editor/lib/schemas";
 import {
 	transformConfig,
 	validateConfig,
 	formatValidationError,
 	ensureInlineTextDefinitions,
-} from "./utils";
-import { createGenericStore } from "./generic-store";
+} from "$editor/utils";
+import { createGenericStore } from "$editor/lib/generic-store";
 import {
 	createDefaultLevel,
 	createDefaultRoom,
 	createDefaultObject,
 	createDefaultAction,
-} from "./defaults";
+} from "$editor/defaults";
 import testConfig from "@zorg/generator/config/test_game.json";
-import type { NotificationState } from "./notificationState";
+import type { NotificationState } from "$editor/notifications";
 import {
 	initialNotificationState,
 	createErrorNotification,
@@ -24,9 +30,9 @@ import {
 	clearNotification,
 	addLogToPublishingNotification,
 	NotificationStateSchema,
-} from "./notificationState";
-import { publishConfigToContract } from "./publisher";
-import { saveConfigToFile, loadConfigFromFile } from "./utils";
+} from "$editor/notifications";
+import { publishConfigToContract } from "$editor/publisher";
+import { saveConfigToFile, loadConfigFromFile } from "$editor/utils";
 
 // Initialize the editor state
 const initialState: EditorState = {

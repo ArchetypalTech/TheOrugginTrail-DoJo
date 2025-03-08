@@ -13,6 +13,7 @@ const config = {
 			$lib: "./src/lib",
 			$styles: "./src/styles",
 			$components: "./src/components",
+			$editor: "./src/editor",
 		},
 	},
 };

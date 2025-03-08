@@ -1,4 +1,10 @@
-import type { Action, Level, Object, Room, TextDefinition } from "./schemas";
+import type {
+	Action,
+	Level,
+	Object,
+	Room,
+	TextDefinition,
+} from "./lib/schemas";
 import { generateUniqueId } from "./utils";
 
 /**

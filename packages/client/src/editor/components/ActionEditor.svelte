@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import type { Action } from "./types";
-  import { ACTION_TYPE_OPTIONS } from "./types";
+  import type { Action } from "$editor/lib/types";
+  import { ACTION_TYPE_OPTIONS } from "$editor/lib/types";
 
   export let action: Action;
   export let availableActions: string[] = [];

@@ -8,8 +8,6 @@ import type {
 	RoomType,
 	BiomeType,
 	TextDefinition,
-} from "./schemas";
-import {
 	ConfigSchema,
 	transformWithSchema,
 	validateWithSchema,
@@ -19,7 +17,7 @@ import {
 	MaterialTypeEnum,
 	RoomTypeEnum,
 	BiomeTypeEnum,
-} from "./schemas";
+} from "$editor/lib/schemas";
 
 /**
  * Generate a unique ID for a new entity

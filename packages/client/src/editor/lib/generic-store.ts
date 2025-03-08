@@ -6,8 +6,8 @@ import {
 	type Readable,
 } from "svelte/store";
 import type { z } from "zod";
-import type { ValidationError } from "./schemas";
-import { validateWithSchema } from "./schemas";
+import type { ValidationError } from "$editor/lib/schemas";
+import { validateWithSchema } from "$editor/lib/schemas";
 
 /**
  * A generic store type with schema validation

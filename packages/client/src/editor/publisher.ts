@@ -1,4 +1,5 @@
-import type { Config, Room, Object, Action } from "./schemas";
+import type { Config, Room, Object, Action } from "./lib/schemas";
+// import type { Action } from "$lib/dojo/typescript/models.gen.ts";
 import {
 	roomTypeToIndex,
 	biomeTypeToIndex,
@@ -7,7 +8,7 @@ import {
 	materialTypeToIndex,
 	actionTypeToIndex,
 } from "./utils";
-import type { DesignerCall } from "../systemCalls";
+import type { DesignerCall } from "../lib/systemCalls";
 import { ByteArray, TempInt } from "$lib/utils";
 
 /**
@@ -115,6 +116,24 @@ export const processObjectActions = async (
 	obj: Object,
 ): Promise<void> => {
 	for (const action of obj.actions) {
+		// const actionsInterface:
+		// 	| {
+		// 			actionId: TempInt;
+		// 			actionType: number;
+		// 			dBitTxt: ByteArray;
+		// 			affectsActionId: TempInt;
+		// 			affectedByActionId: TempInt;
+		// 	  }
+		// 	| Action = {
+		// 	actionId: new TempInt(action.actionID),
+		// 	actionType: actionTypeToIndex(action.type || "None"),
+		// 	dBitTxt: action.dBitText,
+		// 	enabled: action.enabled,
+		// 	revertable: action.revertable,
+		// 	dBit: action.dBit,
+		// 	affectsActionId: new TempInt(action.affectsAction || ""),
+		// 	affectedByActionId: "",
+		// };
 		// Create action
 		const actionData = [
 			new TempInt(action.actionID),

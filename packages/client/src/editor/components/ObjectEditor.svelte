@@ -1,12 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import type { Object } from "./types";
+  import type { Object } from "$editor/lib/types";
   import {
     OBJECT_TYPE_OPTIONS,
     MATERIAL_TYPE_OPTIONS,
     DIRECTION_OPTIONS,
-  } from "./types";
-  import { editorActions } from "./store";
+  } from "$editor/lib/types";
+  import { editorActions } from "$editor/store";
 
   export let object: Object;
 

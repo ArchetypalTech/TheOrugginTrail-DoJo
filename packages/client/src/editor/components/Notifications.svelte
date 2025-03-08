@@ -95,8 +95,10 @@
 
       {#if logs && logs.length > 0}
         <div class="mt-4 log-container">
-          {#each logs as log}
-            <div class="bg-gray-50 p-3 rounded mb-2 flex-col flex">
+          {#each logs.reverse() as log}
+            <div
+              class="bg-gray-50 p-3 rounded mb-2 flex-col flex first-of-type:bg-gray-100"
+            >
               <div class="font-mono text-xs">
                 {JSON.stringify(log.detail, null, 2)}
               </div>

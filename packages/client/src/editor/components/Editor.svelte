@@ -5,12 +5,12 @@
     editorActions,
     notificationStore,
     notificationActions,
-  } from "./store";
-  import StateNotification from "./StateNotification.svelte";
+  } from "$editor/store";
+  import StateNotification from "./Notifications.svelte";
   import RoomEditor from "./RoomEditor.svelte";
   import ObjectEditor from "./ObjectEditor.svelte";
   import ActionEditor from "./ActionEditor.svelte";
-  import type { Room, Object, Action } from "./types";
+  import type { Room, Object, Action } from "$editor/lib/types";
 
   // State
   let selectedObjectIndex: number | null = null;
