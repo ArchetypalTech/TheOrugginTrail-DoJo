@@ -106,17 +106,6 @@ export interface RoomValue {
 	players: Array<BigNumberish>;
 }
 
-// Type definition for `the_oruggin_trail::models::spawnroom::Spawnroom` struct
-export interface Spawnroom {
-	id: BigNumberish;
-	rooms: Array<BigNumberish>;
-}
-
-// Type definition for `the_oruggin_trail::models::spawnroom::SpawnroomValue` struct
-export interface SpawnroomValue {
-	rooms: Array<BigNumberish>;
-}
-
 // Type definition for `the_oruggin_trail::models::txtdef::Txtdef` struct
 export interface Txtdef {
 	id: BigNumberish;
@@ -265,8 +254,6 @@ export interface SchemaType extends ISchemaType {
 		PlayerValue: PlayerValue,
 		Room: Room,
 		RoomValue: RoomValue,
-		Spawnroom: Spawnroom,
-		SpawnroomValue: SpawnroomValue,
 		Txtdef: Txtdef,
 		TxtdefValue: TxtdefValue,
 	},
@@ -535,13 +522,6 @@ export const schema: SchemaType = {
 			dirObjIds: [0],
 			players: [0],
 		},
-		Spawnroom: {
-			id: 0,
-			rooms: [0],
-		},
-		SpawnroomValue: {
-			rooms: [0],
-		},
 		Txtdef: {
 			id: 0,
 			owner: 0,
@@ -566,8 +546,6 @@ export enum ModelsMapping {
 	PlayerValue = 'the_oruggin_trail-PlayerValue',
 	Room = 'the_oruggin_trail-Room',
 	RoomValue = 'the_oruggin_trail-RoomValue',
-	Spawnroom = 'the_oruggin_trail-Spawnroom',
-	SpawnroomValue = 'the_oruggin_trail-SpawnroomValue',
 	Txtdef = 'the_oruggin_trail-Txtdef',
 	TxtdefValue = 'the_oruggin_trail-TxtdefValue',
 	ActionType = 'the_oruggin_trail-ActionType',

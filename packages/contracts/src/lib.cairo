@@ -7,7 +7,6 @@ pub mod systems {
     pub mod outputter;
     pub mod meatpuppet;
     pub mod tokeniser;
-    pub mod spawner;
     pub mod designer;
 }
 
@@ -34,26 +33,15 @@ pub mod models {
     pub mod txtdef;
     pub mod action;
     pub mod object;
-    pub mod spawnroom;
     pub mod room;
     pub mod inventory;
 }
 
 pub mod utils {
     pub mod misc;
-    // pub mod system;
 }
 
 pub mod tests {
-    // pub mod test_meatpuppet_hearing;
-    // pub mod test_meatpuppet_look;
-    // pub mod test_meatpuppet_move;
-    // pub mod test_meatpuppet_act;
     pub mod test_tokeniser;
-    pub mod test_spawn_plain;
-    pub mod test_spawn_pass;
-    pub mod test_spawn_barn;
-    pub mod test_spawn_forge;
-    pub mod test_spawn_basement;
     pub mod test_rig;
 }

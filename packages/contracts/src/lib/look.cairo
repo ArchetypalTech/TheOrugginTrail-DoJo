@@ -5,19 +5,14 @@
 
 //! Handle LOOK type actions
 pub mod lookat {
-    // use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
-    use the_oruggin_trail::systems::tokeniser::{ // tokeniser as lexer, confessor,
-        confessor::Garble,
-    };
+    use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
         player::Player, room::Room,
         zrk_enums::{
-            RoomType, room_type_to_str, BiomeType, biome_type_to_str, // MaterialType,
-            material_type_to_str, // ObjectType,
-            object_type_to_str, // DirectionType,
-            direction_type_to_str,
+            RoomType, room_type_to_str, BiomeType, biome_type_to_str, material_type_to_str,
+            object_type_to_str, direction_type_to_str,
         },
         txtdef::Txtdef, object::Object,
     };
@@ -137,17 +132,21 @@ pub mod lookat {
     /// "there is a manky otter pelt on the floor": objects
     fn describe_room(world: WorldStorage, location: felt252) -> ByteArray {
         let room: Room = world.read_model(location);
-        if room.roomType == RoomType::None {
-            let out: ByteArray = "You are existing before the beginning and after the end.";
-            out
-        } else {
-            let txtModel: Txtdef = world.read_model(room.txtDefId);
-            let txt: ByteArray = txtModel.text;
-            // let connective_txt: ByteArray = "the";
-            // let place_type: ByteArray = room_type_to_str(room.roomType);
-            let exit_txt: ByteArray = collate_exits(world, location);
-            let obj_txt: ByteArray = collate_objects(world, location);
-            format!("{}\n{}\n{}", txt, exit_txt, obj_txt)
+
+        if room.roomId == 0 {
+            return format!("[ERROR INVALID ROOM]: {}:", location);
         }
+        // if room.roomType == RoomType::None {
+        //     let out: ByteArray = "You are existing before the beginning and after the end.";
+        //     out
+        // } else {
+        let txtModel: Txtdef = world.read_model(room.txtDefId);
+        let txt: ByteArray = txtModel.text;
+        // let connective_txt: ByteArray = "the";
+        // let place_type: ByteArray = room_type_to_str(room.roomType);
+        let exit_txt: ByteArray = collate_exits(world, location);
+        let obj_txt: ByteArray = collate_objects(world, location);
+        return format!("{}\n{}\n{}", txt, exit_txt, obj_txt);
+        // }
     }
 }

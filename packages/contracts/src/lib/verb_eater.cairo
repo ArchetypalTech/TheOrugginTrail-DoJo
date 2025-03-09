@@ -4,27 +4,21 @@
 //*
 
 pub mod verb_dispatcher {
-    // use the_oruggin_trail::lib::interop_dispatch::interop_dispatcher as interop;
-    use the_oruggin_trail::lib::system::{WorldSystemsTrait};
     use starknet::{get_caller_address};
 
-    use the_oruggin_trail::systems::spawner::{
-        ISpawner, ISpawnerDispatcher, ISpawnerDispatcherTrait,
-    };
     use the_oruggin_trail::systems::tokeniser::confessor::{Garble};
 
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use dojo::model::{ModelStorage};
 
     use the_oruggin_trail::lib::look::lookat;
-    use the_oruggin_trail::lib::move::relocate as mv;
-    use the_oruggin_trail::lib::act::pullstrings as act;
+    use the_oruggin_trail::lib::move::relocate;
+    use the_oruggin_trail::lib::act::pullstrings;
     use the_oruggin_trail::models::{
         output::{Output}, player::{Player}, room::{Room}, object::{Object}, inventory::{Inventory},
         zrk_enums::{ActionType, ObjectType, object_type_to_str},
     };
-    use the_oruggin_trail::constants::zrk_constants::{statusid as st};
-    use the_oruggin_trail::lib::hash_utils::hashutils as h_util;
+    use the_oruggin_trail::constants::zrk_constants::{statusid};
 
     pub fn handleGarble(ref world: IWorldDispatcher, player_id: felt252, msg: Garble) {
         let mut wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
@@ -46,7 +40,7 @@ pub mod verb_dispatcher {
             let inv = Inventory { owner_id: p_id, items: array![] };
             wrld.write_model(@inv);
             wrld.write_model(@new_player);
-            mv::enter_room(wrld, p_id, start_room);
+            relocate::enter_room(wrld, p_id, start_room);
             let desc: ByteArray = lookat::describe_room_short(wrld, start_room);
             wrld.write_model(@Output { playerId: p_id, text_o_vision: desc });
             return;
@@ -68,23 +62,10 @@ pub mod verb_dispatcher {
                 out = stub;
             },
             ActionType::Spawn => {
-                // let (contract_address, class_hash) = match wrld.dns(@"spawner") {
-                //     Option::Some((addr, hash)) => (addr, hash),
-                //     Option::None => panic!("Contract not found"),
-                // };
-
-                // let spawner: ISpawnerDispatcher = world.spawner_dispatcher();
-
-                // if player.location == 0 {
-                //     spawner.setup();
-                // }
-                // // println!("spawned????");
-                // // let spawn_rm_name: ByteArray = "The Last Saloon";
-                // let spawn_id = 7892581999139148; //h_util::str_hash(@spawn_rm_name);
-                // spawner.spawn_player(player_id, 0);
-                // mv::enter_room(wrld, player_id, spawn_id);
                 let desc: ByteArray = lookat::describe_room_short(wrld, player.location.clone());
-                out = desc;
+                let stub: ByteArray =
+                    "A thought has spawned in your mind, you can't quite make out what it is,";
+                out = format!("{} {}", stub, desc);
             },
             ActionType::Take => {
                 println!("take------->{:?}", msg);
@@ -171,17 +152,17 @@ pub mod verb_dispatcher {
                 out = txt;
             },
             ActionType::Move => {
-                let nxt_rm_id = mv::get_next_room(wrld, player_id, msg);
-                if nxt_rm_id == st::NONE {
+                let nxt_rm_id = relocate::get_next_room(wrld, player_id, msg);
+                if nxt_rm_id == statusid::NONE {
                     out =
                         "no. you cannot go that way.\n\"reasons\" mumbles shoggoth into his hat\n she seems to be waving a hand shaped thing"
                 } else {
-                    mv::enter_room(wrld, player_id, nxt_rm_id);
+                    relocate::enter_room(wrld, player_id, nxt_rm_id);
                     let desc: ByteArray = lookat::describe_room_short(wrld, nxt_rm_id);
                     out = desc;
                 }
             },
-            _ => { out = act::on(world, player_id, msg); },
+            _ => { out = pullstrings::on(world, player_id, msg); },
         }
         // we probably need to hand off to another routine here to interpolate
         // some results and create a string for now though

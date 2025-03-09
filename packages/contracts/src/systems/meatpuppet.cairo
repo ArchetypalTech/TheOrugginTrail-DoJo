@@ -27,46 +27,18 @@ pub trait IListener<T> {
 #[dojo::contract]
 pub mod meatpuppet {
     use super::{IListener};
-    // use super::action_dispatcher as ad;
-    use the_oruggin_trail::lib::verb_eater::verb_dispatcher as ad;
-    use the_oruggin_trail::models::{
-        output::{Output} // , player::{Player}, zrk_enums::{ActionType, ObjectType}
-    };
-    use the_oruggin_trail::systems::tokeniser::{ // tokeniser as lexer,
-        confessor // , confessor::Garble
+    use the_oruggin_trail::lib::verb_eater::verb_dispatcher;
+    use the_oruggin_trail::models::{output::{Output}};
+    use the_oruggin_trail::systems::tokeniser::{confessor // , confessor::Garble
     };
 
-    use the_oruggin_trail::constants::zrk_constants::ErrCode as ec;
-    // use the_oruggin_trail::lib::insult_meat::insulter as badmouth;
-    use the_oruggin_trail::lib::err_handler::err_dispatcher as err_dispatch;
-
-    // use the_oruggin_trail::lib::hash_utils::hashutils as h_util;
-
-    // use the_oruggin_trail::lib::store::{Store, StoreTrait};
-
-    // use the_oruggin_trail::lib::system::{WorldSystemsTrait};
-    // use the_oruggin_trail::systems::spawner::{ISpawnerDispatcher};
-
-    // use the_oruggin_trail::lib::look::lookat;
+    use the_oruggin_trail::constants::zrk_constants::ErrCode;
+    use the_oruggin_trail::lib::err_handler::err_dispatcher;
 
     use dojo::model::{ModelStorage // , ModelValueStorage
     };
     use dojo::world::{ // IWorldDispatcher,
     WorldStorage};
-    //use super::pull_strings as move;
-
-    // use the_oruggin_trail::lib::move::relocate as move;
-
-    // use planetary_interface::interfaces::planetary::{
-    //     PlanetaryInterface, PlanetaryInterfaceTrait, IPlanetaryActionsDispatcherTrait,
-    // }
-
-    // use planetary_interface::interfaces::tot::{ToTInterface, ToTInterfaceTrait,};
-
-    // fn dojo_init(self: ContractState) {
-    //     // let planetary: PlanetaryInterface = PlanetaryInterfaceTrait::new();
-    //     // planetary.dispatcher().register(ToTInterfaceTrait::NAMESPACE, world.contract_address);
-    // }
 
     #[abi(embed_v0)]
     /// ListenImpl
@@ -84,7 +56,7 @@ pub mod meatpuppet {
 
             // world.write_model(@Output{playerId: 23, text_o_vision: "..."});
 
-            let mut isErr: ec = ec::None;
+            let mut isErr: ErrCode = ErrCode::None;
             let l_cmd = @cmd;
             let l_cmd_cpy = l_cmd.clone();
             let mut wrld_dispatcher = world.dispatcher;
@@ -92,8 +64,8 @@ pub mod meatpuppet {
             if l_cmd.len() >= 16 {
                 // we have bad food make an error and pass along to
                 // the error outputter system
-                isErr = ec::BadLen;
-                err_dispatch::error_handle(ref wrld_dispatcher, p_id, isErr);
+                isErr = ErrCode::BadLen;
+                err_dispatcher::error_handle(ref wrld_dispatcher, p_id, isErr);
             } else {
                 // grab the command stream array and extract a Garble type
                 // for the game jam we want the fight command
@@ -101,11 +73,11 @@ pub mod meatpuppet {
                     Result::Ok(r) => {
                         // we have a valid command so pass it into a handler routine
                         // this should really return err and a string
-                        ad::handleGarble(ref wrld_dispatcher, p_id, r);
+                        verb_dispatcher::handleGarble(ref wrld_dispatcher, p_id, r);
                     },
                     Result::Err(_r) => {
                         // this should really return err and a string
-                        err_dispatch::error_handle(ref wrld_dispatcher, p_id, isErr);
+                        err_dispatcher::error_handle(ref wrld_dispatcher, p_id, isErr);
                     },
                 }
             }
@@ -132,29 +104,22 @@ pub mod meatpuppet {
 }
 
 pub mod pull_strings {
-    // use dojo::world::{IWorldDispatcher};
     use the_oruggin_trail::models::{
         output::{Output}, player::{Player} // zrk_enums::{ActionType, ObjectType},
     };
-    // use the_oruggin_trail::constants::zrk_constants::ErrCode as ec;
-    // use the_oruggin_trail::lib::err_handler::err_dispatcher as err_dispatch;
 
     use dojo::model::{ModelStorage};
     use dojo::world::{WorldStorage};
 
     use the_oruggin_trail::lib::look::lookat;
-    // use the_oruggin_trail::lib::system::{WorldSystemsTrait, ISpawnerDispatcher,
-    // ISpawnerDispatcherTrait};
 
     pub fn enter_room(ref world: WorldStorage, ref player: Player, rm_id: felt252) {
         println!("PULL_STRINGS:------> enter_room");
         player.location = rm_id;
         world.write_model(@player);
-        // set!(world, (player));
 
         let out = lookat::describe_room_short(world, rm_id);
         world.write_model(@Output { playerId: player.player_id, text_o_vision: out });
-        // set!(world, Output { playerId: player.player_id, text_o_vision: out })
     }
 }
 

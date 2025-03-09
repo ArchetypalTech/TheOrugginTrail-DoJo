@@ -3,16 +3,13 @@
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-use starknet::{ContractAddress, ClassHash};
-use dojo::world::{
-    IWorldDispatcher, IWorldDispatcherTrait, Resource, WorldStorage, WorldStorageTrait,
-};
+use starknet::{ContractAddress};
+use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
 
 use the_oruggin_trail::utils::misc::{ZERO};
-use the_oruggin_trail::systems::spawner::{ISpawnerDispatcher, ISpawnerDispatcherTrait};
-use the_oruggin_trail::systems::designer::{IDesignerDispatcher, IDesignerDispatcherTrait};
+use the_oruggin_trail::systems::designer::{IDesignerDispatcher};
 
-use the_oruggin_trail::constants::zrk_constants::{ZrkSystemStrings, ZrkSystemStringsImpl};
+use the_oruggin_trail::constants::zrk_constants::{ZrkSystemStringsImpl};
 
 #[generate_trait]
 pub impl WorldSystemsTraitImpl of WorldSystemsTrait {
@@ -26,11 +23,6 @@ pub impl WorldSystemsTraitImpl of WorldSystemsTrait {
             println!("HNDL:SYS----> ZERO");
             (ZERO())
         }
-    }
-
-    #[inline(always)]
-    fn spawner_dispatcher(self: IWorldDispatcher) -> ISpawnerDispatcher {
-        (ISpawnerDispatcher { contract_address: self.contract_address(@"spawner") })
     }
 
     #[inline(always)]

@@ -1,14 +1,13 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-use the_oruggin_trail::models::{zrk_enums as zrk};
+use the_oruggin_trail::models::{zrk_enums};
 
 /// Objects are both Objects/things and now Direction things
 /// like doors etc
-/// 
+///
 /// we should think about using this as the reverse door as well
 /// maybe a flag in the setup functions that add the reverse mapping?
 #[derive(Clone, Drop, Serde)]
@@ -16,15 +15,15 @@ use the_oruggin_trail::models::{zrk_enums as zrk};
 pub struct Object {
     #[key]
     pub objectId: felt252,
-    pub objType: zrk::ObjectType,
-    pub dirType: zrk::DirectionType,
+    pub objType: zrk_enums::ObjectType,
+    pub dirType: zrk_enums::DirectionType,
     pub destId: felt252,
-    pub matType: zrk::MaterialType,
+    pub matType: zrk_enums::MaterialType,
     pub objectActionIds: Array<felt252>,
-    pub txtDefId: felt252
+    pub txtDefId: felt252,
 }
 
-/// Returns the p has of the contents of the 
+/// Returns the p has of the contents of the
 /// p_west Object in the Spawner::pass_gen function
 /// just used for tests
 pub fn obj_mock_hash() -> felt252 {

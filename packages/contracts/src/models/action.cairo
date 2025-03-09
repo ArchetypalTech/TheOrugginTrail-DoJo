@@ -1,10 +1,9 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-use the_oruggin_trail::models::{zrk_enums as zrk};
+use the_oruggin_trail::models::{zrk_enums};
 
 // TODO: add a default txt for when the this doesnt affect
 // a direct object interaction. we mainly just use the dBit now
@@ -15,14 +14,14 @@ use the_oruggin_trail::models::{zrk_enums as zrk};
 #[dojo::model]
 pub struct Action {
     #[key]
-   pub actionId: felt252,
-   pub actionType: zrk::ActionType,
-   pub dBitTxt: ByteArray, // when the bit is set then output this
-   pub enabled: bool,
-   pub revertable: bool,
-   pub dBit: bool,
-   pub affectsActionId: felt252,
-   pub affectedByActionId: felt252
+    pub actionId: felt252,
+    pub actionType: zrk_enums::ActionType,
+    pub dBitTxt: ByteArray, // when the bit is set then output this
+    pub enabled: bool,
+    pub revertable: bool,
+    pub dBit: bool,
+    pub affectsActionId: felt252,
+    pub affectedByActionId: felt252,
 }
 
 pub fn action_mock_hash() -> felt252 {

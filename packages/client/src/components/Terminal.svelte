@@ -106,6 +106,7 @@
         format: "error",
         useTypewriter: false,
       });
+      // TODO: if we have this error we can do an interval check to ping the backend, in case it responds we reload the page
       return;
     }
   });

@@ -8,16 +8,9 @@ pub mod relocate {
     WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
-        // output::{Output},
-        player::{Player}, zrk_enums::{ActionType // , ObjectType
-        }, room::{Room}, object::{Object},
-        action::{Action},
+        player::{Player}, zrk_enums::{ActionType}, room::{Room}, object::{Object}, action::{Action},
     };
-    use the_oruggin_trail::constants::zrk_constants::{ // ErrCode as ec,
-    statusid as st};
-    // use the_oruggin_trail::lib::{
-    // err_handler::err_dispatcher as err_dispatch,
-    // look::lookat};
+    use the_oruggin_trail::constants::zrk_constants::{statusid};
     use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
 
     /// TODO:
@@ -39,7 +32,6 @@ pub mod relocate {
     /// TODO
     /// we also nned to add checking for path/exit blocked by objects
     pub fn get_next_room(world: WorldStorage, pid: felt252, msg: Garble) -> felt252 {
-        // let mut next_rm: felt252 = st::NONE;
         // fetch the room
         let pl: Player = world.read_model(pid);
         let curr_rm = pl.location.clone();
@@ -52,7 +44,7 @@ pub mod relocate {
     fn _direction_check(world: WorldStorage, exits: Array<felt252>, msg: Garble) -> felt252 {
         // get the exits from the room
         let mut idx: u32 = 0;
-        let mut dest: felt252 = st::NONE;
+        let mut dest: felt252 = statusid::NONE;
         let mut canMove: bool = false;
         while idx < exits.len() {
             let exit_id = exits.at(idx).clone();

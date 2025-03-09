@@ -130,27 +130,6 @@ export function setupWorld(provider: DojoProvider) {
 		}
 	};
 
-	const build_spawner_setup_calldata = (): DojoCall => {
-		return {
-			contractName: "spawner",
-			entrypoint: "setup",
-			calldata: [],
-		};
-	};
-
-	const spawner_setup = async (snAccount: Account | AccountInterface) => {
-		try {
-			return await provider.execute(
-				snAccount,
-				build_spawner_setup_calldata(),
-				"the_oruggin_trail",
-			);
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
-	};
-
 	const build_outputter_spawn_calldata = (): DojoCall => {
 		return {
 			contractName: "outputter",
@@ -164,27 +143,6 @@ export function setupWorld(provider: DojoProvider) {
 			return await provider.execute(
 				snAccount,
 				build_outputter_spawn_calldata(),
-				"the_oruggin_trail",
-			);
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
-	};
-
-	const build_spawner_spawnPlayer_calldata = (pid: BigNumberish, startRoom: BigNumberish): DojoCall => {
-		return {
-			contractName: "spawner",
-			entrypoint: "spawn_player",
-			calldata: [pid, startRoom],
-		};
-	};
-
-	const spawner_spawnPlayer = async (snAccount: Account | AccountInterface, pid: BigNumberish, startRoom: BigNumberish) => {
-		try {
-			return await provider.execute(
-				snAccount,
-				build_spawner_spawnPlayer_calldata(pid, startRoom),
 				"the_oruggin_trail",
 			);
 		} catch (error) {
@@ -232,12 +190,6 @@ export function setupWorld(provider: DojoProvider) {
 			buildCreateRoomsCalldata: build_designer_createRooms_calldata,
 			createTxt: designer_createTxt,
 			buildCreateTxtCalldata: build_designer_createTxt_calldata,
-		},
-		spawner: {
-			setup: spawner_setup,
-			buildSetupCalldata: build_spawner_setup_calldata,
-			spawnPlayer: spawner_spawnPlayer,
-			buildSpawnPlayerCalldata: build_spawner_spawnPlayer_calldata,
 		},
 		outputter: {
 			spawn: outputter_spawn,
