@@ -10,7 +10,7 @@ pub mod drop {
     pub fn action_drop(mut world: WorldStorage, message: Garble, player: Player) -> ByteArray {
         println!("drop------->{:?}", message);
         let mut out: ByteArray = "";
-        if message.dobj == ObjectType::None {
+        if message.dobj == ObjectType::None && message.matchedObject == 0 {
             // let item_desc: ByteArray = object_type_to_str(message.dobj);
             out = "Can't drop that";
         } else {
@@ -23,7 +23,9 @@ pub mod drop {
             for element in inventory.items {
                 let foundObject: Object = world.read_model(element);
                 println!("{:?}", foundObject.objType);
-                if foundObject.objType == message.dobj && !found {
+                if (foundObject.objType == message.dobj
+                    || foundObject.objectId == message.matchedObject)
+                    && !found {
                     println!("dropping thing");
                     room.objectIds.append(foundObject.objectId);
                     let item_desc: ByteArray = object::getModelName(foundObject);

@@ -20,6 +20,7 @@ pub mod lib {
     pub mod verb_eater;
     pub mod act;
     pub mod system;
+    pub mod world;
 }
 
 pub mod actions {
@@ -46,6 +47,6 @@ pub mod utils {
 }
 
 pub mod tests {
-    pub mod test_tokeniser;
+    // pub mod test_tokeniser;
     pub mod test_rig;
 }

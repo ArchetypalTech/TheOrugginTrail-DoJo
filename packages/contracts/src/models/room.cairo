@@ -23,14 +23,3 @@ pub struct Room {
 pub fn doesRoomExist(room: Room) -> bool {
     room.clone().roomId != 0
 }
-
-pub fn getRoomObjects(world: WorldStorage, room: Room) -> Array<Object> {
-    let mut objects: Array<Object> = array![];
-    for objectId in room.objectIds {
-        let object: Object = world.read_model(objectId);
-        if (object::doesObjectExist(object.clone())) {
-            objects.append(object);
-        }
-    };
-    objects
-}

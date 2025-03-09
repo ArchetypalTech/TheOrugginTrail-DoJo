@@ -88,8 +88,10 @@ pub mod tokeniser {
 }
 
 pub mod confessor {
+    use dojo::world::{WorldStorage};
+    use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{
-        zrk_enums::{ActionType, ObjectType, DirectionType}, player::Player,
+        zrk_enums::{ActionType, ObjectType, DirectionType}, player::Player, object::Object, object,
     };
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use super::tokeniser;
@@ -101,10 +103,11 @@ pub mod confessor {
     /// the later systems need to handle this specialisation
     #[derive(Serde, Copy, Drop, Introspect, Debug, PartialEq)]
     pub struct Garble {
-        pub vrb: ActionType,
-        pub dir: DirectionType,
-        pub dobj: ObjectType,
-        pub iobj: ObjectType,
+        pub vrb: ActionType, // action command
+        pub dir: DirectionType, // direction
+        pub dobj: ObjectType, // dunno object
+        pub iobj: ObjectType, // inventory object
+        pub matchedObject: felt252,
     }
 
     /// The Confessor - mumble your shameful desires here and receive a message
@@ -113,35 +116,36 @@ pub mod confessor {
     /// and then lexes and runs semantic analysis on the lexed tokens
     /// to extract meaning and create a simple message type that can be
     /// passed around the system logic to make things happen in the world
-    pub fn confess(sin: Array<ByteArray>) -> Result<Garble, ErrCode> {
+    // pub fn confess(message: Array<ByteArray>) -> Result<Garble, ErrCode> {
+    //     // get the first token from the command
+    //     let snap = @sin;
+    //     let i0 = snap.at(0);
+    //     let s0 = i0.clone();
+    //     let t0 = tokeniser::str_to_AT(s0);
+
+    //     // now handle the semantic analysis
+    //     match t0 {
+    //         ActionType::Move => { parse_moves(snap) },
+    //         ActionType::Look => { parse_look(snap) },
+    //         ActionType::None => { Result::Err(ErrCode::BadImpl) },
+    //         _ => { parse_action(snap, t0) },
+    //     }
+    // }
+
+    pub fn parse(
+        message: Array<ByteArray>, world: WorldStorage, player: Player,
+    ) -> Result<Garble, ErrCode> {
         // get the first token from the command
-        let snap = @sin;
-        let i0 = snap.at(0);
-        let s0 = i0.clone();
-        let t0 = tokeniser::str_to_AT(s0);
+        let msg = @message;
+        let verb = msg.at(0).clone();
+        let action = tokeniser::str_to_AT(verb);
 
         // now handle the semantic analysis
-        match t0 {
-            ActionType::Move => { parse_moves(snap) },
-            ActionType::Look => { parse_look(snap) },
+        match action {
+            ActionType::Move => { parse_moves(msg) },
+            ActionType::Look => { parse_look(msg) },
             ActionType::None => { Result::Err(ErrCode::BadImpl) },
-            _ => { parse_action(snap, t0) },
-        }
-    }
-
-    pub fn parse(sin: Array<ByteArray>, player: Player) -> Result<Garble, ErrCode> {
-        // get the first token from the command
-        let snap = @sin;
-        let i0 = snap.at(0);
-        let s0 = i0.clone();
-        let t0 = tokeniser::str_to_AT(s0);
-
-        // now handle the semantic analysis
-        match t0 {
-            ActionType::Move => { parse_moves(snap) },
-            ActionType::Look => { parse_look(snap) },
-            ActionType::None => { Result::Err(ErrCode::BadImpl) },
-            _ => { parse_action(snap, t0) },
+            _ => { parse_action(msg, action, world, player) },
         }
     }
 
@@ -175,37 +179,90 @@ pub mod confessor {
     /// General VERBS
     ///
     /// non movement and non looking verbs, i.e the general case
-    fn parse_action(cmd: @Array<ByteArray>, at: ActionType) -> Result<Garble, ErrCode> {
-        // let mut do: ObjectType = ObjectType::None;
-        // let mut io: ObjectType = ObjectType::None;
-        println!("-------> parse action {:?}", at);
+    fn parse_action(
+        message: @Array<ByteArray>, verb: ActionType, world: WorldStorage, player: Player,
+    ) -> Result<Garble, ErrCode> {
+        // @dev get all the objects that are in the room and the player's inventory
+        let objects = world::getNearbyObjects(world, player);
+        println!("-------> parse action {:?}", verb);
 
-        let s = cmd.at(cmd.len() - 1);
+        let s = message.at(message.len() - 1);
         let sn = s.clone();
         let do = tokeniser::str_to_OT(sn);
 
-        let lng_frm = cmd.len() > 3;
+        let lng_frm = message.len() > 3;
 
-        if do == ObjectType::None && cmd.len() < 2 {
-            if at == ActionType::Spawn || at == ActionType::Inventory {
+        let mut matchedId: felt252 = 0;
+        // @dev we are looking through all the words
+        if (message.len() > 1) {
+            let mut i: usize = 0;
+            loop {
+                if i >= message.len() {
+                    break;
+                }
+                if matchedId != 0 {
+                    break;
+                }
+                let word: ByteArray = message.at(i).clone();
+                for object in objects.clone() {
+                    if matchedId != 0 {
+                        break;
+                    }
+                    let objectId = object.objectId.clone();
+                    let refs: Array<ByteArray> = object::getModelReferences(object);
+                    println!("refs: {:?}", refs);
+                    for handle in refs {
+                        // @dev check if word matches the handle
+                        if handle == word {
+                            matchedId = objectId;
+                            break;
+                        }
+                    }
+                };
+                i += 1;
+            }
+        }
+        if matchedId != 0 {
+            return Result::Ok(
+                Garble {
+                    vrb: verb,
+                    dir: DirectionType::None,
+                    dobj: ObjectType::None,
+                    iobj: ObjectType::None,
+                    matchedObject: matchedId,
+                },
+            );
+        }
+
+        // @dev probably actions should handle their own dealing with empty garble logic, we just
+        // want to find stuff to interact with
+        if do == ObjectType::None && message.len() < 2 {
+            if verb == ActionType::Spawn || verb == ActionType::Inventory {
                 Result::Ok(
                     Garble {
-                        vrb: at,
+                        vrb: verb,
                         dir: DirectionType::None,
                         dobj: ObjectType::None,
                         iobj: ObjectType::None,
+                        matchedObject: 0,
                     },
                 )
             } else {
                 println!("parse Err-------->");
-                Result::Err(ErrCode::NulCmdO(at))
+                Result::Err(ErrCode::NulCmdO(verb))
             }
         } else if do != ObjectType::None && !lng_frm {
             Result::Ok(
-                Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: ObjectType::None },
+                Garble {
+                    vrb: verb,
+                    dir: DirectionType::None,
+                    dobj: do,
+                    iobj: ObjectType::None,
+                    matchedObject: 0,
+                },
             )
         } else {
-            long_form(cmd, at)
+            long_form(message, verb)
         }
     }
 
@@ -229,12 +286,20 @@ pub mod confessor {
 
         if io != ObjectType::None && do != ObjectType::None {
             //! vrb, ~the~, thing, ..., thing
-            Result::Ok(Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: io })
+            Result::Ok(
+                Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: io, matchedObject: 0 },
+            )
         } else {
             //! vrb, ~the~, thing, ..., ~thing~
             if io == ObjectType::None {
                 Result::Ok(
-                    Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: ObjectType::None },
+                    Garble {
+                        vrb: at,
+                        dir: DirectionType::None,
+                        dobj: do,
+                        iobj: ObjectType::None,
+                        matchedObject: 0,
+                    },
                 )
             } else {
                 //! vrb, the, ?thing, ..., thing
@@ -242,12 +307,20 @@ pub mod confessor {
                 let s = s_.clone();
                 let do = tokeniser::str_to_OT(s);
                 if do != ObjectType::None {
-                    Result::Ok(Garble { vrb: at, dir: DirectionType::None, dobj: do, iobj: io })
+                    Result::Ok(
+                        Garble {
+                            vrb: at, dir: DirectionType::None, dobj: do, iobj: io, matchedObject: 0,
+                        },
+                    )
                 } else {
                     //! vrb, the, ~thing~, ..., ~thing~
                     Result::Ok(
                         Garble {
-                            vrb: at, dir: DirectionType::None, dobj: io, iobj: ObjectType::None,
+                            vrb: at,
+                            dir: DirectionType::None,
+                            dobj: io,
+                            iobj: ObjectType::None,
+                            matchedObject: 0,
                         },
                     )
                 }
@@ -271,6 +344,7 @@ pub mod confessor {
                     dir: DirectionType::None,
                     dobj: t0,
                     iobj: ObjectType::None,
+                    matchedObject: 0,
                 },
             )
         } else {
@@ -280,6 +354,7 @@ pub mod confessor {
                     dir: DirectionType::None,
                     dobj: ObjectType::None,
                     iobj: ObjectType::None,
+                    matchedObject: 0,
                 },
             )
         }
@@ -308,7 +383,11 @@ pub mod confessor {
         } else {
             Result::Ok(
                 Garble {
-                    vrb: ActionType::Move, dir: t, dobj: ObjectType::None, iobj: ObjectType::None,
+                    vrb: ActionType::Move,
+                    dir: t,
+                    dobj: ObjectType::None,
+                    iobj: ObjectType::None,
+                    matchedObject: 0,
                 },
             )
         }

@@ -10,7 +10,7 @@ pub mod take {
     pub fn action_take(mut world: WorldStorage, message: Garble, player: Player) -> ByteArray {
         println!("take------->{:?}", message);
         let mut out: ByteArray = "";
-        if message.dobj == ObjectType::None {
+        if message.dobj == ObjectType::None && message.matchedObject == 0 {
             // let item_desc: ByteArray = object_type_to_str(message.dobj);
             out = "I can't take that";
         } else {
@@ -23,7 +23,7 @@ pub mod take {
             for element in obj_ids {
                 let obj: Object = world.read_model(element);
                 println!("{:?}", obj.objType);
-                if obj.objType == message.dobj {
+                if obj.objType == message.dobj || obj.objectId == message.matchedObject {
                     // found = true;
                     println!("found thing");
                     inventory.items.append(obj.objectId);

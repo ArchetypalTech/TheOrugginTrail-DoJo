@@ -1,6 +1,6 @@
 import { CallData, byteArray, type RawArgsArray } from "starknet";
 import { ORUG_CONFIG } from "./config";
-import { escapeRegExp, toCairoArray } from "./utils";
+import { toCairoArray } from "./utils";
 
 async function sendMessage(message: string) {
 	const cmds_raw = message.split(/\s+/);
@@ -16,7 +16,16 @@ async function sendMessage(message: string) {
 	console.log("sendMessage(cmds): ", cmds, " -> calldata ->", calldata);
 
 	// ionvoke the contract as we are doing a write
-	const response = await entity.invoke("listen", [calldata]);
+	try {
+		const response = await entity.invoke("listen", [calldata]);
+	} catch (error) {
+		console.error("sendMessage(cmds): ", cmds, " -> error ->", error);
+		return new Response(JSON.stringify({ message: (error as Error).message }), {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+	}
 
 	return new Response(JSON.stringify(response), {
 		headers: {

@@ -69,7 +69,7 @@ pub mod meatpuppet {
 
             let mut player = getPlayer(world, player_id);
 
-            match confessor::parse(l_cmd.clone(), player) {
+            match confessor::parse(l_cmd.clone(), world, player) {
                 Result::Ok(result) => {
                     // we have a valid command so pass it into a handler routine
                     // this should really return err and a string
