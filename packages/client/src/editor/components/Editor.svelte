@@ -191,7 +191,7 @@
 
   <!-- Main Editor UI -->
   {#if !$notificationStore.blocking}
-    <div class="grid grid-cols-12 gap-4 p-4">
+    <div class="grid grid-cols-12 gap-4">
       <!-- Room List -->
       <div class="col-span-2 bg-transparent rounded">
         <ul class="flex flex-col gap-2">
@@ -213,10 +213,12 @@
       </div>
 
       <!-- Room Editor -->
-      <div class="room-editor col-span-4 bg-gray-100 p-4 rounded">
+      <div class="room-inspector col-span-4 bg-gray-100">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Room</h2>
-          <button class="btn btn-danger" on:click={handleDeleteRoom}>❌</button>
+          <button class="btn btn-sm btn-danger" on:click={handleDeleteRoom}
+            >❌</button
+          >
         </div>
         {#if $editorStore.currentLevel.rooms.length > 0}
           <RoomEditor
@@ -251,7 +253,7 @@
               {/each}
             </ul>
             {#if selectedObjectIndex !== null}
-              <div class="object-inspector bg-gray-50 p-4 rounded">
+              <div class="object-inspector bg-gray-50">
                 <div class="flex justify-between items-center mb-4">
                   <h2 class="text-lg font-semibold">Object</h2>
                   <button
@@ -313,7 +315,7 @@
               {/each}
             </ul>
             {#if selectedActionIndex !== null && selectedObjectIndex !== null}
-              <div class="action-inspector bg-gray-50 p-4 rounded">
+              <div class="action-inspector bg-gray-50">
                 <div class="flex justify-between items-center mb-4">
                   <h2 class="text-lg font-semibold">Action</h2>
                   <button

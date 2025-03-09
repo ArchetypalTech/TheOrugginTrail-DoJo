@@ -5,15 +5,10 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    document.documentElement.classList.toggle(
-      "dark",
-      localStorage.theme === "dark" ||
-        (!("theme" in localStorage) &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-    );
-    if (localStorage.theme === "dark") {
-      user_store.set({ ...user_store.get(), dark_mode: true });
-    }
+    user_store.set({
+      ...user_store.get(),
+      dark_mode: localStorage.theme === "dark",
+    });
 
     user_store.subscribe((state) => {
       if (state.dark_mode) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "$styles/notifications.css";
   import { createEventDispatcher, onDestroy } from "svelte";
 
   // Props for the component
@@ -39,14 +40,14 @@
   // Determine background color based on type
   $: bgColor =
     type === "error"
-      ? "bg-red-100 border-red-400 text-red-700"
+      ? "notification-error"
       : type === "success"
-        ? "bg-green-100 border-green-400 text-green-700"
+        ? "notification-success"
         : type === "warning"
-          ? "bg-yellow-100 border-yellow-400 text-yellow-700"
+          ? "notification-warning"
           : type === "loading"
-            ? "logger"
-            : "bg-gray-100 border-gray-400 text-gray-700";
+            ? "notification-loading"
+            : "notification-default";
 
   // Determine icon based on type if not provided
   $: defaultIcon =
@@ -110,52 +111,3 @@
     </div>
   </div>
 {/if}
-
-<style lang="postcss">
-  @reference "tailwindcss";
-
-  .state-notification-container {
-    @apply fixed w-full z-50;
-  }
-
-  .state-notification-container.blocking {
-    @apply fixed top-0 left-0 w-full h-full flex justify-center items-center z-[9999] pointer-events-none;
-  }
-
-  .overlay {
-    @apply absolute top-0 left-0 w-full h-full bg-black/50;
-  }
-
-  .notification {
-    @apply max-w-[600px] z-10 shadow-md absolute top-2 left-2 pr-8;
-  }
-
-  .state-notification-container.blocking .notification {
-    @apply relative self-center m-auto;
-  }
-
-  .log-container {
-    @apply max-h-[300px] overflow-y-auto mt-2 pt-2;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  button {
-    @apply bg-transparent border-none;
-  }
-
-  .log-error {
-    @apply text-red-500;
-  }
-</style>

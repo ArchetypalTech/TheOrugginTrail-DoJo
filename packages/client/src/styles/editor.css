@@ -13,6 +13,10 @@ label.btn {
   @apply p-2;
 }
 
+label {
+  @apply pb-0.5;
+}
+
 label:not(.btn) {
   @apply text-xs;
 }
@@ -46,6 +50,10 @@ textarea {
   @apply py-2 px-4 rounded bg-gray-100 border border-black/4 border-t-black/1 border-b-black/20 hover:scale-101 active:scale-98 active:bg-white active:text-black select-none;
 }
 
+input {
+  @apply disabled:opacity-50;
+}
+
 .btn-primary {
   @apply py-2 px-4 rounded bg-gray-700 text-white hover:bg-gray-500;
 }
@@ -62,13 +70,17 @@ h2 {
   @apply font-semibold text-black/30;
 }
 
-.logger {
-  @apply bg-blue-50 border-blue-300 text-blue-700;
-}
-
 body.dark {
   @apply bg-black text-[var(--terminal-system)] transition-all duration-150;
 }
+
+.room-inspector,
+.object-inspector,
+.action-inspector {
+  @apply p-2 rounded;
+}
+
+/* Dark Mode */
 
 .dark {
   input:not([type="file"]),
@@ -107,30 +119,33 @@ body.dark {
     @apply bg-red-500/20 text-red-500 hover:bg-red-500 focus:ring-red-500 border-red-500/60;
   }
 
-  .room-editor,
+  h1,
+  h2,
+  h3 {
+    @apply text-[var(--terminal-system)];
+  }
+
+  .room-inspector,
   .object-editor,
   .object-inspector,
   .action-editor,
   .action-inspector {
-    @apply bg-black text-[var(--terminal-system)] border-[var(--terminal-system)];
+    @apply text-[var(--terminal-system)] border-[var(--terminal-system)]/50;
   }
 
-  .room-editor,
+  .room-inspector,
   .object-editor,
   /* .object-inspector, */
   .action-editor
   /* .action-inspector  */ {
-    @apply border p-4 bg-[var(--terminal-system)]/7;
+    @apply bg-transparent;
   }
 
-  /* .room-editor, */
+  .room-inspector,
   /* .object-editor, */
   .object-inspector,
   /* .action-editor */
   .action-inspector {
-    @apply m-0 p-0;
-  }
-  .logger {
-    @apply bg-black border-[var(--terminal-hash)] text-[var(--terminal-hash)];
+    @apply border bg-[var(--terminal-system)]/12;
   }
 }
