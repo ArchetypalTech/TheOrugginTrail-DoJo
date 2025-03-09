@@ -21,8 +21,9 @@ pub mod move {
         let mut out: ByteArray = "";
         let nxt_rm_id = get_next_room(world, player, message);
         if nxt_rm_id == statusid::NONE {
-            out =
-                "no. you cannot go that way.\n\"reasons\" mumbles shoggoth into his hat\n she seems to be waving a hand shaped thing"
+            // let nopes: Array<ByteArray> = array!["Can't go there", "You can't go there", "No
+            // way", "Nope."];
+            out = "Can't go there"
         } else {
             let desc: ByteArray = lookat::describe_room_short(world, nxt_rm_id);
             set_player_location(world, player, nxt_rm_id);

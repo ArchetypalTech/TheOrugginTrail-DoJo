@@ -28,7 +28,7 @@ pub mod drop {
                     && !found {
                     println!("dropping thing");
                     room.objectIds.append(foundObject.objectId);
-                    let item_desc: ByteArray = object::getModelName(foundObject);
+                    let item_desc: ByteArray = object::getObjectName(foundObject);
                     out =
                         format!(
                             "{} is dropped from your trusty plastic adventurers bag", item_desc,

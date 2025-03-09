@@ -62,9 +62,6 @@
 <style lang="postcss">
   @reference "tailwindcss";
 
-  .tag {
-    @apply rounded-xs px-2 py-1 m-1 inline-flex text-black bg-[var(--terminal-system)];
-  }
   .tag-handler {
     @apply ml-2 text-black;
   }

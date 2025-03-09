@@ -4,8 +4,6 @@
 //*
 
 use starknet::ContractAddress;
-use dojo::world::{WorldStorage};
-use the_oruggin_trail::models::{room::Room};
 
 /// Player model
 ///

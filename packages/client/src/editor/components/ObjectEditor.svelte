@@ -128,7 +128,7 @@
       id="destination"
       bind:value={editedObject.destination}
       on:change={handleChange}
-      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50"
       disabled={editedObject.direction === "None"}
     >
       <option value={null}>None</option>

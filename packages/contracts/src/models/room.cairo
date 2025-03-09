@@ -2,9 +2,7 @@
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
-use dojo::world::{WorldStorage};
-use dojo::model::{ModelStorage};
-use the_oruggin_trail::models::{zrk_enums, object::Object, object};
+use the_oruggin_trail::models::{zrk_enums};
 
 #[derive(Clone, Drop, Serde, Introspect, Debug)]
 #[dojo::model]

@@ -3,10 +3,7 @@
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-use the_oruggin_trail::models::{zrk_enums};
-use dojo::world::{WorldStorage};
-use dojo::model::{ModelStorage};
-use the_oruggin_trail::models::{player::Player, room::Room, zrk_enums::{object_type_to_str}};
+use the_oruggin_trail::models::{zrk_enums, zrk_enums::{object_type_to_str}};
 /// Objects are both Objects/things and now Direction things
 /// like doors etc
 ///
@@ -31,7 +28,7 @@ pub fn doesObjectExist(object: Object) -> bool {
     object.clone().objectId != 0
 }
 
-pub fn getModelName(object: Object) -> ByteArray {
+pub fn getObjectName(object: Object) -> ByteArray {
     let mut name: ByteArray = object.name;
     if name.len() == 0 {
         name = object_type_to_str(object.objType);
@@ -39,11 +36,11 @@ pub fn getModelName(object: Object) -> ByteArray {
     name
 }
 
-pub fn getModelReferences(object: Object) -> Array<ByteArray> {
+pub fn getObjectAltRefs(object: Object) -> Array<ByteArray> {
     // we get the name, and all altNames
     let mut references: Array<ByteArray> = array![];
     let altNames = object.altNames.clone();
-    references.append(getModelName(object));
+    references.append(getObjectName(object));
     for altName in altNames {
         references.append(altName);
     };

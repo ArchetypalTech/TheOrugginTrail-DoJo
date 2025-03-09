@@ -8,7 +8,6 @@
   import type { Room, ZorgObject as Object, Action } from "$editor/lib/schemas";
   import { user_store } from "$lib/stores/user_store";
   import {
-    processObjectActions,
     processObjects,
     publishAction,
     publishRoom,
@@ -181,8 +180,8 @@
         disabled={$notificationStore.type === "publishing"}
       >
         {$notificationStore.type === "publishing"
-          ? "Publishing..."
-          : "Publish to Contract"}
+          ? "🕊️ Publishing..."
+          : "📤 Publish to Contract"}
       </button>
       <button
         class="btn"
@@ -267,7 +266,7 @@
                     class:btn-active={i === selectedObjectIndex}
                     on:click={() => handleObjectSelect(i)}
                   >
-                    {object.name || object.type} ({object.material})
+                    {object.name || object.type} ({object.type})
                   </button>
                 </li>
               {/each}
@@ -434,3 +433,7 @@
     />
   {/if}
 </div>
+<!-- TODO: Yeah, we can embed the terminal in the editor -->
+<!-- <div class="flex items-center mini-term max-w-[200px] max-h-[200px]">
+  <Terminal />
+</div> -->

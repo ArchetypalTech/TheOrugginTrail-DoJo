@@ -12,13 +12,13 @@ export type { ObjectType, ActionType, MaterialType, RoomType, BiomeType };
 function formatLabel(value: string): string {
 	// Special cases for directional labels
 	const directionalMap: Record<string, string> = {
+		none: "None",
 		N: "North",
-		S: "South",
 		E: "East",
+		S: "South",
 		W: "West",
 		U: "Up",
 		D: "Down",
-		none: "None",
 	};
 
 	if (directionalMap[value]) {
@@ -35,10 +35,9 @@ function formatLabel(value: string): string {
 }
 
 const manifest = schema.the_oruggin_trail.Object.objType.variant;
-console.log(manifest);
 
 // Define enum values as const arrays - single source of truth
-export const DIRECTIONS = ["None", "N", "S", "E", "W", "U", "D"] as const;
+export const DIRECTIONS = ["None", "N", "E", "S", "W", "U", "D"] as const;
 export const OBJECT_TYPES: [string, ...(keyof ObjectType)[]] = [
 	"None",
 	"Ball",

@@ -2,10 +2,8 @@ pub mod take {
     use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
     use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
-    use the_oruggin_trail::models::{
-        player::Player, room::Room, zrk_enums::{ObjectType}, object, object::Object,
-        inventory::Inventory,
-    };
+    use the_oruggin_trail::lib::world;
+    use the_oruggin_trail::models::{player::Player, room::Room, zrk_enums::{ObjectType}, object};
 
     pub fn action_take(mut world: WorldStorage, message: Garble, player: Player) -> ByteArray {
         println!("take------->{:?}", message);
@@ -14,23 +12,19 @@ pub mod take {
             // let item_desc: ByteArray = object_type_to_str(message.dobj);
             out = "I can't take that";
         } else {
-            let mut room: Room = world.read_model(player.location.clone());
-            let mut obj_ids: Array<felt252> = room.objectIds.clone();
             let mut new_obj_ids: Array<felt252> = array![];
-            let mut inventory: Inventory = world.read_model(player.inventory.clone());
-            // let mut found: bool = false;
-            println!("objs {:?}", obj_ids.len());
-            for element in obj_ids {
-                let obj: Object = world.read_model(element);
+            let mut room: Room = world.read_model(player.location.clone());
+            let objects = world::getRoomObjects(world, room.clone());
+            let mut inventory = world::getPlayerInventory(world, player);
+            for obj in objects {
                 println!("{:?}", obj.objType);
                 if obj.objType == message.dobj || obj.objectId == message.matchedObject {
-                    // found = true;
                     println!("found thing");
                     inventory.items.append(obj.objectId);
-                    let item_desc: ByteArray = object::getModelName(obj);
+                    let item_desc: ByteArray = object::getObjectName(obj);
                     out = format!("{} is now in your trusty plastic adventurers bag", item_desc);
                 } else {
-                    new_obj_ids.append(element);
+                    new_obj_ids.append(obj.objectId);
                 }
             };
 

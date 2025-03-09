@@ -17,7 +17,13 @@ pub mod tokeniser {
             || s == "east"
             || s == "west"
             || s == "up"
-            || s == "down" {
+            || s == "down"
+            || s == "n"
+            || s == "s"
+            || s == "e"
+            || s == "w"
+            || s == "u"
+            || s == "d" {
             ActionType::Move
         } else if s == "look" || s == "examine" || s == "stare" {
             ActionType::Look
@@ -57,9 +63,9 @@ pub mod tokeniser {
             DirectionType::East
         } else if s == "west" || s == "w" {
             DirectionType::West
-        } else if s == "up" {
+        } else if s == "up" || s == "u" {
             DirectionType::Up
-        } else if s == "down" {
+        } else if s == "down" || s == "d" {
             DirectionType::Down
         } else {
             DirectionType::None
@@ -91,7 +97,7 @@ pub mod confessor {
     use dojo::world::{WorldStorage};
     use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{
-        zrk_enums::{ActionType, ObjectType, DirectionType}, player::Player, object::Object, object,
+        zrk_enums::{ActionType, ObjectType, DirectionType}, player::Player, object,
     };
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use super::tokeniser;
@@ -110,28 +116,7 @@ pub mod confessor {
         pub matchedObject: felt252,
     }
 
-    /// The Confessor - mumble your shameful desires here and receive a message
-    ///
-    /// the main entrance of the parsing system, takes an array of str
-    /// and then lexes and runs semantic analysis on the lexed tokens
-    /// to extract meaning and create a simple message type that can be
-    /// passed around the system logic to make things happen in the world
-    // pub fn confess(message: Array<ByteArray>) -> Result<Garble, ErrCode> {
-    //     // get the first token from the command
-    //     let snap = @sin;
-    //     let i0 = snap.at(0);
-    //     let s0 = i0.clone();
-    //     let t0 = tokeniser::str_to_AT(s0);
-
-    //     // now handle the semantic analysis
-    //     match t0 {
-    //         ActionType::Move => { parse_moves(snap) },
-    //         ActionType::Look => { parse_look(snap) },
-    //         ActionType::None => { Result::Err(ErrCode::BadImpl) },
-    //         _ => { parse_action(snap, t0) },
-    //     }
-    // }
-
+    // Parses the command string from the player, and uses world and player as context
     pub fn parse(
         message: Array<ByteArray>, world: WorldStorage, player: Player,
     ) -> Result<Garble, ErrCode> {
@@ -140,10 +125,14 @@ pub mod confessor {
         let verb = msg.at(0).clone();
         let action = tokeniser::str_to_AT(verb);
 
+        // FIXME: @dev this is a temp hack for look with no object
+        if action == ActionType::Look && msg.len() == 1 {
+            return parse_look(msg);
+        }
+
         // now handle the semantic analysis
         match action {
             ActionType::Move => { parse_moves(msg) },
-            ActionType::Look => { parse_look(msg) },
             ActionType::None => { Result::Err(ErrCode::BadImpl) },
             _ => { parse_action(msg, action, world, player) },
         }
@@ -209,7 +198,7 @@ pub mod confessor {
                         break;
                     }
                     let objectId = object.objectId.clone();
-                    let refs: Array<ByteArray> = object::getModelReferences(object);
+                    let refs: Array<ByteArray> = object::getObjectAltRefs(object);
                     println!("refs: {:?}", refs);
                     for handle in refs {
                         // @dev check if word matches the handle

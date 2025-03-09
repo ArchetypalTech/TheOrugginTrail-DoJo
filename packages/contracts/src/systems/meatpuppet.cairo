@@ -30,17 +30,14 @@ pub mod meatpuppet {
     use super::{IListener};
     use the_oruggin_trail::lib::verb_eater::verb_dispatcher;
     use the_oruggin_trail::models::{output::{Output}, player::{Player}, inventory::Inventory};
-    use the_oruggin_trail::systems::tokeniser::{confessor // , confessor::Garble
-    };
+    use the_oruggin_trail::systems::tokeniser::{confessor};
     use the_oruggin_trail::actions::move::move;
 
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use the_oruggin_trail::lib::err_handler::err_dispatcher;
 
-    use dojo::model::{ModelStorage // , ModelValueStorage
-    };
-    use dojo::world::{ // IWorldDispatcher,
-    WorldStorage};
+    use dojo::model::{ModelStorage};
+    use dojo::world::{WorldStorage};
 
     #[abi(embed_v0)]
     /// ListenImpl

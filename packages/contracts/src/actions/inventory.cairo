@@ -2,10 +2,7 @@ pub mod inventory {
     use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
     use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
-    use the_oruggin_trail::models::{
-        player::Player, room::Room, zrk_enums::{ObjectType, object_type_to_str}, object::Object,
-        object, inventory::Inventory,
-    };
+    use the_oruggin_trail::models::{player::Player, object::Object, object, inventory::Inventory};
 
     pub fn action_inventory_list(
         mut world: WorldStorage, message: Garble, player: Player,
@@ -17,7 +14,7 @@ pub mod inventory {
         for element in inventory.items {
             let foundObject: Object = world.read_model(element);
             if foundObject.objectId != 0 {
-                let item_desc: ByteArray = object::getModelName(foundObject);
+                let item_desc: ByteArray = object::getObjectName(foundObject);
                 out = format!("{}\n- {}", out, item_desc);
                 found = true;
             }
