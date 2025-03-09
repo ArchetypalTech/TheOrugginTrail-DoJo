@@ -1,5 +1,5 @@
 import { InitDojo } from "$lib/dojo";
-import { Dojo_Config, Dojo_Outputter } from "$lib/stores/dojo_store";
+import { Dojo_Config } from "$lib/stores/dojo_store";
 import type { ClientInit } from "@sveltejs/kit";
 
 export const init: ClientInit = async () => {

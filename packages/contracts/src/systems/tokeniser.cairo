@@ -29,8 +29,8 @@ pub mod tokeniser {
             ActionType::Spawn
         } else if s == "take" || s == "get" {
             ActionType::Take
-        } else if s == "help" {
-            ActionType::Help
+        } else if s == "inventory" {
+            ActionType::Inventory
         } else if s == "follow" {
             ActionType::Follow
         } else if s == "jump" {
@@ -169,7 +169,7 @@ pub mod confessor {
         let lng_frm = cmd.len() > 3;
 
         if do == ObjectType::None && cmd.len() < 2 {
-            if at == ActionType::Spawn || at == ActionType::Help {
+            if at == ActionType::Spawn || at == ActionType::Inventory {
                 Result::Ok(
                     Garble {
                         vrb: at,

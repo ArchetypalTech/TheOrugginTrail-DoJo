@@ -11,162 +11,66 @@ pub mod verb_dispatcher {
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use dojo::model::{ModelStorage};
 
-    use the_oruggin_trail::lib::look::lookat;
-    use the_oruggin_trail::lib::move::relocate;
+    use the_oruggin_trail::actions::look::lookat;
+    use the_oruggin_trail::actions::move::move;
+    use the_oruggin_trail::actions::take::take;
+    use the_oruggin_trail::actions::drop::drop;
+    use the_oruggin_trail::actions::inventory::inventory;
     use the_oruggin_trail::lib::act::pullstrings;
     use the_oruggin_trail::models::{
-        output::{Output}, player::{Player}, room::{Room}, object::{Object}, inventory::{Inventory},
-        zrk_enums::{ActionType, ObjectType, object_type_to_str},
+        output::{Output}, player::{Player}, inventory::{Inventory}, zrk_enums::{ActionType},
     };
-    use the_oruggin_trail::constants::zrk_constants::{statusid};
 
     pub fn handleGarble(ref world: IWorldDispatcher, player_id: felt252, msg: Garble) {
-        let mut wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
+        let mut world_store: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
         println!("HNDL: ---> {:?}", msg.vrb);
         let mut out: ByteArray =
             "Shoggoth is loveable by default, but it understands not your commands";
 
         let address_player = get_caller_address();
         let p_id: felt252 = address_player.into();
-        let mut player: Player = wrld.read_model(p_id);
+        let mut player: Player = world_store.read_model(p_id);
         // println!("HNDL:------> {:?}", player);
 
-        // let player_model = wrld.read_model(p_id);
+        // let player_model = world_store.read_model(p_id);
         if (player.location == 0) {
             let start_room = 7892581999139148;
-            let new_player = Player {
+            let mut new_player = Player {
                 player_id: p_id, player_adr: address_player, location: start_room, inventory: p_id,
             };
             let inv = Inventory { owner_id: p_id, items: array![] };
-            wrld.write_model(@inv);
-            wrld.write_model(@new_player);
-            relocate::enter_room(wrld, p_id, start_room);
-            let desc: ByteArray = lookat::describe_room_short(wrld, start_room);
-            wrld.write_model(@Output { playerId: p_id, text_o_vision: desc });
-            return;
-        }
-
-        match msg.vrb {
-            ActionType::Look => {
-                // Pass payer id into look handle
-                // let output: ByteArray = "Shoggoth stares into the void<\n>the void is staring
-                // back<\n>shoggoth is a good boy";
-                let output: ByteArray = lookat::stuff(world, msg, player_id);
-                out = output;
-            },
-            ActionType::Fight => {
-                // println!("starting a FIGHT. like a MAN");
-                // i_out = interop::kick_off(@world);
-                let stub: ByteArray = "Shoggoth is a good boy, he will fight you";
-                // out = i_out;
-                out = stub;
-            },
-            ActionType::Spawn => {
-                let desc: ByteArray = lookat::describe_room_short(wrld, player.location.clone());
-                let stub: ByteArray =
-                    "A thought has spawned in your mind, you can't quite make out what it is,";
-                out = format!("{} {}", stub, desc);
-            },
-            ActionType::Take => {
-                println!("take------->{:?}", msg);
-                let mut desc: ByteArray = "";
-                if msg.dobj == ObjectType::None {
-                    // let item_desc: ByteArray = object_type_to_str(msg.dobj);
-                    desc = "hmmm, there isnt one of those here to take. are you mad fam?";
-                } else {
-                    let mut rm: Room = wrld.read_model(player.location.clone());
-                    let mut obj_ids: Array<felt252> = rm.objectIds.clone();
-                    let mut new_obj_ids: Array<felt252> = array![];
-                    let mut inv: Inventory = wrld.read_model(player.inventory.clone());
-                    // let mut found: bool = false;
-                    println!("objs {:?}", obj_ids.len());
-                    for ele in obj_ids {
-                        let obj: Object = wrld.read_model(ele);
-                        println!("{:?}", obj.objType);
-                        if obj.objType == msg.dobj {
-                            // found = true;
-                            println!("found thing");
-                            inv.items.append(obj.objectId);
-                            let item_desc: ByteArray = object_type_to_str(obj.objType);
-                            desc =
-                                format!(
-                                    "you put the {} in your trusty adventurors plastic bag",
-                                    item_desc,
-                                );
-                        } else {
-                            new_obj_ids.append(ele);
-                        }
-                    };
-
-                    rm.objectIds = new_obj_ids;
-                    wrld.write_model(@rm);
-                    wrld.write_model(@inv);
-                }
-                out = desc;
-            },
-            ActionType::Drop => {
-                println!("drop------->{:?}", msg);
-                let mut desc: ByteArray = "";
-                if msg.dobj == ObjectType::None {
-                    // let item_desc: ByteArray = object_type_to_str(msg.dobj);
-                    desc = "hmmm, there isnt one of those here to drop. are you mad fam?";
-                } else {
-                    let mut rm: Room = wrld.read_model(player.location.clone());
-                    let mut inv: Inventory = wrld.read_model(player.inventory.clone());
-                    let mut new_inv_items: Array<felt252> =
-                        array![]; // New inventory without the dropped item
-                    let mut found: bool = false;
-                    println!("inv items {:?}", inv.items.len());
-                    for ele in inv.items {
-                        let obj: Object = wrld.read_model(ele);
-                        println!("{:?}", obj.objType);
-                        if obj.objType == msg.dobj && !found {
-                            println!("dropping thing");
-                            rm.objectIds.append(obj.objectId);
-                            let item_desc: ByteArray = object_type_to_str(obj.objType);
-                            desc =
-                                format!(
-                                    "you drop the {} from your trusty adventurors plastic bag",
-                                    item_desc,
-                                );
-                            found = true;
-                        } else {
-                            new_inv_items.append(ele);
-                        }
-                    };
-
-                    if !found {
-                        desc = "you don't have one of those to drop.";
-                    }
-
-                    inv.items = new_inv_items; // Update inventory
-                    wrld.write_model(@rm);
-                    wrld.write_model(@inv);
-                }
-                out = desc;
-            },
-            ActionType::Help => {
-                // println!("help------>");
-                let txt: ByteArray =
-                    "there is little time\nwaste not time on \"I do thing\"\njust type \"do thing\"\ngo north, take ball, look around, fight the power, go to the north, sniff all the glue etc\nthere is no time...\nno time";
-                out = txt;
-            },
-            ActionType::Move => {
-                let nxt_rm_id = relocate::get_next_room(wrld, player_id, msg);
-                if nxt_rm_id == statusid::NONE {
-                    out =
-                        "no. you cannot go that way.\n\"reasons\" mumbles shoggoth into his hat\n she seems to be waving a hand shaped thing"
-                } else {
-                    relocate::enter_room(wrld, player_id, nxt_rm_id);
-                    let desc: ByteArray = lookat::describe_room_short(wrld, nxt_rm_id);
-                    out = desc;
-                }
-            },
-            _ => { out = pullstrings::on(world, player_id, msg); },
+            world_store.write_model(@inv);
+            world_store.write_model(@new_player);
+            move::set_player_location(world_store, new_player, start_room);
+            out = lookat::describe_room_short(world_store, start_room);
+        } else {
+            // Player exists, let's do stuff
+            match msg.vrb {
+                ActionType::Look => { out = lookat::action_look(world_store, msg, player); },
+                ActionType::Fight => {
+                    let stub: ByteArray = "Shoggoth is a good boy, he will fight you";
+                    out = stub;
+                },
+                ActionType::Spawn => {
+                    let desc: ByteArray = lookat::describe_room_short(
+                        world_store, player.location.clone(),
+                    );
+                    let stub: ByteArray =
+                        "A thought has spawned in your mind, you can't quite make out what it is,";
+                    out = format!("{} {}", stub, desc);
+                },
+                ActionType::Inventory => {
+                    out = inventory::action_inventory_list(world_store, msg, player);
+                },
+                ActionType::Take => { out = take::action_take(world_store, msg, player); },
+                ActionType::Drop => { out = drop::action_drop(world_store, msg, player); },
+                ActionType::Move => { out = move::action_move(world_store, msg, player); },
+                _ => { out = pullstrings::on(world, player_id, msg); },
+            }
         }
         // we probably need to hand off to another routine here to interpolate
         // some results and create a string for now though
-        wrld.write_model(@Output { playerId: player_id, text_o_vision: out });
+        world_store.write_model(@Output { playerId: player_id, text_o_vision: out });
         // set!(world, Output { playerId: player_id, text_o_vision: out })
     }
 }

@@ -4,7 +4,6 @@
 //*
 
 pub mod systems {
-    pub mod outputter;
     pub mod meatpuppet;
     pub mod tokeniser;
     pub mod designer;
@@ -15,15 +14,20 @@ pub mod constants {
 }
 
 pub mod lib {
-    pub mod insult_meat;
     pub mod hash_utils;
     pub mod store;
     pub mod err_handler;
     pub mod verb_eater;
-    pub mod look;
-    pub mod move;
     pub mod act;
     pub mod system;
+}
+
+pub mod actions {
+    pub mod look;
+    pub mod move;
+    pub mod take;
+    pub mod drop;
+    pub mod inventory;
 }
 
 pub mod models {

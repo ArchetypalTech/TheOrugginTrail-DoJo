@@ -61,25 +61,16 @@ pub mod meatpuppet {
             let l_cmd_cpy = l_cmd.clone();
             let mut wrld_dispatcher = world.dispatcher;
 
-            if l_cmd.len() >= 16 {
-                // we have bad food make an error and pass along to
-                // the error outputter system
-                isErr = ErrCode::BadLen;
-                err_dispatcher::error_handle(ref wrld_dispatcher, p_id, isErr);
-            } else {
-                // grab the command stream array and extract a Garble type
-                // for the game jam we want the fight command
-                match confessor::confess(l_cmd_cpy) {
-                    Result::Ok(r) => {
-                        // we have a valid command so pass it into a handler routine
-                        // this should really return err and a string
-                        verb_dispatcher::handleGarble(ref wrld_dispatcher, p_id, r);
-                    },
-                    Result::Err(_r) => {
-                        // this should really return err and a string
-                        err_dispatcher::error_handle(ref wrld_dispatcher, p_id, isErr);
-                    },
-                }
+            match confessor::confess(l_cmd_cpy) {
+                Result::Ok(r) => {
+                    // we have a valid command so pass it into a handler routine
+                    // this should really return err and a string
+                    verb_dispatcher::handleGarble(ref wrld_dispatcher, p_id, r);
+                },
+                Result::Err(_r) => {
+                    // this should really return err and a string
+                    err_dispatcher::error_handle(ref wrld_dispatcher, p_id, isErr);
+                },
             }
         }
 
@@ -111,7 +102,7 @@ pub mod pull_strings {
     use dojo::model::{ModelStorage};
     use dojo::world::{WorldStorage};
 
-    use the_oruggin_trail::lib::look::lookat;
+    use the_oruggin_trail::actions::look::lookat;
 
     pub fn enter_room(ref world: WorldStorage, ref player: Player, rm_id: felt252) {
         println!("PULL_STRINGS:------> enter_room");

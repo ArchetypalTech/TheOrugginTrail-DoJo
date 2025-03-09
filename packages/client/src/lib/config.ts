@@ -46,10 +46,6 @@ const manifest = {
 		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-meatpuppet"),
 		"the_oruggin_trail-meatpuppet",
 	),
-	outputter: getOrFail(
-		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-outputter"),
-		"the_oruggin_trail-outputter",
-	),
 	designer: getOrFail(
 		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-designer"),
 		"the_oruggin_trail-designer",
@@ -68,13 +64,13 @@ const wallet = (() => {
 	};
 })();
 
-const outputter = new Contract(
+const entity = new Contract(
 	manifest.entity.abi,
 	manifest.entity.address,
 	katanaProvider,
 );
 
-outputter.connect(wallet.account);
+entity.connect(wallet.account);
 
 const designer = new Contract(
 	manifest.designer.abi,
@@ -88,7 +84,7 @@ export const ORUG_CONFIG = {
 	endpoints,
 	katanaProvider,
 	contracts: {
-		outputter,
+		entity,
 		designer,
 	},
 	wallet,

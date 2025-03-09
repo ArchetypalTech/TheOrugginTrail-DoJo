@@ -9,14 +9,14 @@ async function sendMessage(message: string) {
 
 	// connect the account to the contract
 	const {
-		contracts: { outputter },
+		contracts: { entity },
 	} = ORUG_CONFIG;
 	// create message as readable contract data
 	const calldata = CallData.compile([cmd_array, 23]);
 	console.log("sendMessage(cmds): ", cmds, " -> calldata ->", calldata);
 
 	// ionvoke the contract as we are doing a write
-	const response = await outputter.invoke("listen", [calldata]);
+	const response = await entity.invoke("listen", [calldata]);
 
 	return new Response(JSON.stringify(response), {
 		headers: {

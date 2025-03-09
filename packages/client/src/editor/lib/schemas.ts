@@ -75,7 +75,7 @@ export const ACTION_TYPES: [string, ...(keyof ActionType)[]] = [
 	"Ignite",
 	"Spawn",
 	"Take",
-	"Help",
+	"Inventory",
 	"Pour",
 	"Follow",
 	"Jump",

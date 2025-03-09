@@ -3,7 +3,7 @@
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-pub mod relocate {
+pub mod move {
     use dojo::world::{ // IWorldDispatcher,
     WorldStorage};
     use dojo::model::{ModelStorage};
@@ -12,15 +12,29 @@ pub mod relocate {
     };
     use the_oruggin_trail::constants::zrk_constants::{statusid};
     use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
+    use the_oruggin_trail::actions::look::lookat;
 
     /// TODO:
     /// this should really live in the meatpuppet also it should
     /// probably return a string
-    pub fn enter_room(mut world: WorldStorage, pid: felt252, rm_id: felt252) {
-        let pid = 23;
-        let mut player: Player = world.read_model(pid);
-        player.location = rm_id;
-        println!("ENTER_RM:-----> {:?}", rm_id);
+    pub fn action_move(mut world: WorldStorage, message: Garble, mut player: Player) -> ByteArray {
+        let mut out: ByteArray = "";
+        let nxt_rm_id = get_next_room(world, player, message);
+        if nxt_rm_id == statusid::NONE {
+            out =
+                "no. you cannot go that way.\n\"reasons\" mumbles shoggoth into his hat\n she seems to be waving a hand shaped thing"
+        } else {
+            let desc: ByteArray = lookat::describe_room_short(world, nxt_rm_id);
+            set_player_location(world, player, nxt_rm_id);
+            out = desc;
+        }
+        return out;
+    }
+
+    pub fn set_player_location(mut world: WorldStorage, mut player: Player, room_id: felt252) {
+        //TODO: check if room exists
+        player.location = room_id;
+        println!("ENTER_RM:-----> {:?}", room_id);
         world.write_model(@player);
     }
 
@@ -31,17 +45,16 @@ pub mod relocate {
     ///
     /// TODO
     /// we also nned to add checking for path/exit blocked by objects
-    pub fn get_next_room(world: WorldStorage, pid: felt252, msg: Garble) -> felt252 {
+    pub fn get_next_room(world: WorldStorage, player: Player, message: Garble) -> felt252 {
         // fetch the room
-        let pl: Player = world.read_model(pid);
-        let curr_rm = pl.location.clone();
+        let curr_rm = player.location;
         let rm: Room = world.read_model(curr_rm);
         let exits: Array<felt252> = rm.dirObjIds.clone();
         // check for an exit
-        _direction_check(world, exits, msg)
+        _direction_check(world, exits, message)
     }
 
-    fn _direction_check(world: WorldStorage, exits: Array<felt252>, msg: Garble) -> felt252 {
+    fn _direction_check(world: WorldStorage, exits: Array<felt252>, message: Garble) -> felt252 {
         // get the exits from the room
         let mut idx: u32 = 0;
         let mut dest: felt252 = statusid::NONE;
@@ -49,9 +62,9 @@ pub mod relocate {
         while idx < exits.len() {
             let exit_id = exits.at(idx).clone();
             let exit: Object = world.read_model(exit_id);
-            if exit.dirType == msg.dir {
+            if exit.dirType == message.dir {
                 // it it open/passable
-                canMove = _can_move(world, @exit, msg);
+                canMove = _can_move(world, @exit, message);
                 if canMove {
                     println!("can_move: -----> {:?}", exit.destId);
                     dest = exit.destId
@@ -62,7 +75,7 @@ pub mod relocate {
         dest
     }
 
-    fn _can_move(world: WorldStorage, exit: @Object, msg: Garble) -> bool {
+    fn _can_move(world: WorldStorage, exit: @Object, message: Garble) -> bool {
         // get the actions and look for open
         let mut idx: u32 = 0;
         let mut canMove: bool = false;

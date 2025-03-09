@@ -130,48 +130,6 @@ export function setupWorld(provider: DojoProvider) {
 		}
 	};
 
-	const build_outputter_spawn_calldata = (): DojoCall => {
-		return {
-			contractName: "outputter",
-			entrypoint: "spawn",
-			calldata: [],
-		};
-	};
-
-	const outputter_spawn = async (snAccount: Account | AccountInterface) => {
-		try {
-			return await provider.execute(
-				snAccount,
-				build_outputter_spawn_calldata(),
-				"the_oruggin_trail",
-			);
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
-	};
-
-	const build_outputter_updateOutput_calldata = (txt: ByteArray): DojoCall => {
-		return {
-			contractName: "outputter",
-			entrypoint: "updateOutput",
-			calldata: [txt],
-		};
-	};
-
-	const outputter_updateOutput = async (snAccount: Account | AccountInterface, txt: ByteArray) => {
-		try {
-			return await provider.execute(
-				snAccount,
-				build_outputter_updateOutput_calldata(txt),
-				"the_oruggin_trail",
-			);
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
-	};
-
 
 
 	return {
@@ -190,12 +148,6 @@ export function setupWorld(provider: DojoProvider) {
 			buildCreateRoomsCalldata: build_designer_createRooms_calldata,
 			createTxt: designer_createTxt,
 			buildCreateTxtCalldata: build_designer_createTxt_calldata,
-		},
-		outputter: {
-			spawn: outputter_spawn,
-			buildSpawnCalldata: build_outputter_spawn_calldata,
-			updateOutput: outputter_updateOutput,
-			buildUpdateOutputCalldata: build_outputter_updateOutput_calldata,
 		},
 	};
 }

@@ -60,7 +60,9 @@
   }
 
   onMount(() => {
-    terminalInput.focus();
+    if (terminalInput) {
+      terminalInput.focus();
+    }
     setTimeout(() => {
       if (get(Dojo_Status).status !== "spawning") {
         Dojo_Status.set({

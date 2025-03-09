@@ -3,10 +3,9 @@
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-//! Handle LOOK type actions
 pub mod lookat {
     use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
-    use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
+    use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
         player::Player, room::Room,
@@ -23,13 +22,9 @@ pub mod lookat {
     /// the general case is assumed to be for a room
     /// currently we just do the full description this should seperate into examination
     /// for objects etc.
-    pub fn stuff(mut world: IWorldDispatcher, message: Garble, player_id: felt252) -> ByteArray {
-        //get the player object
-        // we are always player 23 right now
-        let wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
-        let player: Player = wrld.read_model(player_id);
+    pub fn action_look(mut world: WorldStorage, message: Garble, player: Player) -> ByteArray {
         let location: felt252 = player.location;
-        let mut output: ByteArray = describe_room(wrld, location);
+        let mut output: ByteArray = describe_room(world, location);
         output
     }
 

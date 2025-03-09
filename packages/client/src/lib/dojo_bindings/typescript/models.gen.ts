@@ -138,7 +138,7 @@ export type ActionType = {
 	Ignite: string;
 	Spawn: string;
 	Take: string;
-	Help: string;
+	Inventory: string;
 	Pour: string;
 	Follow: string;
 	Jump: string;
@@ -280,7 +280,7 @@ export const schema: SchemaType = {
 				Ignite: undefined,
 				Spawn: undefined,
 				Take: undefined,
-				Help: undefined,
+				Inventory: undefined,
 				Pour: undefined,
 				Follow: undefined,
 				Jump: undefined,
@@ -317,7 +317,7 @@ export const schema: SchemaType = {
 				Ignite: undefined,
 				Spawn: undefined,
 				Take: undefined,
-				Help: undefined,
+				Inventory: undefined,
 				Pour: undefined,
 				Follow: undefined,
 				Jump: undefined,
