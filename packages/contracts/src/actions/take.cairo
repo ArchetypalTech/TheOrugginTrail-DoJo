@@ -3,7 +3,7 @@ pub mod take {
     use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
-        player::Player, room::Room, zrk_enums::{ObjectType, object_type_to_str}, object::Object,
+        player::Player, room::Room, zrk_enums::{ObjectType}, object, object::Object,
         inventory::Inventory,
     };
 
@@ -12,7 +12,7 @@ pub mod take {
         let mut out: ByteArray = "";
         if message.dobj == ObjectType::None {
             // let item_desc: ByteArray = object_type_to_str(message.dobj);
-            out = "hmmm, there isnt one of those here to take. are you mad fam?";
+            out = "I can't take that";
         } else {
             let mut room: Room = world.read_model(player.location.clone());
             let mut obj_ids: Array<felt252> = room.objectIds.clone();
@@ -27,9 +27,8 @@ pub mod take {
                     // found = true;
                     println!("found thing");
                     inventory.items.append(obj.objectId);
-                    let item_desc: ByteArray = object_type_to_str(obj.objType);
-                    out =
-                        format!("you put the {} in your trusty adventurers plastic bag", item_desc);
+                    let item_desc: ByteArray = object::getModelName(obj);
+                    out = format!("{} is now in your trusty plastic adventurers bag", item_desc);
                 } else {
                     new_obj_ids.append(element);
                 }

@@ -11,7 +11,7 @@
 /// of the system.
 #[starknet::interface]
 pub trait IListener<T> {
-    fn listen(ref self: T, cmd: Array<ByteArray>, p_id: felt252);
+    fn listen(ref self: T, cmd: Array<ByteArray>, _add: felt252);
 
     // for interop with other worlds but doesnt have to be, could just be listen
     // but it sounds cooler
@@ -26,11 +26,13 @@ pub trait IListener<T> {
 /// logical block/system
 #[dojo::contract]
 pub mod meatpuppet {
+    use starknet::{get_caller_address};
     use super::{IListener};
     use the_oruggin_trail::lib::verb_eater::verb_dispatcher;
-    use the_oruggin_trail::models::{output::{Output}};
+    use the_oruggin_trail::models::{output::{Output}, player::{Player}, inventory::Inventory};
     use the_oruggin_trail::systems::tokeniser::{confessor // , confessor::Garble
     };
+    use the_oruggin_trail::actions::move::move;
 
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use the_oruggin_trail::lib::err_handler::err_dispatcher;
@@ -47,7 +49,8 @@ pub mod meatpuppet {
     /// if the player exists already and if not then we should
     /// spawn the player in the some defualt start location
     pub impl ListenImpl of IListener<ContractState> {
-        fn listen(ref self: ContractState, cmd: Array<ByteArray>, p_id: felt252) {
+        fn listen(ref self: ContractState, cmd: Array<ByteArray>, _add: felt252) {
+            let player_id: felt252 = get_caller_address().into();
             //! we use this as an error flag to kick us into error
             //! catching routines later as we run the parses over
             //! the command string
@@ -58,18 +61,23 @@ pub mod meatpuppet {
 
             let mut isErr: ErrCode = ErrCode::None;
             let l_cmd = @cmd;
-            let l_cmd_cpy = l_cmd.clone();
             let mut wrld_dispatcher = world.dispatcher;
 
-            match confessor::confess(l_cmd_cpy) {
-                Result::Ok(r) => {
+            if (doesPlayerExist(world, player_id) == false) {
+                createPlayer(world, player_id);
+            }
+
+            let mut player = getPlayer(world, player_id);
+
+            match confessor::parse(l_cmd.clone(), player) {
+                Result::Ok(result) => {
                     // we have a valid command so pass it into a handler routine
                     // this should really return err and a string
-                    verb_dispatcher::handleGarble(ref wrld_dispatcher, p_id, r);
+                    verb_dispatcher::handleGarble(ref wrld_dispatcher, player, result);
                 },
                 Result::Err(_r) => {
                     // this should really return err and a string
-                    err_dispatcher::error_handle(ref wrld_dispatcher, p_id, isErr);
+                    err_dispatcher::error_handle(ref wrld_dispatcher, player_id, isErr);
                 },
             }
         }
@@ -92,25 +100,38 @@ pub mod meatpuppet {
             shogoth_sees
         }
     }
-}
 
-pub mod pull_strings {
-    use the_oruggin_trail::models::{
-        output::{Output}, player::{Player} // zrk_enums::{ActionType, ObjectType},
-    };
+    pub fn getPlayer(mut world_store: WorldStorage, player_id: felt252) -> Player {
+        let address_player = get_caller_address();
+        let player_id: felt252 = address_player.into();
+        let mut player: Player = world_store.read_model(player_id);
+        player
+    }
 
-    use dojo::model::{ModelStorage};
-    use dojo::world::{WorldStorage};
+    pub fn doesPlayerExist(mut world_store: WorldStorage, player_id: felt252) -> bool {
+        let mut player: Player = getPlayer(world_store, player_id);
+        if (player.location == 0) {
+            return false;
+        }
+        true
+    }
 
-    use the_oruggin_trail::actions::look::lookat;
-
-    pub fn enter_room(ref world: WorldStorage, ref player: Player, rm_id: felt252) {
-        println!("PULL_STRINGS:------> enter_room");
-        player.location = rm_id;
-        world.write_model(@player);
-
-        let out = lookat::describe_room_short(world, rm_id);
-        world.write_model(@Output { playerId: player.player_id, text_o_vision: out });
+    pub fn createPlayer(mut world_store: WorldStorage, player_id: felt252) -> Player {
+        let address_player = get_caller_address();
+        let start_room = 7892581999139148;
+        let mut new_player = Player {
+            player_id: player_id,
+            player_adr: address_player,
+            location: start_room,
+            inventory: player_id,
+        };
+        let inv = Inventory { owner_id: player_id, items: array![] };
+        world_store.write_model(@inv);
+        world_store.write_model(@new_player);
+        move::set_player_location(world_store, new_player, start_room);
+        let mut out: ByteArray = "You feel light in the head";
+        world_store.write_model(@Output { playerId: player_id, text_o_vision: out });
+        return new_player;
     }
 }
 

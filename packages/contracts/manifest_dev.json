@@ -2091,8 +2091,8 @@
       ]
     },
     {
-      "address": "0x3672ed0d1075203ee27ade30185a7fd33abcbd40d5a5590b8d742f02dca7f7b",
-      "class_hash": "0x41fba961dfb1e4761d9a44486743f3b00483532625b754ef1658114245e2a66",
+      "address": "0x54c9ca5024266e61ad16abaa52d6799b7ce19a21487e99c395461bafcd66751",
+      "class_hash": "0x73376d60674bf2da6d97f00c7f12c16a2c4d2f87e849678495634b0e9243dc4",
       "abi": [
         {
           "type": "impl",
@@ -2162,7 +2162,7 @@
                   "type": "core::array::Array::<core::byte_array::ByteArray>"
                 },
                 {
-                  "name": "p_id",
+                  "name": "_add",
                   "type": "core::felt252"
                 }
               ],

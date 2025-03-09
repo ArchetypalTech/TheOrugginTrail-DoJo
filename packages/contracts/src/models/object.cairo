@@ -4,7 +4,9 @@
 //*
 
 use the_oruggin_trail::models::{zrk_enums};
-
+use dojo::world::{WorldStorage};
+use dojo::model::{ModelStorage};
+use the_oruggin_trail::models::{player::Player, room::Room, zrk_enums::{object_type_to_str}};
 /// Objects are both Objects/things and now Direction things
 /// like doors etc
 ///
@@ -25,14 +27,25 @@ pub struct Object {
     pub altNames: Array<ByteArray>,
 }
 
-/// Returns the p has of the contents of the
-/// p_west Object in the Spawner::pass_gen function
-/// just used for tests
-pub fn obj_mock_hash() -> felt252 {
-    2890677428083589291721203693367688373625972625165016977404295659692755897800
+pub fn doesObjectExist(object: Object) -> bool {
+    object.clone().objectId != 0
 }
 
-pub fn ball_mock_hash() -> felt252 {
-    3275117108522619323919331625316279403006627873340444863280843568543699142320
+pub fn getModelName(object: Object) -> ByteArray {
+    let mut name: ByteArray = object.name;
+    if name.len() == 0 {
+        name = object_type_to_str(object.objType);
+    }
+    name
 }
 
+pub fn getModelReferences(object: Object) -> Array<ByteArray> {
+    // we get the name, and all altNames
+    let mut references: Array<ByteArray> = array![];
+    let altNames = object.altNames.clone();
+    references.append(getModelName(object));
+    for altName in altNames {
+        references.append(altName);
+    };
+    references
+}

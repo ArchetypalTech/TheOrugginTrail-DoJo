@@ -111,8 +111,8 @@ export const publishObject = async (obj: ZorgObject) => {
 		obj.actions.map((a: Action) => new TempInt(a.actionID)),
 		// Use text definition ID from the objDescription object if available
 		new TempInt(obj.objDescription.id),
-		new ByteArray(obj.name),
-		obj.altNames.map((name) => new ByteArray(name)),
+		obj.name.length > 0 ? new ByteArray(obj.name) : 0,
+		obj.altNames.length > 0 ? obj.altNames.map((name) => new ByteArray(name)) : 0,
 	];
 	console.log("Creating object:", objData);
 	await dispatchDesignerCall("create_objects", [objData]);

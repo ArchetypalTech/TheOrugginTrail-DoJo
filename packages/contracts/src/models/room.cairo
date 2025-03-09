@@ -2,8 +2,9 @@
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
-
-use the_oruggin_trail::models::{zrk_enums};
+use dojo::world::{WorldStorage};
+use dojo::model::{ModelStorage};
+use the_oruggin_trail::models::{zrk_enums, object::Object, object};
 
 #[derive(Clone, Drop, Serde, Introspect, Debug)]
 #[dojo::model]
@@ -17,4 +18,19 @@ pub struct Room {
     pub objectIds: Array<felt252>,
     pub dirObjIds: Array<felt252>,
     pub players: Array<felt252>,
+}
+
+pub fn doesRoomExist(room: Room) -> bool {
+    room.clone().roomId != 0
+}
+
+pub fn getRoomObjects(world: WorldStorage, room: Room) -> Array<Object> {
+    let mut objects: Array<Object> = array![];
+    for objectId in room.objectIds {
+        let object: Object = world.read_model(objectId);
+        if (object::doesObjectExist(object.clone())) {
+            objects.append(object);
+        }
+    };
+    objects
 }

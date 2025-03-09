@@ -25,15 +25,6 @@ import {
 } from "$editor/lib/schemas";
 
 /**
- * Generate a unique ID for a new entity
- * @deprecated Use generateNumericUniqueId instead for IDs that comply with validation rules
- */
-export const generateUniqueId = (): string => {
-	// For backward compatibility, use the numeric ID generator
-	return generateNumericUniqueId();
-};
-
-/**
  * Convert a string to a text definition object
  * @param text The text content
  * @param ownerId The owner ID
@@ -60,14 +51,14 @@ export const ensureInlineTextDefinitions = (config: Config): Config => {
 	newConfig.levels.forEach((level) => {
 		level.rooms.forEach((room) => {
 			if (room.roomDescription.id === room.roomID) {
-				room.roomDescription.id = generateUniqueId();
+				room.roomDescription.id = generateNumericUniqueId();
 			}
 			if (room.roomDescription.owner !== room.roomID) {
 				room.roomDescription.owner = room.roomID;
 			}
 			room.objects.forEach((object) => {
 				if (object.objDescription.id === object.objID) {
-					object.objDescription.id = generateUniqueId();
+					object.objDescription.id = generateNumericUniqueId();
 					if (object.objDescription.owner !== object.objID) {
 						object.objDescription.owner = object.objID;
 					}

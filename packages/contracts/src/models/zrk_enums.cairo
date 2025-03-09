@@ -431,6 +431,8 @@ pub fn object_type_to_str(object_type: ObjectType) -> ByteArray {
         "path"
     } else if object_type == ObjectType::Chest {
         "chest"
+    } else if object_type == ObjectType::Box {
+        "box"
     } else if object_type == ObjectType::Matches {
         "matches"
     } else if object_type == ObjectType::Petrol {

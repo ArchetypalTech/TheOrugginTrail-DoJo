@@ -3,7 +3,7 @@ pub mod drop {
     use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
-        player::Player, room::Room, zrk_enums::{ObjectType, object_type_to_str}, object::Object,
+        player::Player, room::Room, zrk_enums::{ObjectType}, object, object::Object,
         inventory::Inventory,
     };
 
@@ -12,7 +12,7 @@ pub mod drop {
         let mut out: ByteArray = "";
         if message.dobj == ObjectType::None {
             // let item_desc: ByteArray = object_type_to_str(message.dobj);
-            out = "hmmm, there isnt one of those here to drop. are you mad fam?";
+            out = "Can't drop that";
         } else {
             let mut room: Room = world.read_model(player.location.clone());
             let mut inventory: Inventory = world.read_model(player.inventory.clone());
@@ -26,10 +26,10 @@ pub mod drop {
                 if foundObject.objType == message.dobj && !found {
                     println!("dropping thing");
                     room.objectIds.append(foundObject.objectId);
-                    let item_desc: ByteArray = object_type_to_str(foundObject.objType);
+                    let item_desc: ByteArray = object::getModelName(foundObject);
                     out =
                         format!(
-                            "you drop the {} from your trusty adventurors plastic bag", item_desc,
+                            "{} is dropped from your trusty plastic adventurers bag", item_desc,
                         );
                     found = true;
                 } else {
@@ -38,7 +38,7 @@ pub mod drop {
             };
 
             if !found {
-                out = "you don't have one of those to drop.";
+                out = "Don't have one of those to drop.";
             }
 
             inventory.items = updated_inventory; // Update inventory

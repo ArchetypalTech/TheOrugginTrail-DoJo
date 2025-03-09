@@ -187,7 +187,7 @@ export const ObjectSchema = z.object({
 	name: z.string(),
 	altNames: z.array(z.string()),
 });
-export type Object = z.infer<typeof ObjectSchema>;
+export type ZorgObject = z.infer<typeof ObjectSchema>;
 
 // Define the Room schema
 export const RoomSchema = z.object({

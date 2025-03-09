@@ -109,19 +109,19 @@ export function setupWorld(provider: DojoProvider) {
 		}
 	};
 
-	const build_meatpuppet_listen_calldata = (cmd: Array<ByteArray>, pId: BigNumberish): DojoCall => {
+	const build_meatpuppet_listen_calldata = (cmd: Array<ByteArray>, add: BigNumberish): DojoCall => {
 		return {
 			contractName: "meatpuppet",
 			entrypoint: "listen",
-			calldata: [cmd, pId],
+			calldata: [cmd, add],
 		};
 	};
 
-	const meatpuppet_listen = async (snAccount: Account | AccountInterface, cmd: Array<ByteArray>, pId: BigNumberish) => {
+	const meatpuppet_listen = async (snAccount: Account | AccountInterface, cmd: Array<ByteArray>, add: BigNumberish) => {
 		try {
 			return await provider.execute(
 				snAccount,
-				build_meatpuppet_listen_calldata(cmd, pId),
+				build_meatpuppet_listen_calldata(cmd, add),
 				"the_oruggin_trail",
 			);
 		} catch (error) {

@@ -1,12 +1,19 @@
 import type {
 	Action,
 	Level,
-	Object,
+	ZorgObject,
 	Room,
 	TextDefinition,
 } from "./lib/schemas";
-import { generateUniqueId } from "./utils";
+import { generateNumericUniqueId } from "./utils";
 import randomName from "@scaleway/random-name";
+
+const createRandomName = () => {
+	return `${randomName("", " ")
+		.split(" ")
+		.map((word) => word[0].toUpperCase() + word.slice(1))
+		.join(" ")}`;
+};
 
 /**
  * Create a default TextDefinition
@@ -15,7 +22,7 @@ export const createDefaultTextDefinition = (
 	text: string,
 	ownerId: string,
 ): TextDefinition => ({
-	id: generateUniqueId(),
+	id: generateNumericUniqueId(),
 	owner: ownerId,
 	text,
 });
@@ -24,7 +31,7 @@ export const createDefaultTextDefinition = (
  * Create a default Action
  */
 export const createDefaultAction = (): Action => {
-	const actionId = generateUniqueId();
+	const actionId = generateNumericUniqueId();
 	return {
 		actionID: actionId,
 		type: "Open",
@@ -39,8 +46,8 @@ export const createDefaultAction = (): Action => {
 /**
  * Create a default Object
  */
-export const createDefaultObject = (): Object => {
-	const objectId = generateUniqueId();
+export const createDefaultObject = (): ZorgObject => {
+	const objectId = generateNumericUniqueId();
 	return {
 		objID: objectId,
 		type: "Door",
@@ -52,6 +59,8 @@ export const createDefaultObject = (): Object => {
 		direction: "N",
 		destination: null,
 		actions: [createDefaultAction()],
+		name: `${createRandomName()}`,
+		altNames: [],
 	};
 };
 
@@ -59,15 +68,11 @@ export const createDefaultObject = (): Object => {
  * Create a default Room
  */
 export const createDefaultRoom = (): Room => {
-	const roomId = generateUniqueId();
-	const roomName = `Room of ${randomName("", " ")
-		.split(" ")
-		.map((word) => word[0].toUpperCase() + word.slice(1))
-		.join(" ")}`;
+	const roomId = generateNumericUniqueId();
 	// capitalize the first letter of the room name
 	return {
 		roomID: roomId,
-		roomName,
+		roomName: `Room of ${createRandomName()}`,
 		roomDescription: createDefaultTextDefinition(
 			"you have no idea where this is, but it's somewhere...",
 			roomId,

@@ -88,7 +88,9 @@ pub mod tokeniser {
 }
 
 pub mod confessor {
-    use the_oruggin_trail::models::{zrk_enums::{ActionType, ObjectType, DirectionType}};
+    use the_oruggin_trail::models::{
+        zrk_enums::{ActionType, ObjectType, DirectionType}, player::Player,
+    };
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use super::tokeniser;
 
@@ -112,6 +114,22 @@ pub mod confessor {
     /// to extract meaning and create a simple message type that can be
     /// passed around the system logic to make things happen in the world
     pub fn confess(sin: Array<ByteArray>) -> Result<Garble, ErrCode> {
+        // get the first token from the command
+        let snap = @sin;
+        let i0 = snap.at(0);
+        let s0 = i0.clone();
+        let t0 = tokeniser::str_to_AT(s0);
+
+        // now handle the semantic analysis
+        match t0 {
+            ActionType::Move => { parse_moves(snap) },
+            ActionType::Look => { parse_look(snap) },
+            ActionType::None => { Result::Err(ErrCode::BadImpl) },
+            _ => { parse_action(snap, t0) },
+        }
+    }
+
+    pub fn parse(sin: Array<ByteArray>, player: Player) -> Result<Garble, ErrCode> {
         // get the first token from the command
         let snap = @sin;
         let i0 = snap.at(0);
