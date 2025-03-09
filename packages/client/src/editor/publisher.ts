@@ -19,17 +19,12 @@ import { actions } from "./store";
 export const publishConfigToContract = async (
 	config: Config,
 ): Promise<void> => {
-	// First, create all text definitions
-	await createAllTextDefinitions(config);
-
 	// Then process each room in the config
 	for (const room of config.levels[0].rooms) {
 		// Create room
 		console.log("Creating room:", room);
 		try {
 			await publishRoom(room);
-			// Process objects and actions
-			await processRoomObjects(config, room);
 		} catch (error) {
 			console.error("Error creating room:", error);
 			throw new Error(
@@ -40,6 +35,7 @@ export const publishConfigToContract = async (
 };
 
 export const publishRoom = async (room: Room) => {
+	actions.notifications.startPublishing();
 	const objectIds = room.objects.map((obj) => obj.objID);
 	const dirObjIds = room.objects
 		.filter((obj) => obj.direction !== "None")
@@ -55,53 +51,32 @@ export const publishRoom = async (room: Room) => {
 		dirObjIds.map((id) => new TempInt(id)) || [],
 		0,
 	];
+	await dispatchDesignerCall("create_txt", [
+		room.roomDescription.id, // ID for the text
+		room.roomID, // Owner ID
+		room.roomDescription.text, // The actual text content
+	]);
 	await dispatchDesignerCall("create_rooms", [roomData]);
-};
-
-/**
- * Extracts and creates all text definitions from the config
- * @param config The game configuration
- */
-export const createAllTextDefinitions = async (
-	config: Config,
-): Promise<void> => {
-	// Process each room to create text definitions
-	for (const room of config.levels[0].rooms) {
-		// Create room text definition
-		await dispatchDesignerCall("create_txt", [
-			room.roomDescription.id, // ID for the text
-			room.roomID, // Owner ID
-			room.roomDescription.text, // The actual text content
-		]);
-
-		// Create text definitions for all objects and actions
-		for (const obj of room.objects) {
-			// Create object text definition
-			await dispatchDesignerCall("create_txt", [
-				obj.objDescription.id, // ID for the text
-				obj.objID, // Owner ID
-				obj.objDescription.text, // The actual text content
-			]);
-		}
-	}
+	await processRoomObjects(room);
 };
 
 /**
  * Processes all objects in a room
  * @param room The room containing objects to process
  */
-export const processRoomObjects = async (
-	config: Config,
-	room: Room,
-): Promise<void> => {
+export const processRoomObjects = async (room: Room): Promise<void> => {
 	for (const obj of room.objects) {
-		await publishObject(obj);
-		// Process actions
-		await processObjectActions(config, obj);
+		await processObjects(obj);
 	}
 };
 
+export const processObjects = async (obj: ZorgObject) => {
+	await publishObject(obj);
+	await processObjectActions(obj);
+};
+
 export const publishObject = async (obj: ZorgObject) => {
+	actions.notifications.startPublishing();
 	const objData = [
 		new TempInt(obj.objID),
 		objectTypeToIndex(obj.type || "None"), // Map to index with fallback
@@ -114,6 +89,11 @@ export const publishObject = async (obj: ZorgObject) => {
 		obj.name.length > 0 ? new ByteArray(obj.name) : 0,
 		obj.altNames.length > 0 ? obj.altNames.map((name) => new ByteArray(name)) : 0,
 	];
+	await dispatchDesignerCall("create_txt", [
+		obj.objDescription.id, // ID for the text
+		obj.objID, // Owner ID
+		obj.objDescription.text, // The actual text content
+	]);
 	console.log("Creating object:", objData);
 	await dispatchDesignerCall("create_objects", [objData]);
 };
@@ -122,10 +102,7 @@ export const publishObject = async (obj: ZorgObject) => {
  * Processes all actions for an object
  * @param obj The object containing actions to process
  */
-export const processObjectActions = async (
-	config: Config,
-	obj: ZorgObject,
-): Promise<void> => {
+export const processObjectActions = async (obj: ZorgObject): Promise<void> => {
 	for (const action of obj.actions) {
 		// const actionsInterface:
 		// 	| {
@@ -151,6 +128,7 @@ export const processObjectActions = async (
 };
 
 export const publishAction = async (action: Action) => {
+	actions.notifications.startPublishing();
 	const actionData = [
 		new TempInt(action.actionID),
 		actionTypeToIndex(action.type || "None"), // Map to index with fallback

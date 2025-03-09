@@ -141,6 +141,7 @@ export const actions = {
 			});
 		},
 		startPublishing: async (message = "Publishing to contract...") => {
+			if (get(notificationStore).type === "publishing") return;
 			console.log("STARTING PUBLISHING");
 			await notificationStore.set({
 				type: "publishing",

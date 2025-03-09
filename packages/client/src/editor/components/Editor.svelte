@@ -7,6 +7,12 @@
   import ActionEditor from "./ActionEditor.svelte";
   import type { Room, ZorgObject as Object, Action } from "$editor/lib/schemas";
   import { user_store } from "$lib/stores/user_store";
+  import {
+    processObjectActions,
+    processObjects,
+    publishAction,
+    publishRoom,
+  } from "$editor/publisher";
 
   // State
   let selectedObjectIndex: number | null = null;
@@ -214,11 +220,25 @@
 
       <!-- Room Editor -->
       <div class="room-inspector col-span-4 bg-gray-100">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Room</h2>
-          <button class="btn btn-sm btn-danger" on:click={handleDeleteRoom}
-            >❌</button
-          >
+        <div class="">
+          <div class="flex flex-row mb-4 items-center gap-2">
+            <h2 class="flex grow text-lg font-semibold">Room</h2>
+            <button
+              title="Delete Room"
+              class="btn btn-sm btn-danger mx-1"
+              on:click={handleDeleteRoom}>❌</button
+            >
+            <button
+              title="Publish Room"
+              class="btn btn-sm btn-success"
+              on:click={async () => {
+                await publishRoom(
+                  $editorStore.currentLevel.rooms[$editorStore.currentRoomIndex]
+                );
+                actions.notifications.clear();
+              }}>📤</button
+            >
+          </div>
         </div>
         {#if $editorStore.currentLevel.rooms.length > 0}
           <RoomEditor
@@ -254,15 +274,30 @@
             </ul>
             {#if selectedObjectIndex !== null}
               <div class="object-inspector bg-gray-50">
-                <div class="flex justify-between items-center mb-4">
-                  <h2 class="text-lg font-semibold">Object</h2>
+                <div class="flex flex-row mb-4 items-center gap-2">
+                  <h2 class="flex grow text-lg font-semibold">Object</h2>
                   <button
-                    class="btn btn-sm btn-danger"
+                    title="Delete Object"
+                    class="btn btn-sm btn-danger mx-1"
                     on:click={() => {
                       if (selectedObjectIndex !== null) {
                         handleDeleteObject(selectedObjectIndex);
                       }
                     }}>❌</button
+                  >
+                  <button
+                    title="Publish Object"
+                    class="btn btn-sm btn-success"
+                    on:click={async () => {
+                      if (selectedObjectIndex !== null) {
+                        await processObjects(
+                          $editorStore.currentLevel.rooms[
+                            $editorStore.currentRoomIndex
+                          ].objects[selectedObjectIndex]
+                        );
+                        actions.notifications.clear();
+                      }
+                    }}>📤</button
                   >
                 </div>
                 {#if selectedObjectIndex !== null}
@@ -316,10 +351,11 @@
             </ul>
             {#if selectedActionIndex !== null && selectedObjectIndex !== null}
               <div class="action-inspector bg-gray-50">
-                <div class="flex justify-between items-center mb-4">
-                  <h2 class="text-lg font-semibold">Action</h2>
+                <div class="flex flex-row mb-4 items-center gap-2">
+                  <h2 class="flex grow text-lg font-semibold">Object</h2>
                   <button
-                    class="btn btn-sm btn-danger"
+                    title="Delete Object"
+                    class="btn btn-sm btn-danger mx-1"
                     on:click={() => {
                       if (
                         selectedObjectIndex !== null &&
@@ -332,7 +368,27 @@
                       }
                     }}>❌</button
                   >
+                  <button
+                    title="Publish Object"
+                    class="btn btn-sm btn-success"
+                    on:click={async () => {
+                      if (
+                        selectedObjectIndex !== null &&
+                        selectedActionIndex !== null
+                      ) {
+                        await publishAction(
+                          $editorStore.currentLevel.rooms[
+                            $editorStore.currentRoomIndex
+                          ].objects[selectedObjectIndex].actions[
+                            selectedActionIndex
+                          ]
+                        );
+                        actions.notifications.clear();
+                      }
+                    }}>📤</button
+                  >
                 </div>
+
                 <ActionEditor
                   action={$editorStore.currentLevel.rooms[
                     $editorStore.currentRoomIndex
