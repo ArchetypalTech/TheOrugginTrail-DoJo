@@ -1,16 +1,9 @@
-import type {
-	Action,
-	Object,
-	Room,
-	Level,
-	Config,
-	Direction,
-	ObjectType,
-	ActionType,
-	MaterialType,
-	RoomType,
-	BiomeType,
-} from "@zorg/generator/src/types";
+import type { Room } from "$lib/dojo_bindings/typescript/models.gen";
+
+export interface Level {
+	levelName: string;
+	rooms: Room[];
+}
 
 // Editor state types
 export interface EditorState {
@@ -30,20 +23,5 @@ export interface ValidationError {
 		actionType?: string;
 	};
 }
-
-// Re-export types from room-generator for convenience
-export type {
-	Action,
-	Object,
-	Room,
-	Level,
-	Config,
-	Direction,
-	ObjectType,
-	ActionType,
-	MaterialType,
-	RoomType,
-	BiomeType,
-};
 
 export * from "./schemas";

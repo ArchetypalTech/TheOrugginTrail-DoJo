@@ -56,6 +56,8 @@ pub mod pullstrings {
             matType: MaterialType::None,
             objectActionIds: array![],
             txtDefId: 0,
+            name: "",
+            altNames: array![],
         };
 
         println!("looking for {:?}", map);

@@ -1,5 +1,4 @@
-import type { Config, Room, Object, Action } from "./lib/schemas";
-// import type { Action } from "$lib/dojo_bindings/typescript/models.gen.ts";
+import type { Config, Room, ZorgObject, Action } from "./lib/schemas";
 import {
 	roomTypeToIndex,
 	biomeTypeToIndex,
@@ -28,23 +27,7 @@ export const publishConfigToContract = async (
 		// Create room
 		console.log("Creating room:", room);
 		try {
-			const objectIds = room.objects.map((obj) => obj.objID);
-			const dirObjIds = room.objects
-				.filter((obj) => obj.direction !== "None")
-				.map((obj) => obj.objID);
-			const roomData = [
-				new TempInt(room.roomID),
-				roomTypeToIndex(room.roomType), // Map to index
-				biomeTypeToIndex(room.biomeType), // Map to index
-				// Use text definition ID from the roomDescription object if available
-				new TempInt(room.roomDescription.id),
-				new ByteArray(room.roomName),
-				objectIds.map((id) => new TempInt(id)) || [],
-				dirObjIds.map((id) => new TempInt(id)) || [],
-				0,
-			];
-			await dispatchDesignerCall("create_rooms", [roomData]);
-
+			await publishRoom(room);
 			// Process objects and actions
 			await processRoomObjects(config, room);
 		} catch (error) {
@@ -54,6 +37,25 @@ export const publishConfigToContract = async (
 			);
 		}
 	}
+};
+
+export const publishRoom = async (room: Room) => {
+	const objectIds = room.objects.map((obj) => obj.objID);
+	const dirObjIds = room.objects
+		.filter((obj) => obj.direction !== "None")
+		.map((obj) => obj.objID);
+	const roomData = [
+		new TempInt(room.roomID),
+		roomTypeToIndex(room.roomType), // Map to index
+		biomeTypeToIndex(room.biomeType), // Map to index
+		// Use text definition ID from the roomDescription object if available
+		new TempInt(room.roomDescription.id),
+		new ByteArray(room.roomName),
+		objectIds.map((id) => new TempInt(id)) || [],
+		dirObjIds.map((id) => new TempInt(id)) || [],
+		0,
+	];
+	await dispatchDesignerCall("create_rooms", [roomData]);
 };
 
 /**
@@ -93,23 +95,27 @@ export const processRoomObjects = async (
 	room: Room,
 ): Promise<void> => {
 	for (const obj of room.objects) {
-		// Create object
-		const objData = [
-			new TempInt(obj.objID),
-			objectTypeToIndex(obj.type || "None"), // Map to index with fallback
-			directionToIndex(obj.direction), // Map to index (already handles null)
-			new TempInt(obj.destination || ""),
-			materialTypeToIndex(obj.material || "None"), // Map to index with fallback
-			obj.actions.map((a: Action) => new TempInt(a.actionID)),
-			// Use text definition ID from the objDescription object if available
-			new TempInt(obj.objDescription.id),
-		];
-		console.log("Creating object:", objData);
-		await dispatchDesignerCall("create_objects", [objData]);
-
+		await publishObject(obj);
 		// Process actions
 		await processObjectActions(config, obj);
 	}
+};
+
+export const publishObject = async (obj: ZorgObject) => {
+	const objData = [
+		new TempInt(obj.objID),
+		objectTypeToIndex(obj.type || "None"), // Map to index with fallback
+		directionToIndex(obj.direction), // Map to index (already handles null)
+		new TempInt(obj.destination || ""),
+		materialTypeToIndex(obj.material || "None"), // Map to index with fallback
+		obj.actions.map((a: Action) => new TempInt(a.actionID)),
+		// Use text definition ID from the objDescription object if available
+		new TempInt(obj.objDescription.id),
+		new ByteArray(obj.name),
+		obj.altNames.map((name) => new ByteArray(name)),
+	];
+	console.log("Creating object:", objData);
+	await dispatchDesignerCall("create_objects", [objData]);
 };
 
 /**
@@ -118,7 +124,7 @@ export const processRoomObjects = async (
  */
 export const processObjectActions = async (
 	config: Config,
-	obj: Object,
+	obj: ZorgObject,
 ): Promise<void> => {
 	for (const action of obj.actions) {
 		// const actionsInterface:
@@ -140,19 +146,23 @@ export const processObjectActions = async (
 		// 	affectedByActionId: "",
 		// };
 		// Create action
-		const actionData = [
-			new TempInt(action.actionID),
-			actionTypeToIndex(action.type || "None"), // Map to index with fallback
-			new ByteArray(action.dBitText), // Get the text content from either string or object
-			action.enabled, // Convert boolean to 0/1
-			action.revertable ? 1 : 0, // Convert boolean to 0/1
-			action.dBit ? 1 : 0, // Convert boolean to 0/1
-			new TempInt(action.affectsAction || ""),
-			0, //affectedByActionId
-		];
-		console.log("Creating action:", actionData);
-		await dispatchDesignerCall("create_actions", [actionData]);
+		await publishAction(action);
 	}
+};
+
+export const publishAction = async (action: Action) => {
+	const actionData = [
+		new TempInt(action.actionID),
+		actionTypeToIndex(action.type || "None"), // Map to index with fallback
+		new ByteArray(action.dBitText), // Get the text content from either string or object
+		action.enabled, // Convert boolean to 0/1
+		action.revertable ? 1 : 0, // Convert boolean to 0/1
+		action.dBit ? 1 : 0, // Convert boolean to 0/1
+		new TempInt(action.affectsAction || ""),
+		0, //affectedByActionId
+	];
+	console.log("Creating action:", actionData);
+	await dispatchDesignerCall("create_actions", [actionData]);
 };
 
 /**
@@ -183,9 +193,11 @@ export const dispatchDesignerCall = async (
 	} catch (error) {
 		actions.notifications.addPublishingLog(
 			new CustomEvent("error", {
-				detail: { error: { message: error.message }, call, args },
+				detail: { error: { message: (error as Error).message }, call, args },
 			}),
 		);
-		console.error("Error sending designer call:", error);
+		console.error(
+			`Error sending designer call: ${(error as Error).message}, ${call}, ${args}`,
+		);
 	}
 };

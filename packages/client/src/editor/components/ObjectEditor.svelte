@@ -1,19 +1,20 @@
 <script lang="ts">
   import { createEventDispatcher, onMount } from "svelte";
-  import type { Object } from "$editor/lib/schemas";
+  import type { ZorgObject } from "$editor/lib/schemas";
   import {
     OBJECT_TYPE_OPTIONS,
     MATERIAL_TYPE_OPTIONS,
     DIRECTION_OPTIONS,
   } from "$editor/lib/types";
   import { actions } from "$editor/store";
+  import TagInput from "./TagInput.svelte";
 
-  export let object: Object;
+  export let object: ZorgObject;
 
-  const dispatch = createEventDispatcher<{ update: Object }>();
+  const dispatch = createEventDispatcher<{ update: ZorgObject }>();
 
   // Create a copy of the object for editing
-  let editedObject: Object;
+  let editedObject: ZorgObject;
 
   // Initialize the edited object when the component mounts
   onMount(() => {
@@ -32,6 +33,28 @@
 </script>
 
 <div class="space-y-4">
+  <div class="form-group">
+    <label for="objName" class="block text-sm font-medium text-gray-700"
+      >Name</label
+    >
+    <input
+      id="objName"
+      bind:value={editedObject.name}
+      on:input={handleChange}
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+    />
+  </div>
+  <div class="form-group">
+    <label for="objName" class="block text-sm font-medium text-gray-700"
+      >References</label
+    >
+    <TagInput bind:value={editedObject.altNames} on:change={handleChange} />
+    <p class="mt-1 text-xs text-gray-500">
+      Alternative ways to address this object, use "," to separate multiple
+      names
+    </p>
+  </div>
+
   <div class="form-group">
     <label for="objectType" class="block text-sm font-medium text-gray-700"
       >Object Type</label

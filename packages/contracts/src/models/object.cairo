@@ -21,6 +21,8 @@ pub struct Object {
     pub matType: zrk_enums::MaterialType,
     pub objectActionIds: Array<felt252>,
     pub txtDefId: felt252,
+    pub name: ByteArray,
+    pub altNames: Array<ByteArray>,
 }
 
 /// Returns the p has of the contents of the

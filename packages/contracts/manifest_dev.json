@@ -1312,8 +1312,8 @@
   },
   "contracts": [
     {
-      "address": "0x37221e4558643fadf963da686ddf37a12a59de257a282783d0cefb5b4e9e712",
-      "class_hash": "0x3e30cc92836f14bd0a627271b83b4bf31df0b49efceeabfec110bf9ed0123d",
+      "address": "0x2c2d137f9b93e783dd6bf8241ead57a25754930622b618c3234bcf4de0e5e1d",
+      "class_hash": "0x2e08460b8593392bea0347b896c1a124548306f73c1b21badae76b9624d4184",
       "abi": [
         {
           "type": "impl",
@@ -1575,6 +1575,14 @@
             {
               "name": "txtDefId",
               "type": "core::felt252"
+            },
+            {
+              "name": "name",
+              "type": "core::byte_array::ByteArray"
+            },
+            {
+              "name": "altNames",
+              "type": "core::array::Array::<core::byte_array::ByteArray>"
             }
           ]
         },
@@ -2083,8 +2091,8 @@
       ]
     },
     {
-      "address": "0x85863481359d530fd4daf2b8e25d01de510062ca9ccd5d424e3d5698101b6",
-      "class_hash": "0x2a457998b3355d445eed7b89cf5b2616e3f204eb04cc94161738fc30a7425f9",
+      "address": "0x3672ed0d1075203ee27ade30185a7fd33abcbd40d5a5590b8d742f02dca7f7b",
+      "class_hash": "0x41fba961dfb1e4761d9a44486743f3b00483532625b754ef1658114245e2a66",
       "abi": [
         {
           "type": "impl",
@@ -2324,7 +2332,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x2c829792b4900814b5edcafdc74bfd44c2777fc5653efa636a5af31d554d3c8",
+      "class_hash": "0x223d70f457925a6aa12e8029b8ec21b8f864066b2cf62f47e26d135f57ec02d",
       "tag": "the_oruggin_trail-Object",
       "selector": "0x4fb4d030de6a33ed1299b70767b5efbf47af7f21535b4f094f4622e0dafd44"
     },

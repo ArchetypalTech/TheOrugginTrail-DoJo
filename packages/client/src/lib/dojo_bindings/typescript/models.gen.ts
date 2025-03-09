@@ -45,6 +45,8 @@ export interface Object {
 	matType: MaterialTypeEnum;
 	objectActionIds: Array<BigNumberish>;
 	txtDefId: BigNumberish;
+	name: string;
+	altNames: Array<string>;
 }
 
 // Type definition for `the_oruggin_trail::models::object::ObjectValue` struct
@@ -55,6 +57,8 @@ export interface ObjectValue {
 	matType: MaterialTypeEnum;
 	objectActionIds: Array<BigNumberish>;
 	txtDefId: BigNumberish;
+	name: string;
+	altNames: Array<string>;
 }
 
 // Type definition for `the_oruggin_trail::models::output::Output` struct
@@ -389,6 +393,8 @@ export const schema: SchemaType = {
 				Hay: undefined, }),
 			objectActionIds: [0],
 			txtDefId: 0,
+		name: "",
+			altNames: [""],
 		},
 		ObjectValue: {
 		objType: new CairoCustomEnum({ 
@@ -436,6 +442,8 @@ export const schema: SchemaType = {
 				Hay: undefined, }),
 			objectActionIds: [0],
 			txtDefId: 0,
+		name: "",
+			altNames: [""],
 		},
 		Output: {
 			playerId: 0,

@@ -184,6 +184,8 @@ export const ObjectSchema = z.object({
 	direction: DirectionEnum.nullable(),
 	destination: z.string().nullable(),
 	actions: z.array(ActionSchema),
+	name: z.string(),
+	altNames: z.array(z.string()),
 });
 export type Object = z.infer<typeof ObjectSchema>;
 

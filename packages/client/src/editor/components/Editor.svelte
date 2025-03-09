@@ -5,7 +5,7 @@
   import RoomEditor from "./RoomEditor.svelte";
   import ObjectEditor from "./ObjectEditor.svelte";
   import ActionEditor from "./ActionEditor.svelte";
-  import type { Room, Object, Action } from "$editor/lib/schemas";
+  import type { Room, ZorgObject as Object, Action } from "$editor/lib/schemas";
   import { user_store } from "$lib/stores/user_store";
 
   // State
@@ -247,7 +247,7 @@
                     class:btn-active={i === selectedObjectIndex}
                     on:click={() => handleObjectSelect(i)}
                   >
-                    {object.type} ({object.material})
+                    {object.name || object.type} ({object.material})
                   </button>
                 </li>
               {/each}

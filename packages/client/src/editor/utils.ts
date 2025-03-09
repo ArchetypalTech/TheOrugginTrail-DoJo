@@ -8,6 +8,9 @@ import type {
 	MATERIAL_TYPES,
 	ROOM_TYPES,
 	BIOME_TYPES,
+	Room,
+	ZorgObject,
+	Action,
 } from "$editor/lib/schemas";
 import {
 	ConfigSchema,
@@ -101,40 +104,11 @@ const extractRoomsFromConfig = (
 
 // Helper function to create a fallback config from rooms
 const createFallbackConfig = (rooms: unknown[]): Config => {
-	interface RoomLike {
-		roomID?: string;
-		roomName?: string;
-		roomDescription?: { text?: string };
-		roomType?: string;
-		biomeType?: string;
-		objects?: ObjectLike[];
-	}
-
-	interface ObjectLike {
-		objID?: string;
-		type?: string;
-		material?: string;
-		direction?: string;
-		destination?: string;
-		objDescription?: { text?: string };
-		actions?: ActionLike[];
-	}
-
-	interface ActionLike {
-		actionID?: string;
-		type?: string;
-		dBitText?: string;
-		dBit?: boolean;
-		enabled?: boolean;
-		revertable?: boolean;
-		affectsAction?: string;
-	}
-
-	const minimalConfig = {
+	return {
 		levels: [
 			{
 				levelName: "Level 1",
-				rooms: (rooms as RoomLike[]).map((room) => ({
+				rooms: (rooms as Partial<Room>[]).map((room) => ({
 					roomID: normalizeId(room.roomID ?? "") || generateNumericUniqueId(),
 					roomName: room.roomName || "Unnamed Room",
 					roomDescription: {
@@ -144,7 +118,7 @@ const createFallbackConfig = (rooms: unknown[]): Config => {
 					},
 					roomType: room.roomType || "None",
 					biomeType: room.biomeType || "None",
-					objects: ((room.objects || []) as ObjectLike[]).map((obj) => ({
+					objects: ((room.objects || []) as Partial<ZorgObject>[]).map((obj) => ({
 						objID: normalizeId(obj.objID ?? "") || generateNumericUniqueId(),
 						type: obj.type || "None",
 						material: obj.material || "None",
@@ -155,7 +129,7 @@ const createFallbackConfig = (rooms: unknown[]): Config => {
 							owner: normalizeId(obj.objID ?? "") || generateNumericUniqueId(),
 							text: obj.objDescription?.text || "",
 						},
-						actions: ((obj.actions || []) as ActionLike[]).map((act) => ({
+						actions: ((obj.actions || []) as Partial<Action>[]).map((act) => ({
 							actionID: normalizeId(act.actionID ?? "") || generateNumericUniqueId(),
 							type: act.type || "None",
 							dBitText: act.dBitText || "",
@@ -164,13 +138,13 @@ const createFallbackConfig = (rooms: unknown[]): Config => {
 							revertable: act.revertable || false,
 							affectsAction: normalizeId(act.affectsAction ?? "") || null,
 						})),
+						name: obj.name || "",
+						altNames: obj.altNames || [],
 					})),
 				})),
 			},
 		],
 	};
-
-	return minimalConfig as unknown as Config;
 };
 
 /**
@@ -321,6 +295,7 @@ export const validateConfig = (config: unknown): ValidationError[] => {
 	// First, do basic schema validation
 	const schemaErrors = validateWithSchema(ConfigSchema, config);
 
+	// FIXME: temporarily removed validation
 	// If it passes schema validation, also validate IDs
 	if (schemaErrors.length === 0 && config && typeof config === "object") {
 		try {

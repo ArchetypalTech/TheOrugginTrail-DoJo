@@ -39,8 +39,12 @@ pub mod lookat {
             let _id: felt252 = objects.at(idx).clone();
             let obj: Object = world.read_model(_id);
             let _txt: Txtdef = world.read_model(obj.txtDefId.clone());
+            let mut objName = obj.name.clone();
+            if (objName.len() == 0) {
+                objName = object_type_to_str(obj.objType);
+            }
             let mut desc: ByteArray = format!(
-                "{} {}, {}\n", base.clone(), object_type_to_str(obj.objType), _txt.text.clone(),
+                "{} {}, {}\n", base.clone(), objName, _txt.text.clone(),
             );
             out.append(@desc);
             idx += 1;
