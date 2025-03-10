@@ -1,4 +1,4 @@
-import manifestJson from "@zorg/contracts/manifest_dev.json";
+import manifestJson from "@zorg/contracts/manifest.json";
 import { url, cleanEnv, host, str } from "envalid";
 import { Account, Contract, RpcProvider } from "starknet";
 

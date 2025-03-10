@@ -12,6 +12,7 @@
     publishAction,
     publishRoom,
   } from "$editor/publisher";
+  import { ORUG_CONFIG } from "$lib/config";
 
   // State
   let selectedObjectIndex: number | null = null;
@@ -159,7 +160,15 @@
 
 <div class="editor-container text-sm">
   <header class="p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold font-mono">EDITZORG</h1>
+    <div class="flex flex-col">
+      <h1 class="text-xl font-bold font-mono">EDITZORG</h1>
+      <a
+        href={`${ORUG_CONFIG.endpoints.torii.http}/sql`}
+        target="_blank"
+        class="text-blue-500 text-xs"
+        >SQL ({import.meta.env.MODE.toUpperCase()})</a
+      >
+    </div>
     <div class="flex gap-2 font-semibold">
       <label class="btn btn-sm btn-success">
         Import Config

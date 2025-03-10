@@ -10,10 +10,7 @@ pub mod lookat {
     use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{
         player::Player, room::Room,
-        zrk_enums::{
-            RoomType, room_type_to_str, BiomeType, biome_type_to_str, material_type_to_str,
-            object_type_to_str, direction_type_to_str, ActionType,
-        },
+        zrk_enums::{material_type_to_str, object_type_to_str, direction_type_to_str, ActionType},
         txtdef::Txtdef, object::Object, object,
     };
 

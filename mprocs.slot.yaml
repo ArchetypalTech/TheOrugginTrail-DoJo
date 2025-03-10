@@ -1,0 +1,7 @@
+procs:
+  contracts:
+    cwd: packages/contracts
+    shell: bun run slot:watch
+  client:
+    cwd: packages/client
+    shell: bun run dev:slot

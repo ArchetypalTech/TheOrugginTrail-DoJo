@@ -5,8 +5,8 @@ import {
 	clearTerminalContent,
 } from "$lib/stores/terminal_store";
 import { WindowType, windowsStore } from "$lib/stores/windows_store";
-import { get } from "svelte/store";
 import { commandHandler } from "./commandHandler";
+import { ORUG_CONFIG } from "$lib/config";
 
 type commandContext = {
 	command: string;
@@ -143,5 +143,16 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 			const e = error as Error;
 			return e.message;
 		}
+	},
+	connection: async () => {
+		const dest = {
+			endpoints: ORUG_CONFIG.endpoints,
+			mode: import.meta.env.MODE,
+		};
+		addTerminalContent({
+			text: JSON.stringify(dest, null, 2),
+			format: "system",
+			useTypewriter: true,
+		});
 	},
 };

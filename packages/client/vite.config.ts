@@ -7,25 +7,36 @@ import topLevelAwait from "vite-plugin-top-level-await";
 import { patchBindings } from "./scripts/vite-fix-bindings";
 import tailwindcss from "@tailwindcss/vite";
 
-const config: UserConfig = {
-	plugins: [
-		tailwindcss(),
-		sveltekit(),
-		wasm(),
-		topLevelAwait(),
-		patchBindings(), // Patcher for `models.gen.ts` starknet BigNumberish type import
-	],
-	build: {
-		target: "esnext",
-	},
-	server: {
-		// add SSL certificates
-		https: {
-			key: fs.readFileSync(path.resolve(__dirname, "ssl", "localhost-key.pem")), // Path to your private key
-			cert: fs.readFileSync(path.resolve(__dirname, "ssl", "localhost-cert.pem")), // Path to your certificate
+export default defineConfig(async ({ mode }) => {
+	console.log(`\n🦨💕 ZORG IN (${mode}) MODE`);
+	const config: UserConfig = {
+		plugins: [
+			tailwindcss(),
+			sveltekit(),
+			wasm(),
+			topLevelAwait(),
+			patchBindings(), // Patcher for `models.gen.ts` starknet BigNumberish type import
+		],
+		build: {
+			target: "esnext",
 		},
-		cors: true,
-	},
-};
+		server: {
+			// add SSL certificates
+			https: {
+				key: fs.readFileSync(path.resolve(__dirname, "ssl", "localhost-key.pem")), // Path to your private key
+				cert: fs.readFileSync(path.resolve(__dirname, "ssl", "localhost-cert.pem")), // Path to your certificate
+			},
+			cors: true,
+		},
+		resolve: {
+			alias: {
+				"@zorg/contracts/manifest.json":
+					mode === "slot"
+						? "@zorg/contracts/manifest_slot.json"
+						: "@zorg/contracts/manifest_dev.json",
+			},
+		},
+	};
 
-export default defineConfig(config);
+	return config;
+});

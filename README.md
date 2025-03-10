@@ -23,6 +23,7 @@ bun install
 ```
 
 ### 💕 Quickstart installer:
+
 Automated installer for installing [scarb](https://github.com/software-mansion/scarb) and [dojo](https://book.dojoengine.org/getting-started#install-using-asdf) using [asdf](https://asdf-vm.com/) and [homebrew](https://brew.sh/).
 
 ```bash
@@ -31,8 +32,16 @@ bun run quickstart
 
 ### 🕹️ Run development mode:
 
+Local development:
+
 ```bash
 bun run dev
+```
+
+Slot development:
+
+```bash
+bun run dev:slot
 ```
 
 ### 🔧 Manual dependency installation:
@@ -50,10 +59,9 @@ asdf install dojo <version>
 
 This is a monorepo containing the following packages:
 
-| **Package** | **Description**                               |
-| ----------- | --------------------------------------------- |
-| `client`    | Game client                                   |
-| `contracts` | Dojo contracts        |
-| `room-generator`     | JSON based utility for room generation   |
+| **Package** | **Description** |
+| ----------- | --------------- |
+| `client`    | Game client     |
+| `contracts` | Dojo contracts  |
 
 ![ad_2_final](https://github.com/ArchetypalTech/TheOrugginTrail/assets/983878/b90bcc55-2ba1-4564-94e1-d08184c1e49c)
