@@ -16,6 +16,9 @@ const config = {
 			$editor: "./src/editor",
 		},
 	},
+	// hooks: {
+	// 	client: ["./src/hooks.client.ts"],
+	// },
 };
 
 export default config;

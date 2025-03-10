@@ -11,7 +11,9 @@ const runBuild = async () => {
 	if (buildProcess) {
 		buildProcess.kill();
 	}
-	buildProcess = Bun.spawn([`sozo`, `build`], {
+	const cmd =
+		"sozo build --typescript --bindings-output ../react-client/src/lib/dojo_bindings/";
+	buildProcess = Bun.spawn(cmd.split(" "), {
 		stdout: "inherit",
 		stderr: "inherit",
 		env: { FORCE_COLOR: "3", ...import.meta.env },

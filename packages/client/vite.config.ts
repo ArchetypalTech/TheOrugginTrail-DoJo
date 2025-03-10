@@ -12,28 +12,33 @@ import { bgGreen, black } from "ansicolor";
 export default defineConfig(async ({ mode }) => {
 	console.log(`\n🦨💕 ZORG IN (${mode}) MODE`);
 	const isSlot = mode === "slot";
-	console.info(
-		black(
-			bgGreen(
-				" Mkcert may prompt for sudo password to generate SSL certificates. ",
+	const isProduction = mode === "production";
+	if (!isProduction)
+		console.info(
+			black(
+				bgGreen(
+					" Mkcert may prompt for sudo password to generate SSL certificates. ",
+				),
 			),
-		),
-	);
+		);
 	const config: UserConfig = {
 		plugins: [
-			mkcert({
-				hosts: ["localhost", "*.localhost", "*.127.0.0.1"],
-				autoUpgrade: true,
-				savePath: path.resolve(__dirname, "ssl"),
-			}),
-			tailwindcss(),
 			sveltekit(),
+			!isProduction &&
+				mkcert({
+					hosts: ["localhost", "*.localhost", "*.127.0.0.1"],
+					autoUpgrade: true,
+					savePath: path.resolve(__dirname, "ssl"),
+				}),
+			tailwindcss(),
 			wasm(),
 			topLevelAwait(),
 			patchBindings(), // Patcher for `models.gen.ts` starknet BigNumberish type import
 		],
 		build: {
 			target: "esnext",
+			minify: false,
+			sourcemap: true,
 		},
 		server: {
 			cors: true,

@@ -1,0 +1,18 @@
+{
+  "version": "v1.4.4",
+  "record": {
+    "hosts": [
+      "localhost",
+      "127.0.0.1",
+      "192.168.1.238",
+      "10.134.246.173",
+      "*.localhost",
+      "*.127.0.0.1"
+    ],
+    "hash": {
+      "key": "aa448935e545e858b88d72a9c479819200f5f88da224a022db7e57fb99e0c511",
+      "cert": "bae7266f8098a3a6236b4bf05451f6d96ed9c1817d5316d3f8bb73904ff6cd26"
+    }
+  },
+  "configFilePath": "/Users/alexander/Node/semeaopus/TheOrugginTrail-DoJo/packages/react-client/ssl/config.json"
+}

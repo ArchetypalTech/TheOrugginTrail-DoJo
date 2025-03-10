@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "./colors.css";
+@import "./typography.css";
+
+html,
+body,
+#root {
+  height: 100%;
+  position: relative;
+  text-rendering: optimizeLegibility;
+  @apply font-sans antialiased;
+}
