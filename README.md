@@ -44,6 +44,10 @@ Slot development:
 bun run dev:slot
 ```
 
+### 🗺️ World deployment:
+
+Initial deployments start with an empty world, use the editor at `http://localhost:5173/editor` to create and publish a world.
+
 ### 🔧 Manual dependency installation:
 
 ```bash

@@ -57,8 +57,14 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 	}
 };
 
+/*
+ * sendCommand
+ * Clientside call for player commands
+ */
+
 async function sendCommand(command: string): Promise<string> {
 	if (get(walletStore).isConnected) {
+		// we're connected to controller
 		return sendControllerCommand(command);
 	}
 	try {
@@ -78,9 +84,15 @@ async function sendCommand(command: string): Promise<string> {
 	}
 }
 
+/*
+ * sendControllerCommand
+ * Clientside call for controller commands
+ */
+
 async function sendControllerCommand(command: string): Promise<string> {
-	console.log("going through controller");
+	console.log("[CONTROLLER] sendControllerCommand", command);
 	const wallet = get(walletStore);
+	console.time("calltime");
 	const { calldata, cmds } = await SystemCalls.formatCallData(command);
 	wallet.controller?.account?.execute([
 		{
@@ -89,5 +101,6 @@ async function sendControllerCommand(command: string): Promise<string> {
 			calldata,
 		},
 	]);
+	console.timeEnd("calltime");
 	return "woop";
 }

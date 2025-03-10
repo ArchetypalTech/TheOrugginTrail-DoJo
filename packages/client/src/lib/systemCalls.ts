@@ -8,10 +8,14 @@ async function formatCallData(message: string) {
 	const cmd_array = cmds.map((cmd) => byteArray.byteArrayFromString(cmd));
 	// create message as readable contract data
 	const calldata = CallData.compile([cmd_array, 23]);
-	console.log("sendMessage(cmds): ", cmds, " -> calldata ->", calldata);
+	console.log("formatCallData(cmds): ", cmds, " -> calldata ->", calldata);
 	return { calldata, cmds };
 }
 
+/*
+ * sendMessage
+ * Serverside call for player commands
+ */
 async function sendMessage(message: string) {
 	const {
 		contracts: { entity },
@@ -21,6 +25,14 @@ async function sendMessage(message: string) {
 	try {
 		// ionvoke the contract as we are doing a write
 		const response = await entity.invoke("listen", [calldata]);
+		return new Response(
+			JSON.stringify({ tx: response.transaction_hash, cmds, calldata }),
+			{
+				headers: {
+					"Content-Type": "application/text",
+				},
+			},
+		);
 	} catch (error) {
 		console.error("sendMessage(cmds): ", cmds, " -> error ->", error);
 		return new Response(JSON.stringify({ message: (error as Error).message }), {
@@ -29,11 +41,6 @@ async function sendMessage(message: string) {
 			},
 		});
 	}
-	return new Response("EMPTY RESPONSE", {
-		headers: {
-			"Content-Type": "application/json",
-		},
-	});
 }
 
 export type DesignerCall =
@@ -47,52 +54,38 @@ type DesignerCallProps = {
 	args: unknown[];
 };
 
+/*
+ * sendDesignerCall
+ * Serverside call for designer commands
+ */
+
 async function sendDesignerCall(props: string) {
 	const { call, args } = JSON.parse(props) as DesignerCallProps;
 	try {
-		// reformat args to cairo array
+		// other calls follow the same format Array<Object> see Cairo Models
 		if (call !== "create_txt") {
+			// reformat args to cairo array
 			const data = toCairoArray(args) as RawArgsArray;
 			const calldata = CallData.compile(data);
-			// console.log(
-			// 	`sendDesignerCall[${call}](args):`,
-			// 	args,
-			// 	" -> calldata ->",
-			// 	calldata,
-			// );
 			const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
 			// we do a manual wait because the waitForTransaction is super slow
 			await new Promise((r) => setTimeout(r, 500));
-			// await ORUG_CONFIG.katanaProvider.waitForTransaction(
-			// 	response.transaction_hash,
-			// );
 			return new Response(JSON.stringify(response), {
 				headers: {
 					"Content-Type": "application/json",
 				},
 			});
 		}
-		// txt format: id: felt252, ownedBy: felt252, val: ByteArray
-		// 2nd arg needs to always be 0
-		// console.log("LENGTH >>>>", (args[2] as string).length, args[2]);
 
 		const safeEncoded = encodeURI(args[2] as string);
 		const convertedString = byteArray.byteArrayFromString(safeEncoded);
 
 		const data = [args[0], args[1], convertedString] as RawArgsArray;
 		const calldata = CallData.compile(data);
-		// console.log(
-		// 	`sendDesignerCall[${call}](args):`,
-		// 	args,
-		// 	" -> calldata ->",
-		// 	data,
-		// );
+
 		const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
 		// we do a manual wait because the waitForTransaction is super slow
 		await new Promise((r) => setTimeout(r, 500));
-		// await ORUG_CONFIG.katanaProvider.waitForTransaction(
-		// 	response.transaction_hash,
-		// );
 
 		return new Response(JSON.stringify(response), {
 			headers: {

@@ -9,6 +9,7 @@
 
   let hasError = false;
   let ambientSoundComponent: { switchTone: () => void };
+  const useController = import.meta.env.MODE === "slot";
 
   function handleError(error: unknown) {
     hasError = true;
@@ -39,7 +40,9 @@
       <div
         class="absolute w-[500px] h-2/3 min-w-[500px] flex flex-col top-3/4 -translate-y-1/2"
       >
-        <Wallet />
+        {#if useController}
+          <Wallet />
+        {/if}
         <Terminal />
       </div>
 

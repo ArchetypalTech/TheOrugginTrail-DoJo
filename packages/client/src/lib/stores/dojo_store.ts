@@ -8,7 +8,7 @@ export type Outputter = {
 };
 
 export type DojoStatus = {
-	status: "loading" | "initialized" | "spawning" | "error";
+	status: "loading" | "initialized" | "spawning" | "error" | "controller";
 	error: string | null;
 };
 

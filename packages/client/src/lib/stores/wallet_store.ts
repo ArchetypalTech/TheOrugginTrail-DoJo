@@ -32,24 +32,18 @@ export const setWalletData = (data: Partial<WalletStore>) => {
 
 export const setupController = async () => {
 	const worldName = ORUG_CONFIG.manifest.default.world.name;
-	// const methods = ORUG_CONFIG.contracts.entity.abi.map((method) => ({
-	// 	entryPoint: method.name,
-	// 	description: `Approve submitting transactions to play ${worldName}`,
-	// }));
 	const controllerConfig = {
 		colorMode: "dark",
-		theme: "", //"here will go our theme that needs to be designed and added",
-		// Policies are required to be defined better
+		theme: "",
 		policies: {
 			contracts: {
 				[ORUG_CONFIG.manifest.entity.address]: {
 					name: worldName, // Optional, can be added if you want a name
-					description: `Approve or reject submitting transactions to play ${worldName}`,
+					description: `Aprove submitting transactions to ${worldName}`,
 					methods: [
-						// ...methods,
 						{
-							entrypoint: "listen", // The actual method name
-							description: `Approve submitting transactions to play ${worldName}`,
+							entrypoint: "listen",
+							description: `The terminal endpoint for ${worldName}`,
 						},
 					],
 				},
@@ -86,16 +80,6 @@ export const setupController = async () => {
 		setWalletData({
 			controller,
 		});
-		// controller.on("accountsChanged", async () => {
-		// 	const username = await controller.username();
-		// 	setWalletData({
-		// 		isConnected: true,
-		// 		username,
-		// 	});
-		// });
-		// controller.on("networkChanged", async () => {
-		// 	// connectedToCGC.set(false);
-		// });
 		return controller;
 	} catch (e) {
 		console.error("Error creating controller", e);
