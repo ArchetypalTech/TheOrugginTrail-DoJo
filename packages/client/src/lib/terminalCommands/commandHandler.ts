@@ -1,8 +1,9 @@
 import { addTerminalContent } from "$lib/stores/terminal_store";
-import { connectedToArX, connectedToCGC } from "$lib/stores/wallet_store";
 import { getBalance2 } from "$lib/tokens/interaction";
 import { get } from "svelte/store";
 import { TERMINAL_SYSTEM_COMMANDS } from "./systemCommands";
+import { wallet } from "starknet";
+import { walletStore } from "$lib/stores/wallet_store";
 
 export const commandHandler = async (command: string, bypassSystem = false) => {
 	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
@@ -29,10 +30,10 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 	// skip token gating in DEV
 	if (!import.meta.env.DEV) {
 		// check if player is allowed to interact (tokengating) {}
-		if (!get(connectedToArX) && !get(connectedToCGC)) {
+		if (!get(walletStore).isConnected) {
 			addTerminalContent({
-				text: "You are not in the realm of shoggoth yet...",
-				format: "shog",
+				text: "Connect",
+				format: "hash",
 				useTypewriter: true,
 			});
 			return;
