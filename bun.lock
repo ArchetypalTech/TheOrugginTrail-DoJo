@@ -80,6 +80,7 @@
         "@scaleway/random-name": "^5.1.1",
         "@tailwindcss/vite": "^4.0.3",
         "@vitejs/plugin-react-swc": "^3.8.0",
+        "@zorg/contracts": "workspace:*",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "envalid": "^8.0.0",

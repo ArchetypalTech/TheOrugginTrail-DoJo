@@ -3,7 +3,7 @@ import type {
 	Config,
 	EditorState,
 	Action,
-	Object,
+	ZorgObject,
 	Room,
 } from "$editor/lib/schemas";
 import {
@@ -18,7 +18,6 @@ import {
 	createDefaultObject,
 	createDefaultAction,
 } from "$editor/defaults";
-import testConfig from "@zorg/generator/config/test_game.json";
 import type { NotificationState } from "$editor/notifications";
 import { initialNotificationState } from "$editor/notifications";
 import { publishConfigToContract } from "$editor/publisher";
@@ -183,8 +182,6 @@ export const actions = {
 				actions.config.loadConfig(config);
 				return;
 			}
-
-			actions.config.loadConfig(transformConfig(testConfig));
 		},
 
 		/**

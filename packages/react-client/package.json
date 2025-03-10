@@ -4,7 +4,8 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "bunx vite",
+		"dev": "bunx vite --mode development",
+		"dev:slot": "bunx vite dev --mode slot",
 		"build": "bunx vite build",
 		"preview": "bunx vite preview --port 8080",
 		"start": "bunx serve -s /dist --port 8080"
@@ -34,7 +35,8 @@
 		"vite-plugin-top-level-await": "^1.5.0",
 		"vite-plugin-wasm": "^3.4.1",
 		"zod": "^3.24.2",
-		"zustand": "^5.0.3"
+		"zustand": "^5.0.3",
+		"@zorg/contracts": "workspace:*"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
