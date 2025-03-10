@@ -31,8 +31,8 @@ export default defineConfig(async ({ mode }) => {
 				}),
 			wasm(),
 			topLevelAwait(),
-			react(),
 			tailwindcss(),
+			react(),
 			patchBindings(),
 		],
 		build: {
@@ -47,7 +47,6 @@ export default defineConfig(async ({ mode }) => {
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "./src"),
-				"@assets": path.resolve(__dirname, "./src/assets"),
 				"@components": path.resolve(__dirname, "./src/components"),
 				"@lib": path.resolve(__dirname, "./src/lib"),
 				"@styles": path.resolve(__dirname, "./src/styles"),

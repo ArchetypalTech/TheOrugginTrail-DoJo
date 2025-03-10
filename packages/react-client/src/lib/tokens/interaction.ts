@@ -1,11 +1,7 @@
 // Internals
 import { get } from "svelte/store";
-import {
-	addrContract,
-	addrContractSepolia,
-	initializeContracts,
-} from "./constants.js";
-import { walletStore } from "$lib/stores/wallet_store.js";
+import { addrContract, initializeContracts } from "./constants.js";
+import WalletStore from "@lib/stores/wallet.store";
 
 // Get the balance of the FerryTicket via command
 export async function getBalance(): Promise<string> {

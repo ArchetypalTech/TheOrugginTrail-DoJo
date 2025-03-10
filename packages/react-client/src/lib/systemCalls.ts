@@ -1,6 +1,6 @@
 import { CallData, byteArray, type RawArgsArray } from "starknet";
-import { ORUG_CONFIG } from "./config";
-import { toCairoArray } from "./utils";
+import { ORUG_CONFIG } from "@lib/config";
+import { toCairoArray } from "@lib/utils";
 
 async function formatCallData(message: string) {
 	const cmds_raw = message.split(/\s+/);

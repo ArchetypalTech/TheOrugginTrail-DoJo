@@ -1,6 +1,6 @@
 import type manifestJsonType from "@zorg/contracts/manifest_dev.json";
 import manifestJson from "@zorg/contracts/manifest";
-import { url, cleanEnv, host, str } from "envalid";
+import { url, cleanEnv, str } from "envalid";
 import { Account, Contract, RpcProvider } from "starknet";
 
 const getOrFail = <T>(value: T | undefined, name?: string): T => {

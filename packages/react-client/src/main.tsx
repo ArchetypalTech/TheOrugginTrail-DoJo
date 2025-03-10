@@ -1,8 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import { InitDojo } from "./lib/dojo.ts";
-import DojoStore from "./stores/dojo_store.ts";
+import { InitDojo } from "@lib/dojo.ts";
+import DojoStore from "@lib/stores/dojo.store.ts";
 
 const initializeRoot = async () => {
 	DojoStore().initializeConfig(await InitDojo());

@@ -1,10 +1,11 @@
-import { get, writable } from "svelte/store";
-import { wallet, type AccountInterface } from "starknet";
+import type { WalletAccount } from "starknet";
 import Controller, { type ControllerOptions } from "@cartridge/controller";
-import { ORUG_CONFIG } from "$lib/config";
+import { ORUG_CONFIG } from "@lib/config";
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 
 export interface WalletStore {
-	accountController: AccountInterface | undefined;
+	accountController: WalletAccount | undefined;
 	username: string | undefined;
 	walletAddress: string | undefined;
 	controller: Controller | undefined;
@@ -12,29 +13,35 @@ export interface WalletStore {
 	isLoading: boolean;
 }
 
-export const walletStore = writable<WalletStore>({
+// Create initial state
+const initialState: WalletStore = {
 	accountController: undefined,
 	username: undefined,
 	walletAddress: undefined,
 	controller: undefined,
 	isConnected: false,
 	isLoading: false,
-});
+};
+
+export const useWalletStore = create<
+	WalletStore & { set: (state: Partial<WalletStore>) => void }
+>()(
+	immer((set) => ({
+		...initialState,
+		set,
+	})),
+);
+
+const get = () => useWalletStore.getState();
+const set = useWalletStore.getState().set;
 
 export const setWalletData = (data: Partial<WalletStore>) => {
-	walletStore.update((store) => {
-		return {
-			...store,
-			...data,
-		};
-	});
+	set(data);
 };
 
 export const setupController = async () => {
 	const worldName = ORUG_CONFIG.manifest.default.world.name;
-	const controllerConfig = {
-		colorMode: "dark",
-		theme: "",
+	const controllerConfig: ControllerOptions = {
 		policies: {
 			contracts: {
 				[ORUG_CONFIG.manifest.entity.address]: {
@@ -74,7 +81,8 @@ export const setupController = async () => {
 			//erc721: [addrContract],
 		},
 		slot: ORUG_CONFIG.env.VITE_SLOT,
-	} satisfies ControllerOptions;
+	};
+
 	try {
 		const controller = new Controller(controllerConfig);
 		setWalletData({
@@ -87,17 +95,17 @@ export const setupController = async () => {
 };
 
 if (import.meta.env.MODE === "slot") {
-	const controller = await setupController();
+	await setupController();
 }
 
 export const connectController = async () => {
-	const wallet = get(walletStore);
+	const wallet = get();
 	if (wallet.isConnected) {
 		return;
 	}
 	setWalletData({ isLoading: true });
 	try {
-		const controller = get(walletStore).controller;
+		const controller = get().controller;
 		if (!controller) {
 			throw new Error("No controller found");
 		}
@@ -129,11 +137,11 @@ export const connectController = async () => {
 };
 
 export const openUserProfile = () => {
-	get(walletStore).controller?.openProfile("inventory");
+	get().controller?.openProfile("inventory");
 };
 
 export const disconnectController = async () => {
-	get(walletStore).controller?.disconnect(); // Disconnect the controller
+	get().controller?.disconnect(); // Disconnect the controller
 	setWalletData({
 		accountController: undefined,
 		username: undefined,
@@ -141,3 +149,16 @@ export const disconnectController = async () => {
 		isConnected: false,
 	});
 };
+
+const WalletStore = () => ({
+	...useWalletStore.getState(),
+	set: useWalletStore.setState,
+	subscribe: useWalletStore.subscribe,
+	setWalletData,
+	setupController,
+	connectController,
+	openUserProfile,
+	disconnectController,
+});
+
+export default WalletStore;

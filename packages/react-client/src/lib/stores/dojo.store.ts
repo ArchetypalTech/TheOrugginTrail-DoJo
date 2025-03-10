@@ -22,9 +22,9 @@ export type TerminalContentItem = {
 // Create initial state object
 const initialState = {
 	status: {
-		status: "loading" as DojoStatus["status"],
-		error: null as DojoStatus["error"],
-	},
+		status: "loading",
+		error: null,
+	} as DojoStatus,
 	outputter: undefined as Outputter | undefined,
 	config: undefined as Awaited<ReturnType<typeof InitDojo>> | undefined,
 	terminalContent: [] as TerminalContentItem[],
@@ -41,9 +41,9 @@ type DojoState = typeof initialState;
 export const useDojoStore = create<
 	DojoState & { set: (state: Partial<DojoState>) => void }
 >()(
-	immer((_set, get) => ({
+	immer((set) => ({
 		...initialState,
-		set: _set,
+		set,
 	})),
 );
 

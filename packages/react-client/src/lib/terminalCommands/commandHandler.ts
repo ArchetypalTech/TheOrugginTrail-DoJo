@@ -1,10 +1,10 @@
-import { addTerminalContent } from "$lib/stores/terminal_store";
-import { getBalance2 } from "$lib/tokens/interaction";
-import { get } from "svelte/store";
+import { addTerminalContent } from "@lib/stores/terminal.store";
+// import { getBalance2 } from "../tokens/interaction";
 import { TERMINAL_SYSTEM_COMMANDS } from "./systemCommands";
-import { walletStore } from "$lib/stores/wallet_store";
-import { SystemCalls } from "$lib/systemCalls";
-import { ORUG_CONFIG } from "$lib/config";
+// import { walletStore } from "@lib/stores/wallet.store";
+import { SystemCalls } from "@lib/systemCalls";
+import { ORUG_CONFIG } from "@lib/config";
+import WalletStore from "@lib/stores/wallet.store";
 
 export const commandHandler = async (command: string, bypassSystem = false) => {
 	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
@@ -31,7 +31,7 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 	// skip token gating in DEV
 	if (!import.meta.env.DEV) {
 		// check if player is allowed to interact (tokengating) {}
-		if (!get(walletStore).isConnected) {
+		if (!WalletStore().isConnected) {
 			addTerminalContent({
 				text: "Connect",
 				format: "hash",
@@ -39,14 +39,14 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 			});
 			return;
 		}
-		const tokenBalance = await getBalance2();
-		if (tokenBalance < 1) {
-			addTerminalContent({
-				text: `You have ${tokenBalance} TOT Tokens and cannot proceed on the journey.`,
-				format: "error",
-				useTypewriter: true,
-			});
-		}
+		// const tokenBalance = await getBalance2();
+		// if (tokenBalance < 1) {
+		// 	addTerminalContent({
+		// 		text: `You have ${tokenBalance} TOT Tokens and cannot proceed on the journey.`,
+		// 		format: "error",
+		// 		useTypewriter: true,
+		// 	});
+		// }
 	}
 
 	// forward to contract
@@ -63,7 +63,7 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
  */
 
 async function sendCommand(command: string): Promise<string> {
-	if (get(walletStore).isConnected) {
+	if (WalletStore().isConnected) {
 		// we're connected to controller
 		return sendControllerCommand(command);
 	}
@@ -91,10 +91,9 @@ async function sendCommand(command: string): Promise<string> {
 
 async function sendControllerCommand(command: string): Promise<string> {
 	console.log("[CONTROLLER] sendControllerCommand", command);
-	const wallet = get(walletStore);
 	console.time("calltime");
 	const { calldata, cmds } = await SystemCalls.formatCallData(command);
-	wallet.controller?.account?.execute([
+	WalletStore().controller?.account?.execute([
 		{
 			contractAddress: ORUG_CONFIG.contracts.entity.address,
 			entrypoint: "listen",
