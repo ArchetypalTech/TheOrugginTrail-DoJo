@@ -1,3 +1,4 @@
+import type manifestJsonType from "@zorg/contracts/manifest_dev.json";
 import manifestJson from "@zorg/contracts/manifest.json";
 import { url, cleanEnv, host, str } from "envalid";
 import { Account, Contract, RpcProvider } from "starknet";
@@ -9,6 +10,8 @@ const getOrFail = <T>(value: T | undefined, name?: string): T => {
 	return value;
 };
 
+const slotEnv = import.meta.env.MODE === "slot" ? { VITE_SLOT: str() } : {};
+
 const env = cleanEnv(import.meta.env, {
 	VITE_CONTROLLER_CHAINID: str(),
 	VITE_TOKEN_HTTP_RPC: url(),
@@ -18,6 +21,7 @@ const env = cleanEnv(import.meta.env, {
 	VITE_TORII_WS_RPC: str(),
 	VITE_BURNER_ADDRESS: str(),
 	VITE_BURNER_PRIVATE_KEY: str(),
+	...slotEnv,
 });
 
 const endpoints = {
@@ -41,7 +45,7 @@ const katanaProvider = new RpcProvider({
 // const mf = await import("@zorg/contracts/manifest_dev.json");
 // console.log(mf.default);
 const manifest = {
-	default: manifestJson,
+	default: manifestJson as typeof manifestJsonType,
 	entity: getOrFail(
 		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-meatpuppet"),
 		"the_oruggin_trail-meatpuppet",

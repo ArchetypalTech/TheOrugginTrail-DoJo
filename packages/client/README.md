@@ -1,64 +1,71 @@
-<!-- /*
- * Created on Wed Sep 04 2024
- *
- * Copyright (c) 2024 Archetypal Tech
- * MeaCulpa (mc) 2024 lbdl | itrainspiders
- */ -->
+<p align="center">
+  <h1 align="center">ZORG Client</h1>
+</p>
+<p align="center">
+A SvelteKit-based web client for the ZORG platform built on Dojo engine.
+</p>
+<p align="center">
+Your gateway to the Oruggin Trail adventure...
+</p>
 
-# TeamPain Client
+## ⚡ Setup
 
-This a minimal front end client for the [O'Ruggin Trail](https://github.com/ArchetypalTech/TheOrugginTrail-DoJo) implemenation of the ZORG engine.
+#### 📦 Install dependencies
 
-It is a Svelekit and GraphQL based app wrapping [Starknet.js](https://github.com/starknet-io/starknet.js).
+```bash
+bun install
+```
 
-It also aims to present a simple tutorial for setting up the above mentioned stack for general interaction with :shinto_shrine: [Dojo](https://github.com/dojoengine/dojo) based worlds and contains some shell utilities for copying over the manifest and abi files from a dojo project, deploying itself and also deploying the cotract stack for local development.
+### 🕹️ Run development mode:
 
-For a simple tutorial/template for a Sveltekit/GraphQL app check out branch `pain_lessons/101`.
+Standard development:
 
-For a more complex version of the above (more features, etc) check out `pain_lessons/102`.
+```bash
+bun run dev
+```
 
-## Contents
-* `scripts/` - utility scripts
-* `src/` - sveltekit app
+Slot development:
 
-## Setup and usage
-:warning: **Note** :warning:
-the application needs an endpoint, if you have already built and deployed "`contracts`" you 
-can ignore the following section that explains how to do this.
+```bash
+bun run dev:slot
+```
 
-### Building and deploying the contracts locally
-* Clone the [best game ever made](https://github.com/ArchetypalTech/TheOrugginTrail-DoJo)
-* ```cd <where_did_i_clone_that_repo_to>```
-* ```sozo build```
-* ```katana --disable-fee --allowed-origins "*" | grep -v -e starknet_call -e starknet_blockHashAndNumber -e starknet_getBlockWithTxs```
-* ```sozo migrate apply``` 
-    - you need to note the world address from the output of this command
-* ```torii --world <world_address> --allowed-origins "*"```
+### 🔧 Build and preview
 
-### Running the client locally
-assuming that there is an instance of both `katana` and `torii` running.
-* check you have endpoints running
-    ```lsof -i -P -n | grep LISTEN | grep katana```
-    ```lsof -i -P -n | grep LISTEN | grep torii```
-* `pnpm dev` 
-* `localhost:5173` & Open dev console in browser
+Build for production:
 
----
-## Development
-when the world gets updated and assuming that the structure of the contracts the client wishes to interactwith changes then the `abi` and `manifest` files need to be updated.
+```bash
+bun run build
+```
 
-* copy over manifest and abi files using `pnpm`:
-    ```pnpm deploy:copy_abi_manifest``` 
+Preview the built application:
 
-* copy using the shell script:
-     ```bash
-    ./scripts/copy_abi_manifest.sh ../tot
-    ```
-    The script takes a path to the root of the dojo project as an argument. i.e. wherever you cloned out the project to.
+```bash
+bun run preview
+```
 
-## Utility scripts
+### 🧪 Type checking
 
-`pnpm deploy:cp_system_abis` copies the abi json files from a dojo project, this is assumed to be at ../tot but can ofc be overidden, see `scripts/copy_abi_manifest.sh` for details as well as `package.json` where the commands are defined.
+Run type checking:
 
-there are also a set of scripts for further code gen in the actual dojo project see [the best game in the entire universe](https://github.com/ArchetypalTech/TheOrugginTrail-DoJo).
+```bash
+bun run check
+```
 
+Watch mode for type checking:
+
+```bash
+bun run check:watch
+```
+
+### 🛠️ Technologies
+
+This client integrates the following main technologies:
+
+| **Technology** | **Purpose**                      |
+| -------------- | -------------------------------- |
+| SvelteKit      | Web application framework        |
+| Tailwind CSS   | Styling and UI components        |
+| Three.js       | 3D rendering                     |
+| Dojo Engine    | On-chain game engine integration |
+| StarkNet       | Layer 2 blockchain connectivity  |
