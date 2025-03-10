@@ -48,12 +48,8 @@ export const setupController = async () => {
 					methods: [
 						// ...methods,
 						{
-							entrypoint: "approve", // The actual method name
+							entrypoint: "listen", // The actual method name
 							description: `Approve submitting transactions to play ${worldName}`,
-						},
-						{
-							entrypoint: "reject", // The actual method name
-							description: `Reject submitting transactions to play ${worldName}`,
 						},
 					],
 				},
@@ -139,7 +135,6 @@ export const connectController = async () => {
 			"address:",
 			data.walletAddress,
 		);
-
 		setWalletData(data);
 	} catch (e) {
 		console.error(e);

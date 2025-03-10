@@ -2,8 +2,9 @@ import { addTerminalContent } from "$lib/stores/terminal_store";
 import { getBalance2 } from "$lib/tokens/interaction";
 import { get } from "svelte/store";
 import { TERMINAL_SYSTEM_COMMANDS } from "./systemCommands";
-import { wallet } from "starknet";
 import { walletStore } from "$lib/stores/wallet_store";
+import { SystemCalls } from "$lib/systemCalls";
+import { ORUG_CONFIG } from "$lib/config";
 
 export const commandHandler = async (command: string, bypassSystem = false) => {
 	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
@@ -57,6 +58,9 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 };
 
 async function sendCommand(command: string): Promise<string> {
+	if (get(walletStore).isConnected) {
+		return sendControllerCommand(command);
+	}
 	try {
 		const formData = new FormData();
 		formData.append("command", command);
@@ -72,4 +76,18 @@ async function sendCommand(command: string): Promise<string> {
 		const e = error as Error;
 		return e.message;
 	}
+}
+
+async function sendControllerCommand(command: string): Promise<string> {
+	console.log("going through controller");
+	const wallet = get(walletStore);
+	const { calldata, cmds } = await SystemCalls.formatCallData(command);
+	wallet.controller?.account?.execute([
+		{
+			contractAddress: ORUG_CONFIG.contracts.entity.address,
+			entrypoint: "listen",
+			calldata,
+		},
+	]);
+	return "woop";
 }

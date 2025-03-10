@@ -2,21 +2,24 @@ import { CallData, byteArray, type RawArgsArray } from "starknet";
 import { ORUG_CONFIG } from "./config";
 import { toCairoArray } from "./utils";
 
-async function sendMessage(message: string) {
+async function formatCallData(message: string) {
 	const cmds_raw = message.split(/\s+/);
 	const cmds = cmds_raw.filter((word) => word !== "");
 	const cmd_array = cmds.map((cmd) => byteArray.byteArrayFromString(cmd));
+	// create message as readable contract data
+	const calldata = CallData.compile([cmd_array, 23]);
+	console.log("sendMessage(cmds): ", cmds, " -> calldata ->", calldata);
+	return { calldata, cmds };
+}
 
-	// connect the account to the contract
+async function sendMessage(message: string) {
 	const {
 		contracts: { entity },
 	} = ORUG_CONFIG;
 	// create message as readable contract data
-	const calldata = CallData.compile([cmd_array, 23]);
-	console.log("sendMessage(cmds): ", cmds, " -> calldata ->", calldata);
-
-	// ionvoke the contract as we are doing a write
+	const { calldata, cmds } = await formatCallData(message);
 	try {
+		// ionvoke the contract as we are doing a write
 		const response = await entity.invoke("listen", [calldata]);
 	} catch (error) {
 		console.error("sendMessage(cmds): ", cmds, " -> error ->", error);
@@ -26,8 +29,7 @@ async function sendMessage(message: string) {
 			},
 		});
 	}
-
-	return new Response(JSON.stringify(response), {
+	return new Response("EMPTY RESPONSE", {
 		headers: {
 			"Content-Type": "application/json",
 		},
@@ -108,4 +110,5 @@ async function sendDesignerCall(props: string) {
 export const SystemCalls = {
 	sendMessage,
 	sendDesignerCall,
+	formatCallData,
 };
