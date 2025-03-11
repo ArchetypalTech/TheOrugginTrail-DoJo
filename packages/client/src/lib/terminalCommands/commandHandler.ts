@@ -63,7 +63,7 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
  */
 
 async function sendCommand(command: string): Promise<string> {
-	if (WalletStore().isConnected) {
+	if (ORUG_CONFIG.useSlot) {
 		// we're connected to controller
 		return sendControllerCommand(command);
 	}
@@ -93,6 +93,13 @@ async function sendCommand(command: string): Promise<string> {
  */
 
 async function sendControllerCommand(command: string): Promise<string> {
+	if (!WalletStore().isConnected) {
+		addTerminalContent({
+			text: "You are not yet connected",
+			format: "hash",
+			useTypewriter: true,
+		});
+	}
 	console.log("[CONTROLLER] sendControllerCommand", command);
 	console.time("calltime");
 	const { calldata, cmds } = await SystemCalls.formatCallData(command);

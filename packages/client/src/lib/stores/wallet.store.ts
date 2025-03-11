@@ -96,6 +96,7 @@ export const setupController = async () => {
 
 if (ORUG_CONFIG.useSlot) {
 	await setupController();
+	await get().controller?.probe();
 }
 
 export const connectController = async () => {

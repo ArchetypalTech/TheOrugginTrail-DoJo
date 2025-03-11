@@ -127,3 +127,13 @@ export class ByteArray {
 export function escapeRegExp(text: string) {
 	return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 }
+
+export const normalizeAddress = (addr: string): string => {
+	if (!addr) return "";
+	const addrStr = String(addr).trim();
+	if (addrStr.startsWith("0x")) {
+		// Remove 0x, remove leading zeros, then add 0x back
+		return `0x${addrStr.substring(2).replace(/^0+/, "")}`;
+	}
+	return addrStr.replace(/^0+/, "");
+};

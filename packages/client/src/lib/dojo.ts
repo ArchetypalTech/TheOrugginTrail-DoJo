@@ -47,7 +47,7 @@ export const InitDojo = async () => {
 
 	const provider = new DojoProvider(manifest, rpcUrl);
 
-	const query = (id: number = 23) => {
+	const query = () => {
 		const builder = new ToriiQueryBuilder<SchemaType>();
 		const query = builder
 			.addEntityModel("the_oruggin_trail-Output")
@@ -61,14 +61,13 @@ export const InitDojo = async () => {
 	 * @dev we do not do the subscription in the `hooks.client.ts` hook, but we subscribe to it further in the Svelte client
 	 */
 	const sub = async (
-		playerId: number,
 		callback: (response: {
 			data?: StandardizedQueryResult<SchemaType> | undefined;
 			error?: Error;
 		}) => void,
 	) => {
 		return await sdk.subscribeEntityQuery({
-			query: query(playerId),
+			query: query(),
 			callback,
 		});
 	};

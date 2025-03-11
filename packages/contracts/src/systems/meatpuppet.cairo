@@ -12,10 +12,6 @@
 #[starknet::interface]
 pub trait IListener<T> {
     fn listen(ref self: T, cmd: Array<ByteArray>, _add: felt252);
-
-    // for interop with other worlds but doesnt have to be, could just be listen
-    // but it sounds cooler
-    fn command_shoggoth(ref self: T, victim: felt252, wish: Array<ByteArray>) -> ByteArray;
 }
 
 /// Impl of the listener
@@ -77,24 +73,6 @@ pub mod meatpuppet {
                     err_dispatcher::error_handle(ref wrld_dispatcher, player_id, isErr);
                 },
             }
-        }
-
-        fn command_shoggoth(
-            ref self: ContractState, victim: felt252, wish: Array<ByteArray>,
-        ) -> ByteArray {
-            // call into the main listen
-            // the output is generated in the listen handler
-            // which dispatches to the next handler etc
-            // // in other words hit main game loop
-            // println!("foolish desires: {:?}", wish);
-            self.listen(wish, victim);
-
-            // now read from the output model and exit
-            let mut world = self.world(@"the_oruggin_trail");
-            let cmd_output: Output = world.read_model(23);
-            let shogoth_sees = cmd_output.text_o_vision;
-            // println!("{:?}", shogoth_sees);
-            shogoth_sees
         }
     }
 

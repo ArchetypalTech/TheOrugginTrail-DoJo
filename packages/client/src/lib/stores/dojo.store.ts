@@ -2,6 +2,8 @@ import type { InitDojo } from "@lib/dojo";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { addTerminalContent } from "./terminal.store";
+import { ORUG_CONFIG } from "../config";
+import WalletStore from "./wallet.store";
 
 export type Outputter = {
 	playerId: string;
@@ -97,7 +99,7 @@ const initializeConfig = async (
 	if (existingSubscription !== undefined) return;
 
 	try {
-		const [_, subscription] = await config.sub(23, (response) => {
+		const [_, subscription] = await config.sub((response) => {
 			if (response.error) {
 				console.error("Error setting up entity sync:", response.error);
 				setStatus({
@@ -114,7 +116,17 @@ const initializeConfig = async (
 				"playerId" in outputData &&
 				"text_o_vision" in outputData
 			) {
-				setOutputter(outputData as Outputter);
+				const address = !ORUG_CONFIG.useSlot
+					? ORUG_CONFIG.wallet.address
+					: WalletStore().controller?.account?.address;
+
+				const normalizedPlayerId = normalizeAddress(String(outputData.playerId));
+				const normalizedAddress = normalizeAddress(String(address));
+
+				if (normalizedPlayerId === normalizedAddress) {
+					setOutputter(outputData as Outputter);
+					return;
+				}
 				return;
 			}
 
@@ -166,3 +178,16 @@ const DojoStore = () => ({
 });
 
 export default DojoStore;
+
+// Normalize addresses by removing leading zeros after 0x
+const normalizeAddress = (addr: string | undefined): string => {
+	if (!addr) return "";
+	// First convert to string and trim in case it's not already
+	const addrStr = String(addr).trim();
+	// Check if it starts with 0x
+	if (addrStr.startsWith("0x")) {
+		// Remove 0x, remove leading zeros, then add 0x back
+		return `0x${addrStr.substring(2).replace(/^0+/, "")}`;
+	}
+	return addrStr.replace(/^0+/, "");
+};
