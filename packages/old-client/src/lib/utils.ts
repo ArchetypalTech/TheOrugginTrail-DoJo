@@ -1,10 +1,4 @@
-import clsx, { type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { byteArray } from "starknet";
-
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
 
 /**
  * Determines the entity ID from an array of keys. If only one key is provided,

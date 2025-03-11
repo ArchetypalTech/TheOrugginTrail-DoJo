@@ -4,7 +4,6 @@ import type {
 	ZorgObject,
 	Room,
 	TextDefinition,
-	Config,
 } from "./lib/schemas";
 import { generateNumericUniqueId } from "./utils";
 import randomName from "@scaleway/random-name";
@@ -93,11 +92,5 @@ export const createDefaultLevel = (): Level => {
 	return {
 		levelName: "New Level",
 		rooms: [defaultRoom],
-	};
-};
-
-export const createDefaultConfig = (): Config => {
-	return {
-		levels: [createDefaultLevel()],
 	};
 };

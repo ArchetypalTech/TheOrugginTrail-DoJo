@@ -1,4 +1,5 @@
-import { ORUG_CONFIG } from "@lib/config";
+// Starknet.js
+import { ORUG_CONFIG } from "$lib/config";
 import { Contract, RpcProvider } from "starknet";
 
 // Initialize provider with Sepolia Testnet node

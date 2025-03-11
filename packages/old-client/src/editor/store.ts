@@ -1,29 +1,27 @@
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { writable, derived, get } from "svelte/store";
 import type {
 	Config,
 	EditorState,
 	Action,
 	ZorgObject,
 	Room,
-} from "@editor/lib/schemas";
+} from "$editor/lib/schemas";
 import {
 	transformConfig,
 	validateConfig,
 	formatValidationError,
 	ensureInlineTextDefinitions,
-} from "@editor/utils";
+} from "$editor/utils";
 import {
 	createDefaultLevel,
 	createDefaultRoom,
 	createDefaultObject,
 	createDefaultAction,
-	createDefaultConfig,
-} from "@editor/defaults";
-import type { NotificationState } from "@editor/notifications";
-import { initialNotificationState } from "@editor/notifications";
-import { publishConfigToContract } from "@editor/publisher";
-import { saveConfigToFile, loadConfigFromFile } from "@editor/utils";
+} from "$editor/defaults";
+import type { NotificationState } from "$editor/notifications";
+import { initialNotificationState } from "$editor/notifications";
+import { publishConfigToContract } from "$editor/publisher";
+import { saveConfigToFile, loadConfigFromFile } from "$editor/utils";
 
 // Initialize the editor state
 const initialState: EditorState = {
@@ -34,67 +32,78 @@ const initialState: EditorState = {
 };
 
 /**
- * Create the editor store using Zustand
+ * Create a simplified world store
  */
-export const useEditorStore = create<
-	EditorState & { set: (state: Partial<EditorState>) => void }
->()(
-	immer((set) => ({
-		...initialState,
-		set,
-	})),
-);
+function createEditorStore() {
+	const { subscribe, set, update } = writable<EditorState>(initialState);
 
-// Helper functions to access the store
-const get = () => useEditorStore.getState();
-const set = useEditorStore.getState().set;
+	// Helper method to run validation and auto-save
+	const saveAndValidate = async (state: EditorState) => {
+		const config = {
+			levels: [state.currentLevel],
+		};
 
-// Helper method to run validation and auto-save
-const saveAndValidate = async (state: EditorState) => {
-	const config = {
-		levels: [state.currentLevel],
+		const errors = validateConfig(config);
+
+		// Only auto-save if no errors
+		if (errors.length === 0) {
+			await window.localStorage.setItem("editorConfig", JSON.stringify(config));
+		}
+
+		return errors;
 	};
 
-	const errors = validateConfig(config);
+	return {
+		subscribe,
+		get: () => {
+			let state: EditorState;
+			update((s) => {
+				state = s;
+				return s;
+			});
+			return state!;
+		},
+		set,
+		update,
 
-	// Only auto-save if no errors
-	if (errors.length === 0) {
-		await window.localStorage.setItem("editorConfig", JSON.stringify(config));
-	}
+		// Update any part of the world data with a direct mutation approach
+		updateWorld: (updater: (draft: EditorState) => void) => {
+			update((state) => {
+				// Create a deep copy for mutation
+				const draft = JSON.parse(JSON.stringify(state)) as EditorState;
 
-	return errors;
-};
+				// Apply the updates to the draft
+				updater(draft);
+				draft.isDirty = true;
 
-// Update world function that handles validation and auto-save
-export const updateWorld = (updater: (draft: EditorState) => void) => {
-	const state = get();
-	// Create a deep copy for mutation
-	const draft = JSON.parse(JSON.stringify(state)) as EditorState;
+				// Run validation and auto-save in the background
+				saveAndValidate(draft).then((errors) => {
+					if (errors.length > 0) {
+						// Just update the errors without triggering another auto-save
+						update((s) => ({ ...s, errors }));
+					}
+				});
 
-	// Apply the updates to the draft
-	updater(draft);
-	draft.isDirty = true;
+				return draft;
+			});
+		},
+	};
+}
 
-	// Set the new state
-	set(draft);
-
-	// Run validation and auto-save in the background
-	saveAndValidate(draft).then((errors) => {
-		if (errors.length > 0) {
-			// Just update the errors without triggering another auto-save
-			set({ errors });
-		}
-	});
-};
+// Create the editor store using our simplified implementation
+export const editorStore = createEditorStore();
 
 // Create the notification store
-export const useNotificationStore = create<NotificationState>()(
-	immer(() => initialNotificationState),
+export const notificationStore = writable<NotificationState>(
+	initialNotificationState,
 );
 
-// Helper functions for notification store
-const getNotification = () => useNotificationStore.getState();
-const setNotification = useNotificationStore.setState;
+// Derived store for the current room
+export const currentRoom = derived(
+	editorStore,
+	($editorStore) =>
+		$editorStore.currentLevel.rooms[$editorStore.currentRoomIndex],
+);
 
 /**
  * Combined actions for the editor, organized by functionality
@@ -103,20 +112,20 @@ export const actions = {
 	// Notification related actions
 	notifications: {
 		clear: () => {
-			setNotification(initialNotificationState);
+			notificationStore.set({ ...initialNotificationState });
 		},
 		showError: (message: string, blocking = false) => {
-			setNotification({
+			notificationStore.set({
 				type: "error",
 				message,
 				blocking,
 			});
 		},
 		showSuccess: (message: string, timeout = 3000) => {
-			if (getNotification().blocking) {
+			if (get(notificationStore).blocking) {
 				return;
 			}
-			setNotification({
+			notificationStore.set({
 				type: "success",
 				message,
 				blocking: false,
@@ -124,22 +133,22 @@ export const actions = {
 			});
 		},
 		showLoading: (message: string) => {
-			setNotification({
+			notificationStore.set({
 				type: "loading",
 				message,
 				blocking: true,
 			});
 		},
 		startPublishing: async (message = "Publishing to contract...") => {
-			if (getNotification().type === "publishing") return;
+			if (get(notificationStore).type === "publishing") return;
 			console.log("STARTING PUBLISHING");
-			setNotification({
+			await notificationStore.set({
 				type: "publishing",
 				message,
 				blocking: true,
 				logs: [],
 			});
-			const currentNotification = getNotification();
+			const currentNotification = get(notificationStore);
 			console.log("Current notification:", currentNotification);
 			return currentNotification.logs || [];
 		},
@@ -148,14 +157,15 @@ export const actions = {
 		 * Add a log entry to a publishing notification
 		 */
 		addPublishingLog: (log: CustomEvent) => {
-			const state = getNotification();
-			if (state.type !== "publishing" || !state.logs) {
-				console.warn("Cannot add log to non-publishing notification");
-				return;
-			}
-			setNotification({
-				...state,
-				logs: [...state.logs, log],
+			notificationStore.update((state) => {
+				if (state.type !== "publishing" || !state.logs) {
+					console.warn("Cannot add log to non-publishing notification");
+					return state;
+				}
+				return {
+					...state,
+					logs: [...state.logs, log],
+				};
 			});
 		},
 	},
@@ -172,7 +182,6 @@ export const actions = {
 				actions.config.loadConfig(config);
 				return;
 			}
-			actions.config.loadConfig(createDefaultConfig());
 		},
 
 		/**
@@ -194,16 +203,17 @@ export const actions = {
 			const level = { ...config.levels[0] };
 			console.log("Setting current level:", level);
 
-			set({
+			editorStore.update((state) => ({
+				...state,
 				currentLevel: level,
 				currentRoomIndex: 0,
 				isDirty: false,
 				errors,
-			});
+			}));
 
 			// Force UI refresh
 			setTimeout(() => {
-				set({ ...get() });
+				editorStore.update((state) => ({ ...state }));
 			}, 100);
 		},
 
@@ -211,7 +221,7 @@ export const actions = {
 		 * Auto-save the current config to localStorage
 		 */
 		autoSave: async () => {
-			const state = get();
+			const state = editorStore.get();
 			const config = {
 				levels: [state.currentLevel],
 			};
@@ -234,7 +244,7 @@ export const actions = {
 		saveConfig: () => {
 			actions.config.autoSave();
 
-			const state = get();
+			const state = editorStore.get();
 			const config = {
 				levels: [state.currentLevel],
 			};
@@ -242,10 +252,11 @@ export const actions = {
 			// Validate the config using our Zod schema
 			const errors = validateConfig(config);
 
-			set({
+			editorStore.update((state) => ({
+				...state,
 				errors,
 				isDirty: false,
-			});
+			}));
 
 			// Ensure text definitions are properly formatted and download the file
 			if (errors.length === 0) {
@@ -353,23 +364,23 @@ export const actions = {
 		 * Get all rooms from the current level
 		 */
 		getAllRooms: () => {
-			return get().currentLevel.rooms;
+			return editorStore.get().currentLevel.rooms;
 		},
-
 		/**
 		 * Set the current room index
 		 */
 		setCurrentIndex: (index: number) => {
-			set({
+			editorStore.update((state) => ({
+				...state,
 				currentRoomIndex: index,
-			});
+			}));
 		},
 
 		/**
 		 * Add a new room
 		 */
 		add: () => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				draft.currentLevel.rooms.push(createDefaultRoom());
 				draft.currentRoomIndex = draft.currentLevel.rooms.length - 1;
 			});
@@ -379,7 +390,7 @@ export const actions = {
 		 * Update a room
 		 */
 		update: (roomIndex: number, room: Room) => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				draft.currentLevel.rooms[roomIndex] = room;
 			});
 			actions.config.autoSave();
@@ -389,9 +400,9 @@ export const actions = {
 		 * Delete a room
 		 */
 		delete: (roomIndex: number) => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				draft.currentLevel.rooms = draft.currentLevel.rooms.filter(
-					(_: Room, i: number) => i !== roomIndex,
+					(_, i) => i !== roomIndex,
 				);
 				draft.currentRoomIndex = Math.min(
 					draft.currentRoomIndex,
@@ -405,17 +416,18 @@ export const actions = {
 	// Object operations
 	objects: {
 		getAllActionIDs: () => {
-			const actions = get().currentLevel.rooms.flatMap((room: Room) =>
-				room.objects.flatMap((object: ZorgObject) => object.actions),
-			);
-			return actions.map((action: Action) => action.actionID);
+			const actions = editorStore
+				.get()
+				.currentLevel.rooms.flatMap((room) =>
+					room.objects.flatMap((object) => object.actions),
+				);
+			return actions.map((action) => action.actionID);
 		},
-
 		/**
 		 * Add an object to the current room
 		 */
 		add: () => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				const newObject = createDefaultObject();
 
@@ -426,8 +438,8 @@ export const actions = {
 		/**
 		 * Update an object in the current room
 		 */
-		update: (objectIndex: number, object: ZorgObject) => {
-			updateWorld((draft) => {
+		update: (objectIndex: number, object: Object) => {
+			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				room.objects[objectIndex] = object;
 			});
@@ -438,7 +450,7 @@ export const actions = {
 		 * Delete an object from the current room
 		 */
 		delete: (objectIndex: number) => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				room.objects.splice(objectIndex, 1);
 			});
@@ -448,7 +460,7 @@ export const actions = {
 		 * Add an action to an object
 		 */
 		addAction: (objectIndex: number) => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				const object = room.objects[objectIndex];
 				object.actions.push(createDefaultAction());
@@ -460,7 +472,7 @@ export const actions = {
 		 * Update an action in an object
 		 */
 		updateAction: (objectIndex: number, actionIndex: number, action: Action) => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				const object = room.objects[objectIndex];
 				object.actions[actionIndex] = action;
@@ -472,7 +484,7 @@ export const actions = {
 		 * Delete an action from an object
 		 */
 		deleteAction: (objectIndex: number, actionIndex: number) => {
-			updateWorld((draft) => {
+			editorStore.updateWorld((draft) => {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				const object = room.objects[objectIndex];
 				object.actions.splice(actionIndex, 1);
@@ -480,22 +492,3 @@ export const actions = {
 		},
 	},
 };
-
-// Export a composable store object with all functionality
-const EditorStore = () => ({
-	...useEditorStore.getState(),
-	set: useEditorStore.setState,
-	subscribe: useEditorStore.subscribe,
-	updateWorld,
-	...actions,
-});
-
-export default EditorStore;
-
-// Helper for React components to get current room
-export const getCurrentRoom = () => {
-	const state = get();
-	return state.currentLevel.rooms[state.currentRoomIndex];
-};
-
-EditorStore().config.initialize();

@@ -1,7 +1,6 @@
 import type manifestJsonType from "@zorg/contracts/manifest_dev.json";
-import manifestJson from "@zorg/contracts/manifest";
-import { schema } from "@lib/dojo_bindings/typescript/models.gen";
-import { url, cleanEnv, str } from "envalid";
+import manifestJson from "@zorg/contracts/manifest.json";
+import { url, cleanEnv, host, str } from "envalid";
 import { Account, Contract, RpcProvider } from "starknet";
 
 const getOrFail = <T>(value: T | undefined, name?: string): T => {
@@ -17,7 +16,7 @@ const env = cleanEnv(import.meta.env, {
 	VITE_CONTROLLER_CHAINID: str(),
 	VITE_TOKEN_HTTP_RPC: url(),
 	VITE_TOKEN_CONTRACT_ADDRESS: str(),
-	VITE_KATANA_HTTP_RPC: str(),
+	VITE_KATANA_HTTP_RPC: url(),
 	VITE_TORII_HTTP_RPC: url(),
 	VITE_TORII_WS_RPC: str(),
 	VITE_BURNER_ADDRESS: str(),
@@ -26,7 +25,7 @@ const env = cleanEnv(import.meta.env, {
 });
 
 const endpoints = {
-	katana: "/katana", // FIXME: endpoint cors proxy workaround-- endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
+	katana: env.VITE_KATANA_HTTP_RPC,
 	torii: {
 		http: env.VITE_TORII_HTTP_RPC,
 		ws: env.VITE_TORII_WS_RPC,
@@ -34,7 +33,7 @@ const endpoints = {
 };
 
 const katanaProvider = new RpcProvider({
-	nodeUrl: "/katana", // FIXME: this is probably correct as cors escape, however endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
+	nodeUrl: env.VITE_KATANA_HTTP_RPC,
 	headers: {
 		//nocors
 		"Access-Control-Allow-Origin": "*",
@@ -94,7 +93,6 @@ export const ORUG_CONFIG = {
 	},
 	wallet,
 	manifest,
-	schema,
 	token: {
 		provider: env.VITE_TOKEN_HTTP_RPC,
 		// starkli chain-id --rpc https://api.cartridge.gg/x/theoruggintrail/katana
@@ -103,6 +101,5 @@ export const ORUG_CONFIG = {
 		contract_address: env.VITE_TOKEN_CONTRACT_ADDRESS,
 		erc20: ["0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"],
 	},
-	useSlot: import.meta.env.MODE === "slot",
 	env: env,
 };

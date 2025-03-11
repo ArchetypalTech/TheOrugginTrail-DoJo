@@ -6,7 +6,7 @@ import {
 	type MaterialType,
 	type RoomType,
 	type BiomeType,
-} from "@lib/dojo_bindings/typescript/models.gen";
+} from "$lib/dojo_bindings/typescript/models.gen";
 export type { ObjectType, ActionType, MaterialType, RoomType, BiomeType };
 // Helper function to convert camelCase to spaced words
 function formatLabel(value: string): string {

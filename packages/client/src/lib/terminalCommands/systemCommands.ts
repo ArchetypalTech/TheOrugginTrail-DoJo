@@ -1,12 +1,13 @@
-import { audioStore } from "$lib/stores/audio_store";
-import { handleHelp, helpStore } from "$lib/stores/help_store";
+// import { audioStore } from "../../stores/audio.store";
+// import { handleHelp, helpStore } from "../../stores/help.store";
 import {
 	addTerminalContent,
 	clearTerminalContent,
-} from "$lib/stores/terminal_store";
-import { WindowType, windowsStore } from "$lib/stores/windows_store";
+} from "@lib/stores/terminal.store";
+// import { WindowType, windowsStore } from "../lib/stores/windows.store";
 import { commandHandler } from "./commandHandler";
-import { ORUG_CONFIG } from "$lib/config";
+import { ORUG_CONFIG } from "@lib/config";
+import WalletStore from "../stores/wallet.store";
 
 type commandContext = {
 	command: string;
@@ -17,71 +18,102 @@ type commandContext = {
 export const TERMINAL_SYSTEM_COMMANDS: {
 	[key: string]: (command: commandContext) => void;
 } = {
+	_intro: () => {
+		addTerminalContent({
+			text: `
+			Welcome to the Oruggin Trail, a text adventure game.
+			You are a young adventurer, seeking to find the Oruggin Trail, a mysterious and dangerous path.
+			`,
+			format: "system",
+			useTypewriter: true,
+		});
+	},
 	clear: () => {
 		clearTerminalContent();
 	},
-	close: (ctx) => {
-		if (ctx.args[0] === "help") {
-			helpStore.hide();
+	wallet: async () => {
+		if (WalletStore().isConnected) {
+			await WalletStore().disconnectController();
 			addTerminalContent({
-				text: "Toggled help window",
+				text: "Disconnected",
 				format: "hash",
 				useTypewriter: true,
 			});
 			return;
 		}
+		const res = await WalletStore().connectController();
+		console.log(res);
+		if (WalletStore().isConnected) {
+			const { username, walletAddress } = WalletStore();
+			addTerminalContent({
+				text: JSON.stringify({ username, walletAddress }, null, 2),
+				format: "hash",
+				useTypewriter: true,
+			});
+		}
+	},
+	close: (ctx) => {
+		// if (ctx.args[0] === "help") {
+		// 	helpStore.hide();
+		// 	addTerminalContent({
+		// 		text: "Toggled help window",
+		// 		format: "hash",
+		// 		useTypewriter: true,
+		// 	});
+		// 	return;
+		// }
 		commandHandler(ctx.command, true);
 	},
 	debug: () => {
-		windowsStore.toggle(WindowType.DEBUG);
-		addTerminalContent({
-			text: `Debug window ${windowsStore.get(WindowType.DEBUG) ? "enabled" : "disabled"}`,
-			format: "out",
-			useTypewriter: false,
-		});
+		// windowsStore.toggle(WindowType.DEBUG);
+		// addTerminalContent({
+		// 	text: `Debug window ${windowsStore.get(WindowType.DEBUG) ? "enabled" : "disabled"}`,
+		// 	format: "out",
+		// 	useTypewriter: false,
+		// });
 	},
 	help: ({ command }) => {
-		handleHelp(command);
-		console.log(command);
-		addTerminalContent({
-			text: "Toggled help window",
-			format: "hash",
-			useTypewriter: true,
-		});
+		// handleHelp(command);
+		// console.log(command);
+		// addTerminalContent({
+		// 	text: "Toggled help window",
+		// 	format: "hash",
+		// 	useTypewriter: true,
+		// });
 	},
 	hear: ({ args }) => {
-		if (args.length === 0 || args[0] === "help") {
-			helpStore.showHelp("hear");
-			return;
-		}
-		{
-			const [target, state] = args;
-			if (target === "wind") {
-				console.log("-----------> wind off");
-				audioStore.toggleWind();
-				addTerminalContent({
-					text: state === "off" ? "Wind sound disabled" : "Wind sound enabled",
-					format: "out",
-					useTypewriter: false,
-				});
-			} else if (target === "tone") {
-				console.log("-----------> tone off");
-				audioStore.toggleTone();
-				addTerminalContent({
-					text: state === "off" ? "Tonal sound disabled" : "Tonal sound enabled",
-					format: "out",
-					useTypewriter: false,
-				});
-			} else if (target === "cricket") {
-				console.log("-----------> cricket off");
-				audioStore.toggleCricket();
-				addTerminalContent({
-					text: state === "off" ? "Cricket sound disabled" : "Cricket sound enabled",
-					format: "out",
-					useTypewriter: false,
-				});
-			}
-		}
+		// if (args.length === 0 || args[0] === "help") {
+		// 	helpStore.showHelp("hear");
+		// 	return;
+		// }
+		// {
+		// 	const [target, state] = args;
+		// 	if (target === "wind") {
+		// 		console.log("-----------> wind off");
+		// 		audioStore.toggleWind();
+		// 		addTerminalContent({
+		// 			text: state === "off" ? "Wind sound disabled" : "Wind sound enabled",
+		// 			format: "out",
+		// 			useTypewriter: false,
+		// 		});
+		// 	} else if (target === "tone") {
+		// 		console.log("-----------> tone off");
+		// 		audioStore.toggleTone();
+		// 		addTerminalContent({
+		// 			text: state === "off" ? "Tonal sound disabled" : "Tonal sound enabled",
+		// 			format: "out",
+		// 			useTypewriter: false,
+		// 		});
+		// 	} else if (target === "cricket") {
+		// 		console.log("-----------> cricket off");
+		// 		audioStore.toggleCricket();
+		// 		addTerminalContent({
+		// 			text: state === "off" ? "Cricket sound disabled" : "Cricket sound enabled",
+		// 			format: "out",
+		// 			useTypewriter: false,
+		// 		});
+		// 	}
+		// }
 	},
 	"balance-tottokens": (ctx) => TERMINAL_SYSTEM_COMMANDS.getBalance(ctx),
 	getBalance: () => {

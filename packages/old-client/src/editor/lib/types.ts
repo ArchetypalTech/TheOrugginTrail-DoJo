@@ -1,4 +1,4 @@
-import type { Room } from "@lib/dojo_bindings/typescript/models.gen";
+import type { Room } from "$lib/dojo_bindings/typescript/models.gen";
 
 export interface Level {
 	levelName: string;
@@ -23,3 +23,5 @@ export interface ValidationError {
 		actionType?: string;
 	};
 }
+
+export * from "./schemas";

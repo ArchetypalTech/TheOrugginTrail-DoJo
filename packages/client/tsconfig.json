@@ -1,19 +1,38 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true,
 		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"sourceMap": true,
-		"strict": true,
+		"jsxImportSource": "react",
+		"types": ["vite/client", "bun-types"],
+		"typeRoots": ["../../node_modules/", "./src/types"],
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"target": "ESNext",
+		"module": "ESNext",
 		"moduleResolution": "bundler",
-		"jsx": "preserve",
-		"rootDirs": [".", "./.svelte-kit/types"]
+
+		/* Bundler mode */
+		"forceConsistentCasingInFileNames": true,
+		"allowImportingTsExtensions": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"useDefineForClassFields": true,
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["src/*"],
+			"@components/*": ["src/client/terminal/*"],
+			"@lib/*": ["src/lib/*"],
+			"@styles/*": ["src/styles/*"],
+			"@editor/*": ["src/editor/*"]
+		}
 	},
-	"include": ["src/**/*", "tests/**/*"],
-	"exclude": ["node_modules"]
+	"include": ["src/**/*", "vite.config.ts"]
 }

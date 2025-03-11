@@ -11,7 +11,7 @@ import type {
 	Room,
 	ZorgObject,
 	Action,
-} from "@editor/lib/schemas";
+} from "$editor/lib/schemas";
 import {
 	ConfigSchema,
 	transformWithSchema,
@@ -22,7 +22,7 @@ import {
 	MaterialTypeEnum,
 	RoomTypeEnum,
 	BiomeTypeEnum,
-} from "@editor/lib/schemas";
+} from "$editor/lib/schemas";
 
 /**
  * Convert a string to a text definition object

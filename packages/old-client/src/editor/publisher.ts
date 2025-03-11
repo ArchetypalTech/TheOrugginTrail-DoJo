@@ -7,8 +7,8 @@ import {
 	materialTypeToIndex,
 	actionTypeToIndex,
 } from "./utils";
-import { SystemCalls, type DesignerCall } from "../lib/systemCalls";
-import { ByteArray, TempInt } from "@lib/utils";
+import type { DesignerCall } from "../lib/systemCalls";
+import { ByteArray, TempInt } from "$lib/utils";
 import { actions } from "./store";
 
 /**
@@ -153,10 +153,14 @@ export const dispatchDesignerCall = async (
 	call: DesignerCall,
 	args: unknown[],
 ) => {
+	const formData = new FormData();
+	formData.append("route", "sendDesignerCall");
+	formData.append("command", JSON.stringify({ call, args }));
 	try {
-		const response = await SystemCalls.sendDesignerCall(
-			JSON.stringify({ call, args }),
-		);
+		const response = await fetch("/api", {
+			method: "POST",
+			body: formData,
+		});
 		if (!response.ok || response.status !== 200) {
 			throw new Error("Failed to send designer call");
 		}

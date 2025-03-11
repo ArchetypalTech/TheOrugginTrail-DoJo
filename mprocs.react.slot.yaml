@@ -1,7 +1,0 @@
-procs:
-  contracts:
-    cwd: packages/contracts
-    shell: bun run slot:watch
-  client:
-    cwd: packages/react-client
-    shell: bun run dev:slot

@@ -1,4 +1,4 @@
-import { ORUG_CONFIG } from "@lib/config";
+import { ORUG_CONFIG } from "./config";
 import { createDojoConfig, DojoProvider } from "@dojoengine/core";
 import {
 	init,
@@ -8,7 +8,7 @@ import {
 import {
 	type SchemaType,
 	schema,
-} from "@lib/dojo_bindings/typescript/models.gen";
+} from "$lib/dojo_bindings/typescript/models.gen";
 
 /**
  * ## Initializes the Dojo SDK and configuration
@@ -51,8 +51,29 @@ export const InitDojo = async () => {
 		const builder = new ToriiQueryBuilder<SchemaType>();
 		const query = builder
 			.addEntityModel("the_oruggin_trail-Output")
+			// .addEntityModel("the_oruggin_trail-OutputValue")
+			// .includeHashedKeys()
+			// .withClause(
+			// 	new ClauseBuilder()
+			// 		.compose()
+			// 		.and([
+			// 			new ClauseBuilder().where(
+			// 				"the_oruggin_trail-Output",
+			// 				"playerId",
+			// 				"Eq",
+			// 				id,
+			// 			),
+			// 		])
+			// 		.build(),
+			// );
 			.withOffset(0)
 			.withLimit(1000);
+		// .withClause(
+		// 	new ClauseBuilder()
+		// 		.where("the_oruggin_trail-Output", "playerId", "Eq", id)
+		// 		.build(),
+		// )
+		// .includeHashedKeys();
 		return query;
 	};
 

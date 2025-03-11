@@ -1,19 +1,23 @@
-import fs from "node:fs";
 import path from "node:path";
-import { sveltekit } from "@sveltejs/kit/vite";
-import { type UserConfig, defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { black, bgGreen } from "ansicolor";
+import mkcert from "vite-plugin-mkcert";
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { patchBindings } from "./scripts/vite-fix-bindings";
-import tailwindcss from "@tailwindcss/vite";
-import mkcert from "vite-plugin-mkcert";
-import { bgGreen, black } from "ansicolor";
+
+//TODO: https://github.com/nksaraf/vinxi
+// https://www.npmjs.com/package/wouter
 
 export default defineConfig(async ({ mode }) => {
+	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 	console.log(`\n🦨💕 ZORG IN (${mode}) MODE`);
 	const isSlot = mode === "slot";
-	const isProduction = mode === "production";
-	if (!isProduction)
+	const isProd = mode === "production";
+	const isDev = mode === "development";
+	if (isSlot)
 		console.info(
 			black(
 				bgGreen(
@@ -21,36 +25,47 @@ export default defineConfig(async ({ mode }) => {
 				),
 			),
 		);
-	const config: UserConfig = {
+
+	return {
 		plugins: [
-			sveltekit(),
-			!isSlot &&
+			isSlot &&
 				mkcert({
-					hosts: ["localhost", "*.localhost", "*.127.0.0.1"],
+					hosts: ["localhost"],
 					autoUpgrade: true,
 					savePath: path.resolve(__dirname, "ssl"),
 				}),
-			tailwindcss(),
 			wasm(),
 			topLevelAwait(),
-			patchBindings(), // Patcher for `models.gen.ts` starknet BigNumberish type import
+			tailwindcss(),
+			react(),
+			patchBindings(),
 		],
 		build: {
 			target: "esnext",
-			minify: false,
+			minify: true,
 			sourcemap: true,
+			reportCompressedSize: false,
 		},
 		server: {
+			proxy: {
+				"/katana": {
+					target: process.env.VITE_KATANA_HTTP_RPC,
+					changeOrigin: true,
+				},
+			},
 			cors: true,
 		},
 		resolve: {
 			alias: {
-				"@zorg/contracts/manifest.json": isSlot
+				"@": path.resolve(__dirname, "./src"),
+				"@components": path.resolve(__dirname, "./src/components"),
+				"@lib": path.resolve(__dirname, "./src/lib"),
+				"@styles": path.resolve(__dirname, "./src/styles"),
+				"@editor": path.resolve(__dirname, "./src/editor"),
+				"@zorg/contracts/manifest": isSlot
 					? "@zorg/contracts/manifest_slot.json"
 					: "@zorg/contracts/manifest_dev.json",
 			},
 		},
 	};
-
-	return config;
 });

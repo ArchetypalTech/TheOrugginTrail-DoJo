@@ -4,8 +4,6 @@ export type NotificationType =
 	| "success"
 	| "loading"
 	| "publishing"
-	| "warning"
-	| "info"
 	| "none";
 
 export interface NotificationState {
