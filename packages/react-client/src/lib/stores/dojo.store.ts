@@ -1,6 +1,8 @@
-import type { InitDojo } from "../lib/dojo";
+import type { InitDojo } from "@lib/dojo";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
+import { addTerminalContent } from "./terminal.store";
+
 export type Outputter = {
 	playerId: string;
 	text_o_vision: string;
@@ -12,6 +14,7 @@ export type DojoStatus = {
 };
 
 export type FormatType = "input" | "hash" | "error" | "out" | "shog" | "system";
+
 export type TerminalContentItem = {
 	text: string;
 	format: FormatType;
@@ -19,6 +22,7 @@ export type TerminalContentItem = {
 	speed?: number;
 	style?: string;
 };
+
 // Create initial state object
 const initialState = {
 	status: {
@@ -70,8 +74,7 @@ const setOutputter = (outputter: Outputter | undefined) => {
 	set({ trimmedNewText });
 
 	if (
-		trimmedNewText === lastProcessedText.trim() &&
-		Date.now() - timeout < 500
+		trimmedNewText === lastProcessedText.trim()
 	) {
 		console.log("Skipping duplicate update");
 		set({ timeout: Date.now() });
@@ -81,6 +84,7 @@ const setOutputter = (outputter: Outputter | undefined) => {
 		set({ lastProcessedText: trimmedNewText });
 
 		for (const line of lines) {
+			console.log("OUTOUTOUTOUT", line);
 			addTerminalContent({
 				text: line,
 				format: "out",
@@ -90,40 +94,6 @@ const setOutputter = (outputter: Outputter | undefined) => {
 	}
 };
 
-const addTerminalContent = (item: TerminalContentItem) => {
-	set({
-		contentQueue: [...get().contentQueue, item],
-	});
-
-	// Similar to Svelte's tick, we use setTimeout with 0ms to defer execution
-	setTimeout(() => {
-		if (get().currentContentItem === null) {
-			nextItem(null);
-		}
-	}, 0);
-};
-const nextItem = (contentItem: TerminalContentItem | null) => {
-	const state = get();
-
-	// Check if contentItem is in the currentItem
-	if (contentItem && state.currentContentItem === contentItem) {
-		set({
-			terminalContent: [...state.terminalContent, contentItem],
-			currentContentItem: null,
-		});
-	}
-
-	if (state.contentQueue.length > 0) {
-		const nextItem = state.contentQueue[0];
-		if (nextItem) {
-			set({
-				contentQueue: state.contentQueue.filter((item) => item !== nextItem),
-				currentContentItem: nextItem,
-			});
-		}
-	}
-};
-const clearTerminalContent = () => set({ terminalContent: [] });
 const initializeConfig = async (
 	config: Awaited<ReturnType<typeof InitDojo>>,
 ) => {
@@ -202,9 +172,6 @@ const DojoStore = () => ({
 	subscribe: useDojoStore.subscribe,
 	setStatus,
 	setOutputter,
-	addTerminalContent,
-	nextItem,
-	clearTerminalContent,
 	initializeConfig,
 });
 

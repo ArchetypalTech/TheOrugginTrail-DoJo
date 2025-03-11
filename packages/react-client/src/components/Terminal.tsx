@@ -178,7 +178,7 @@ export default function Terminal() {
 						<TerminalLine key={index} content={content} />
 					))}
 
-					<Typewriter terminalContent={currentContentItem} />
+					<Typewriter/>
 
 					{status === "spawning" && (
 						<div id="scroller" className="w-full flex flex-row gap-2">

@@ -24,7 +24,7 @@ export default defineConfig(async ({ mode }) => {
 	const config: UserConfig = {
 		plugins: [
 			sveltekit(),
-			!isProduction &&
+			!isSlot &&
 				mkcert({
 					hosts: ["localhost", "*.localhost", "*.127.0.0.1"],
 					autoUpgrade: true,

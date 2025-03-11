@@ -16,7 +16,7 @@ const env = cleanEnv(import.meta.env, {
 	VITE_CONTROLLER_CHAINID: str(),
 	VITE_TOKEN_HTTP_RPC: url(),
 	VITE_TOKEN_CONTRACT_ADDRESS: str(),
-	VITE_KATANA_HTTP_RPC: url(),
+	VITE_KATANA_HTTP_RPC: str(),
 	VITE_TORII_HTTP_RPC: url(),
 	VITE_TORII_WS_RPC: str(),
 	VITE_BURNER_ADDRESS: str(),

@@ -16,7 +16,7 @@ export default defineConfig(async ({ mode }) => {
 	const isSlot = mode === "slot";
 	const isProd = mode === "production";
 	const isDev = mode === "development";
-	if (!isProd)
+	if (isSlot)
 		console.info(
 			black(
 				bgGreen(
@@ -24,17 +24,10 @@ export default defineConfig(async ({ mode }) => {
 				),
 			),
 		);
-	const proxy = {
-		"/katana": "http://localhost:5050",
-		"/torii": {
-			target: "http://localhost:8080/",
-			changeOrigin: true,
-		},
-	};
 
 	return {
 		plugins: [
-			!isProd &&
+			isSlot &&
 				mkcert({
 					hosts: ["localhost"],
 					autoUpgrade: true,
@@ -53,7 +46,12 @@ export default defineConfig(async ({ mode }) => {
 			reportCompressedSize: false,
 		},
 		server: {
-			...proxy,
+			proxy: {
+				"/local": {
+					target: "http://localhost:5050",
+					changeOrigin: true,
+				},
+			},
 			cors: true,
 		},
 		resolve: {

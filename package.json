@@ -7,7 +7,8 @@
 		"quickstart": "bun run ./scripts/quickstart.ts # 🦨💕 quickstart installer ",
 		"dev": "mprocs # start developer mode",
 		"dev:slot": "mprocs --config ./mprocs.slot.yaml # start developer mode for slot",
-		"dev:react": "mprocs --config ./mprocs.react.yaml # start developer mode for react"
+		"dev:react:slot": "mprocs --config ./mprocs.react.slot.yaml # start developer mode for react",
+		"dev:react": "mprocs --config ./mprocs.react.local.yaml # start developer mode for react"
 	},
 	"workspaces": ["packages/*"],
 	"engines": {

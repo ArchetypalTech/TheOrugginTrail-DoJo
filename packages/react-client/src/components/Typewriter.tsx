@@ -1,48 +1,49 @@
 import { useEffect, useState } from "react";
 import type { TerminalContentItem } from "@lib/stores/terminal.store";
-import { nextItem } from "@lib/stores/terminal.store";
+import { nextItem, useTerminalStore } from "@lib/stores/terminal.store";
 import { user_store } from "@lib/stores/user.store";
 import TerminalLine from "./TerminalLine";
 
-interface TypewriterProps {
-	terminalContent: TerminalContentItem | null;
-}
 
-export default function Typewriter({ terminalContent }: TypewriterProps) {
+export default function Typewriter() {
 	const [displayContent, setDisplayContent] =
 		useState<TerminalContentItem | null>(null);
 	const minTypingDelay = 2;
 	const maxTypingDelay = 9;
 
+	const {currentContentItem} = useTerminalStore();
+
 	useEffect(() => {
-		// Reset display content when terminalContent changes
+		console.warn("Typewriter", currentContentItem);
+		// Reset display content when currentContentItem changes
 		setDisplayContent(null);
 
-		if (terminalContent === null) {
+		if (currentContentItem === null) {
 			return;
 		}
 
 		// Fast mode - instant display
 		if (
-			terminalContent.useTypewriter === false ||
+			currentContentItem.useTypewriter === false ||
 			user_store.get().typewriter_effect === false
 		) {
-			nextItem(terminalContent);
+			nextItem(currentContentItem);
 			return;
 		}
 
 		// Clone the content item for animation
-		const newDisplayContent = { ...terminalContent, text: "" };
+		const newDisplayContent = { ...currentContentItem, text: "" };
 		setDisplayContent(newDisplayContent);
 
 		let currentIndex = 0;
-		const text = terminalContent.text;
+		const text = currentContentItem.text;
 
 		const interval = setInterval(
 			() => {
 				if (currentIndex >= text.length) {
 					clearInterval(interval);
-					nextItem(terminalContent);
+					console.log("endlength", text.length);
+					nextItem(currentContentItem);
 					return;
 				}
 
@@ -53,17 +54,17 @@ export default function Typewriter({ terminalContent }: TypewriterProps) {
 				});
 				currentIndex++;
 			},
-			(terminalContent.speed || 1) *
+			(currentContentItem.speed || 1) *
 				Math.random() *
 				(maxTypingDelay - minTypingDelay) +
 				minTypingDelay,
 		);
 
-		// Cleanup interval on unmount or when terminalContent changes
+		// Cleanup interval on unmount or when currentContentItem changes
 		return () => {
 			clearInterval(interval);
 		};
-	}, [terminalContent]);
+	}, [currentContentItem]);
 
 	if (displayContent === null) {
 		return null;
