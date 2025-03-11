@@ -73,10 +73,13 @@ async function sendCommand(command: string): Promise<string> {
 		formData.append("route", "sendMessage");
 
 		// call the /api endpoint to post a command
-		const response = await fetch("/api", {
-			method: "POST",
-			body: formData,
-		});
+		// const response = await fetch("/api", {
+		// 	method: "POST",
+		// 	body: formData,
+		// });
+
+		const { calldata, cmds } = await SystemCalls.formatCallData(command);
+		ORUG_CONFIG.contracts.entity.invoke("listen", [calldata]);
 		return response.json();
 	} catch (error) {
 		const e = error as Error;

@@ -8,11 +8,15 @@ import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { patchBindings } from "./scripts/vite-fix-bindings";
 
+//TODO: https://github.com/nksaraf/vinxi
+// https://www.npmjs.com/package/wouter
+
 export default defineConfig(async ({ mode }) => {
 	console.log(`\n🦨💕 ZORG IN (${mode}) MODE`);
 	const isSlot = mode === "slot";
-	const isProduction = mode === "production";
-	if (!isProduction)
+	const isProd = mode === "production";
+	const isDev = mode === "development";
+	if (!isProd)
 		console.info(
 			black(
 				bgGreen(
@@ -20,12 +24,19 @@ export default defineConfig(async ({ mode }) => {
 				),
 			),
 		);
+	const proxy = {
+		"/katana": "http://localhost:5050",
+		"/torii": {
+			target: "http://localhost:8080/",
+			changeOrigin: true,
+		},
+	};
 
 	return {
 		plugins: [
-			!isProduction &&
+			!isProd &&
 				mkcert({
-					hosts: ["localhost", "*.localhost", "*.127.0.0.1"],
+					hosts: ["localhost"],
 					autoUpgrade: true,
 					savePath: path.resolve(__dirname, "ssl"),
 				}),
@@ -42,6 +53,7 @@ export default defineConfig(async ({ mode }) => {
 			reportCompressedSize: false,
 		},
 		server: {
+			...proxy,
 			cors: true,
 		},
 		resolve: {
