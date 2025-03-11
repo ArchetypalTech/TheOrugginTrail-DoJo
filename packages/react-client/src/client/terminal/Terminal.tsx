@@ -60,7 +60,7 @@ export default function Terminal() {
 				format: "system",
 				useTypewriter: true,
 				speed: 4,
-				style: JSON.stringify({ textAlign: "center" }),
+				style: { textAlign: "center" },
 			});
 			if (ORUG_CONFIG.useSlot) {
 				if (!WalletStore().isConnected) {
@@ -69,7 +69,6 @@ export default function Terminal() {
 						format: "hash",
 						useTypewriter: true,
 					});
-					return;
 				}
 			}
 

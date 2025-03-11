@@ -1,36 +1,36 @@
-import { Link, Route, Switch } from "wouter";
-import { ORUG_CONFIG } from "@lib/config";
+import { Route, Switch } from "wouter";
 import "./styles/index.css";
 import { Client } from "./client/client";
 import { Editor } from "./editor/editor";
+import { useHead } from "@unhead/react";
+import { APP_SEO } from "./data/app";
+import type { PropsWithChildren, ReactNode } from "react";
 
-console.log(import.meta.env);
-
-function App() {
-	// useHead({
-	// 	title: APP_SEO.title,
-	// 	meta: Object.entries(APP_SEO).map(([key, value]) => {
-	// 		if (key.startsWith("og")) {
-	// 			return {
-	// 				property: `og:${key.replace("og", "")}`,
-	// 				content: value,
-	// 			};
-	// 		}
-	// 		return {
-	// 			name: key,
-	// 			content: value,
-	// 		};
-	// 	}),
-	// });
-
-	console.log(ORUG_CONFIG);
+const App = (_: PropsWithChildren<ReactNode>) => {
+	useHead({
+		title: APP_SEO.title,
+		meta: Object.entries(APP_SEO).map(([key, value]) => {
+			if (key.startsWith("og")) {
+				return {
+					property: `og:${key.replace("og", "")}`,
+					content: value,
+				};
+			}
+			return {
+				name: key,
+				content: value,
+			};
+		}),
+	});
 
 	return (
-		<Switch>
-			<Route path="/editor" component={Editor} />
-			<Route component={Client} />
-		</Switch>
+		<>
+			<Switch>
+				<Route path="/editor" component={Editor} />
+				<Route component={Client} />
+			</Switch>
+		</>
 	);
-}
+};
 
 export default App;

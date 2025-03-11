@@ -1,3 +1,4 @@
+import type { HTMLAttributes, HtmlHTMLAttributes } from "react";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
@@ -7,7 +8,7 @@ export type TerminalContentItem = {
 	format: FormatType;
 	useTypewriter?: boolean;
 	speed?: number;
-	style?: string;
+	style?: HTMLAttributes<HTMLDivElement>["style"];
 };
 
 // Create initial state object

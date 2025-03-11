@@ -26,8 +26,6 @@ export default defineConfig(async ({ mode }) => {
 			),
 		);
 
-	console.log(process.env);
-
 	return {
 		plugins: [
 			isSlot &&
@@ -63,6 +61,7 @@ export default defineConfig(async ({ mode }) => {
 				"@components": path.resolve(__dirname, "./src/components"),
 				"@lib": path.resolve(__dirname, "./src/lib"),
 				"@styles": path.resolve(__dirname, "./src/styles"),
+				"@editor": path.resolve(__dirname, "./src/editor"),
 				"@zorg/contracts/manifest": isSlot
 					? "@zorg/contracts/manifest_slot.json"
 					: "@zorg/contracts/manifest_dev.json",

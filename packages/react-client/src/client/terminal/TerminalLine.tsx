@@ -30,7 +30,7 @@ export default function TerminalLine({ content }: TerminalLineProps) {
 				format === "hash" && "hash",
 				format === "input" && "input",
 			)}
-			style={content.style ? JSON.parse(content.style) : {}}
+			style={content.style || {}}
 			// biome-ignore lint/security/noDangerouslySetInnerHtml: <Using dangerouslySetInnerHTML is necessary here for the newline formatting>
 			dangerouslySetInnerHTML={{
 				__html: contentText,

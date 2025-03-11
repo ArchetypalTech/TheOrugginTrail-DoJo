@@ -30,7 +30,8 @@
 			"@/*": ["src/*"],
 			"@components/*": ["src/client/terminal/*"],
 			"@lib/*": ["src/lib/*"],
-			"@styles/*": ["src/styles/*"]
+			"@styles/*": ["src/styles/*"],
+			"@editor/*": ["src/editor/*"]
 		}
 	},
 	"include": ["src/**/*", "vite.config.ts"]

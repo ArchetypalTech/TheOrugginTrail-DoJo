@@ -90,7 +90,6 @@ const initializeConfig = async (
 ) => {
 	set({ config });
 	const { existingSubscription } = get();
-
 	if (config === undefined) return;
 
 	console.log("[DOJO]: CONFIG ", config);

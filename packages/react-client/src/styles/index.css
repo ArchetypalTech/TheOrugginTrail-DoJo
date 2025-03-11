@@ -7,11 +7,15 @@
 html,
 body,
 #root {
-  @apply bg-black/60 relative w-screen h-screen;
+  @apply relative w-screen h-screen;
   height: 100%;
   position: relative;
   text-rendering: optimizeLegibility;
   @apply font-sans antialiased;
+}
+
+#client-root {
+  @apply bg-gray-950;
 }
 
 #terminal {

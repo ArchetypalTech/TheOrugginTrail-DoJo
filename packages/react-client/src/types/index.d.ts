@@ -5,3 +5,7 @@ declare module "react" {
 		fetchpriority?: "high" | "low" | "auto";
 	}
 }
+
+declare interface Window {
+	__UNHEAD__: Unhead<T>;
+}

@@ -1,5 +1,6 @@
 import type manifestJsonType from "@zorg/contracts/manifest_dev.json";
 import manifestJson from "@zorg/contracts/manifest";
+import { schema } from "@lib/dojo_bindings/typescript/models.gen";
 import { url, cleanEnv, str } from "envalid";
 import { Account, Contract, RpcProvider } from "starknet";
 
@@ -93,6 +94,7 @@ export const ORUG_CONFIG = {
 	},
 	wallet,
 	manifest,
+	schema,
 	token: {
 		provider: env.VITE_TOKEN_HTTP_RPC,
 		// starkli chain-id --rpc https://api.cartridge.gg/x/theoruggintrail/katana
