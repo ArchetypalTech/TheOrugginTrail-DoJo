@@ -9,7 +9,9 @@ import DojoStore, { useDojoStore } from "@lib/stores/dojo.store";
 import Typewriter from "./Typewriter";
 import TerminalLine from "./TerminalLine";
 import "./Terminal.css";
-import { commandHandler } from "../lib/terminalCommands/commandHandler";
+import { commandHandler } from "../../lib/terminalCommands/commandHandler";
+import { ORUG_CONFIG } from "@/lib/config";
+import WalletStore from "@/lib/stores/wallet.store";
 
 export default function Terminal() {
 	const [inputValue, setInputValue] = useState("");
@@ -60,6 +62,16 @@ export default function Terminal() {
 				speed: 4,
 				style: JSON.stringify({ textAlign: "center" }),
 			});
+			if (ORUG_CONFIG.useSlot) {
+				if (!WalletStore().isConnected) {
+					addTerminalContent({
+						text: "type [wallet] to connect.",
+						format: "hash",
+						useTypewriter: true,
+					});
+					return;
+				}
+			}
 
 			addTerminalContent({
 				text: 'type [command] [target], or type "help"',
@@ -178,7 +190,7 @@ export default function Terminal() {
 						<TerminalLine key={index} content={content} />
 					))}
 
-					<Typewriter/>
+					<Typewriter />
 
 					{status === "spawning" && (
 						<div id="scroller" className="w-full flex flex-row gap-2">

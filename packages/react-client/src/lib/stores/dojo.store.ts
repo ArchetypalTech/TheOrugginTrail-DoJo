@@ -63,34 +63,25 @@ const setOutputter = (outputter: Outputter | undefined) => {
 		return;
 	}
 
-	const { lastProcessedText, timeout } = get();
 	const newText = Array.isArray(outputter.text_o_vision)
 		? outputter.text_o_vision.join("\n")
 		: outputter.text_o_vision || ""; // Ensure it's always a string
 
-	console.log("OUT: ", newText);
+	console.log("OUT:", newText);
 
 	const trimmedNewText = decodeURI(newText.trim()).replaceAll("%2C", ",");
 	set({ trimmedNewText });
 
-	if (
-		trimmedNewText === lastProcessedText.trim()
-	) {
-		console.log("Skipping duplicate update");
-		set({ timeout: Date.now() });
-	} else {
-		set({ timeout: Date.now() });
-		const lines: string[] = processWhitespaceTags(trimmedNewText);
-		set({ lastProcessedText: trimmedNewText });
+	const lines: string[] = processWhitespaceTags(trimmedNewText);
+	set({ lastProcessedText: trimmedNewText });
 
-		for (const line of lines) {
-			console.log("OUTOUTOUTOUT", line);
-			addTerminalContent({
-				text: line,
-				format: "out",
-				useTypewriter: true,
-			});
-		}
+	for (const line of lines) {
+		console.log("LINE:", line);
+		addTerminalContent({
+			text: line,
+			format: "out",
+			useTypewriter: true,
+		});
 	}
 };
 
@@ -107,7 +98,7 @@ const initializeConfig = async (
 	if (existingSubscription !== undefined) return;
 
 	try {
-		const [initialEntities, subscription] = await config.sub(23, (response) => {
+		const [_, subscription] = await config.sub(23, (response) => {
 			if (response.error) {
 				console.error("Error setting up entity sync:", response.error);
 				setStatus({

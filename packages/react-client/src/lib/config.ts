@@ -25,7 +25,7 @@ const env = cleanEnv(import.meta.env, {
 });
 
 const endpoints = {
-	katana: env.VITE_KATANA_HTTP_RPC,
+	katana: "/katana", // FIXME: endpoint cors proxy workaround-- endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
 	torii: {
 		http: env.VITE_TORII_HTTP_RPC,
 		ws: env.VITE_TORII_WS_RPC,
@@ -33,7 +33,7 @@ const endpoints = {
 };
 
 const katanaProvider = new RpcProvider({
-	nodeUrl: env.VITE_KATANA_HTTP_RPC,
+	nodeUrl: "/katana", // FIXME: this is probably correct as cors escape, however endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
 	headers: {
 		//nocors
 		"Access-Control-Allow-Origin": "*",
@@ -101,5 +101,6 @@ export const ORUG_CONFIG = {
 		contract_address: env.VITE_TOKEN_CONTRACT_ADDRESS,
 		erc20: ["0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"],
 	},
+	useSlot: import.meta.env.MODE === "slot",
 	env: env,
 };

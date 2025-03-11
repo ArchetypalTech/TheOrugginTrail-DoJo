@@ -28,7 +28,7 @@
 		"baseUrl": "./",
 		"paths": {
 			"@/*": ["src/*"],
-			"@components/*": ["src/components/*"],
+			"@components/*": ["src/client/terminal/*"],
 			"@lib/*": ["src/lib/*"],
 			"@styles/*": ["src/styles/*"]
 		}

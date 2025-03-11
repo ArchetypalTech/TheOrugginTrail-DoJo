@@ -1,5 +1,5 @@
 import path from "node:path";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { black, bgGreen } from "ansicolor";
@@ -12,6 +12,7 @@ import { patchBindings } from "./scripts/vite-fix-bindings";
 // https://www.npmjs.com/package/wouter
 
 export default defineConfig(async ({ mode }) => {
+	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 	console.log(`\n🦨💕 ZORG IN (${mode}) MODE`);
 	const isSlot = mode === "slot";
 	const isProd = mode === "production";
@@ -24,6 +25,8 @@ export default defineConfig(async ({ mode }) => {
 				),
 			),
 		);
+
+	console.log(process.env);
 
 	return {
 		plugins: [
@@ -47,8 +50,8 @@ export default defineConfig(async ({ mode }) => {
 		},
 		server: {
 			proxy: {
-				"/local": {
-					target: "http://localhost:5050",
+				"/katana": {
+					target: process.env.VITE_KATANA_HTTP_RPC,
 					changeOrigin: true,
 				},
 			},

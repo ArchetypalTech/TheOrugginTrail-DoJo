@@ -1,6 +1,8 @@
-import Terminal from "@components/Terminal";
+import { Link, Route, Switch } from "wouter";
 import { ORUG_CONFIG } from "@lib/config";
 import "./styles/index.css";
+import { Client } from "./client/client";
+import { Editor } from "./editor/editor";
 
 console.log(import.meta.env);
 
@@ -24,9 +26,10 @@ function App() {
 	console.log(ORUG_CONFIG);
 
 	return (
-		<div className="flex relative w-screen h-screen">
-			<Terminal />
-		</div>
+		<Switch>
+			<Route path="/editor" component={Editor} />
+			<Route component={Client} />
+		</Switch>
 	);
 }
 

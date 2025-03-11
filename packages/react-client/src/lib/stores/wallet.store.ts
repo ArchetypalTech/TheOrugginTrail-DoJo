@@ -72,7 +72,7 @@ export const setupController = async () => {
 		},
 		chains: [
 			{
-				rpcUrl: ORUG_CONFIG.endpoints.katana,
+				rpcUrl: ORUG_CONFIG.env.VITE_KATANA_HTTP_RPC, // FIXME: workaround for endpoint being proxied
 			},
 		],
 		defaultChainId: ORUG_CONFIG.token.chainId,
@@ -94,7 +94,7 @@ export const setupController = async () => {
 	}
 };
 
-if (import.meta.env.MODE === "slot") {
+if (ORUG_CONFIG.useSlot) {
 	await setupController();
 }
 

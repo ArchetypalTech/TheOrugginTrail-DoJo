@@ -7,6 +7,7 @@ import {
 // import { WindowType, windowsStore } from "../lib/stores/windows.store";
 import { commandHandler } from "./commandHandler";
 import { ORUG_CONFIG } from "@lib/config";
+import WalletStore from "../stores/wallet.store";
 
 type commandContext = {
 	command: string;
@@ -17,8 +18,39 @@ type commandContext = {
 export const TERMINAL_SYSTEM_COMMANDS: {
 	[key: string]: (command: commandContext) => void;
 } = {
+	_intro: () => {
+		addTerminalContent({
+			text: `
+			Welcome to the Oruggin Trail, a text adventure game.
+			You are a young adventurer, seeking to find the Oruggin Trail, a mysterious and dangerous path.
+			`,
+			format: "system",
+			useTypewriter: true,
+		});
+	},
 	clear: () => {
 		clearTerminalContent();
+	},
+	wallet: async () => {
+		if (WalletStore().isConnected) {
+			await WalletStore().disconnectController();
+			addTerminalContent({
+				text: "Disconnected",
+				format: "hash",
+				useTypewriter: true,
+			});
+			return;
+		}
+		const res = await WalletStore().connectController();
+		console.log(res);
+		if (WalletStore().isConnected) {
+			const { username, walletAddress } = WalletStore();
+			addTerminalContent({
+				text: JSON.stringify({ username, walletAddress }, null, 2),
+				format: "hash",
+				useTypewriter: true,
+			});
+		}
 	},
 	close: (ctx) => {
 		// if (ctx.args[0] === "help") {
