@@ -33,12 +33,7 @@ const initialState = {
 	} as DojoStatus,
 	outputter: undefined as Outputter | undefined,
 	config: undefined as Awaited<ReturnType<typeof InitDojo>> | undefined,
-	terminalContent: [] as TerminalContentItem[],
-	currentContentItem: null as TerminalContentItem | null,
-	contentQueue: [] as TerminalContentItem[],
 	lastProcessedText: "",
-	trimmedNewText: "",
-	timeout: Date.now(),
 	existingSubscription: undefined as unknown | undefined,
 };
 
@@ -72,7 +67,6 @@ const setOutputter = (outputter: Outputter | undefined) => {
 	console.log("OUT:", newText);
 
 	const trimmedNewText = decodeURI(newText.trim()).replaceAll("%2C", ",");
-	set({ trimmedNewText });
 
 	const lines: string[] = processWhitespaceTags(trimmedNewText);
 	set({ lastProcessedText: trimmedNewText });

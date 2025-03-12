@@ -4,46 +4,45 @@ import { nextItem, useTerminalStore } from "@lib/stores/terminal.store";
 import { user_store } from "@lib/stores/user.store";
 import TerminalLine from "./TerminalLine";
 
-
 export default function Typewriter() {
 	const [displayContent, setDisplayContent] =
 		useState<TerminalContentItem | null>(null);
 	const minTypingDelay = 2;
 	const maxTypingDelay = 9;
 
-	const {currentContentItem} = useTerminalStore();
+	const { activeTypewriterLine } = useTerminalStore();
 
 	useEffect(() => {
-		console.warn("Typewriter", currentContentItem);
-		// Reset display content when currentContentItem changes
+		console.warn("Typewriter", activeTypewriterLine);
+		// Reset display content when activeTypewriterLine changes
 		setDisplayContent(null);
 
-		if (currentContentItem === null) {
+		if (activeTypewriterLine === null) {
 			return;
 		}
 
 		// Fast mode - instant display
 		if (
-			currentContentItem.useTypewriter === false ||
+			activeTypewriterLine.useTypewriter === false ||
 			user_store.get().typewriter_effect === false
 		) {
-			nextItem(currentContentItem);
+			nextItem(activeTypewriterLine);
 			return;
 		}
 
 		// Clone the content item for animation
-		const newDisplayContent = { ...currentContentItem, text: "" };
+		const newDisplayContent = { ...activeTypewriterLine, text: "" };
 		setDisplayContent(newDisplayContent);
 
 		let currentIndex = 0;
-		const text = currentContentItem.text;
+		const text = activeTypewriterLine.text;
 
 		const interval = setInterval(
 			() => {
 				if (currentIndex >= text.length) {
 					clearInterval(interval);
 					console.log("endlength", text.length);
-					nextItem(currentContentItem);
+					nextItem(activeTypewriterLine);
 					return;
 				}
 
@@ -54,17 +53,17 @@ export default function Typewriter() {
 				});
 				currentIndex++;
 			},
-			(currentContentItem.speed || 1) *
+			(activeTypewriterLine.speed || 1) *
 				Math.random() *
 				(maxTypingDelay - minTypingDelay) +
 				minTypingDelay,
 		);
 
-		// Cleanup interval on unmount or when currentContentItem changes
+		// Cleanup interval on unmount or when activeTypewriterLine changes
 		return () => {
 			clearInterval(interval);
 		};
-	}, [currentContentItem]);
+	}, [activeTypewriterLine]);
 
 	if (displayContent === null) {
 		return null;

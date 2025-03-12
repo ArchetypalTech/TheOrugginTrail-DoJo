@@ -1,11 +1,17 @@
 import { addTerminalContent } from "@lib/stores/terminal.store";
 // import { getBalance2 } from "../tokens/interaction";
-import { TERMINAL_SYSTEM_COMMANDS } from "./systemCommands";
-// import { walletStore } from "@lib/stores/wallet.store";
+import { TERMINAL_SYSTEM_COMMANDS } from "./commands";
 import { SystemCalls } from "@lib/systemCalls";
 import { ORUG_CONFIG } from "@lib/config";
 import WalletStore from "@lib/stores/wallet.store";
 
+/**
+ * Handles terminal commands entered by the user
+ *
+ * @param {string} command - The full command string entered by the user
+ * @param {boolean} bypassSystem - When true, bypasses system commands and sends directly to contract
+ * @returns {Promise<void>}
+ */
 export const commandHandler = async (command: string, bypassSystem = false) => {
 	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
 	addTerminalContent({
@@ -21,9 +27,8 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 	};
 
 	// try to get a match with systemCommands
-	console.log(context);
+	console.log("[commandHandler]:", context);
 	if (!bypassSystem && TERMINAL_SYSTEM_COMMANDS[cmd]) {
-		console.log("MATCH");
 		TERMINAL_SYSTEM_COMMANDS[cmd](context);
 		return;
 	}
@@ -39,70 +44,80 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 			});
 			return;
 		}
-		// const tokenBalance = await getBalance2();
-		// if (tokenBalance < 1) {
-		// 	addTerminalContent({
-		// 		text: `You have ${tokenBalance} TOT Tokens and cannot proceed on the journey.`,
-		// 		format: "error",
-		// 		useTypewriter: true,
-		// 	});
-		// }
+		if (!hasRequiredTokens()) return;
 	}
 
-	// forward to contract
 	try {
-		const response = await sendCommand(command);
+		if (ORUG_CONFIG.useSlot) {
+			return await sendControllerCommand(command);
+		}
+		return await sendCommand(command);
 	} catch (error) {
 		console.error("Error sending command:", error);
 	}
 };
 
-/*
- * sendCommand
- * Clientside call for player commands
+/**
+ * Checks if the user has the required tokens to proceed
+ *
+ * @returns {Promise<boolean>} True if user has the required tokens, false otherwise
  */
-
-async function sendCommand(command: string): Promise<string> {
-	if (ORUG_CONFIG.useSlot) {
-		// we're connected to controller
-		return sendControllerCommand(command);
+async function hasRequiredTokens(): Promise<boolean> {
+	if (!ORUG_CONFIG.useSlot) return true;
+	if (!WalletStore().isConnected) {
+		return false;
 	}
+	// FIXME: currently token is always 1
+	const tokenBalance = 1; //await getBalance2();
+	if (tokenBalance < 1) {
+		addTerminalContent({
+			text: `You have ${tokenBalance} TOT Tokens and cannot proceed on the journey.`,
+			format: "error",
+			useTypewriter: true,
+		});
+	}
+	return true;
+}
+
+/**
+ * Sends a command to the entity contract
+ * Clientside call for player commands
+ *
+ * @param {string} command - The command to send
+ * @returns {Promise<void>}
+ */
+async function sendCommand(command: string): Promise<void> {
 	try {
 		const formData = new FormData();
 		formData.append("command", command);
 		formData.append("route", "sendMessage");
 
-		// call the /api endpoint to post a command
-		// const response = await fetch("/api", {
-		// 	method: "POST",
-		// 	body: formData,
-		// });
-
-		const { calldata, cmds } = await SystemCalls.formatCallData(command);
-		ORUG_CONFIG.contracts.entity.invoke("listen", [calldata]);
-		return response.json();
+		const { calldata } = await SystemCalls.formatCallData(command);
+		await ORUG_CONFIG.contracts.entity.invoke("listen", [calldata]);
 	} catch (error) {
-		const e = error as Error;
-		return e.message;
+		console.error("Error sending command:", error as Error);
 	}
 }
 
-/*
- * sendControllerCommand
+/**
+ * Sends a command through the controller
  * Clientside call for controller commands
+ *
+ * @param {string} command - The command to send
+ * @returns {Promise<void>}
  */
-
-async function sendControllerCommand(command: string): Promise<string> {
+async function sendControllerCommand(command: string): Promise<void> {
 	if (!WalletStore().isConnected) {
 		addTerminalContent({
 			text: "You are not yet connected",
 			format: "hash",
 			useTypewriter: true,
 		});
+		return;
 	}
 	console.log("[CONTROLLER] sendControllerCommand", command);
 	console.time("calltime");
-	const { calldata, cmds } = await SystemCalls.formatCallData(command);
+	const { calldata } = await SystemCalls.formatCallData(command);
 	WalletStore().controller?.account?.execute([
 		{
 			contractAddress: ORUG_CONFIG.contracts.entity.address,
@@ -111,5 +126,4 @@ async function sendControllerCommand(command: string): Promise<string> {
 		},
 	]);
 	console.timeEnd("calltime");
-	return "woop";
 }

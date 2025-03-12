@@ -25,7 +25,7 @@ export default function Terminal() {
 	const {
 		status: { status, error },
 	} = useDojoStore();
-	const { terminalContent, currentContentItem } = useTerminalStore();
+	const { terminalContent, activeTypewriterLine } = useTerminalStore();
 
 	useEffect(() => {
 		// Focus input on mount
@@ -132,7 +132,7 @@ export default function Terminal() {
 				break;
 			case "Escape":
 				e.preventDefault();
-				nextItem(currentContentItem);
+				nextItem(activeTypewriterLine);
 				break;
 			default:
 				break;

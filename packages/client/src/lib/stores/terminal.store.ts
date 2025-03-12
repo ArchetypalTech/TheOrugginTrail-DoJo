@@ -11,10 +11,9 @@ export type TerminalContentItem = {
 	style?: HTMLAttributes<HTMLDivElement>["style"];
 };
 
-// Create initial state object
 const initialState = {
 	terminalContent: [] as TerminalContentItem[],
-	currentContentItem: null as TerminalContentItem | null,
+	activeTypewriterLine: null as TerminalContentItem | null,
 	contentQueue: [] as TerminalContentItem[],
 };
 
@@ -37,22 +36,19 @@ export function addTerminalContent(item: TerminalContentItem) {
 		contentQueue: [...get().contentQueue, item],
 	});
 
-	// Similar to Svelte's tick, we use setTimeout with 0ms to defer execution
-	setTimeout(() => {
-		if (get().currentContentItem === null) {
-			nextItem(null);
-		}
-	}, 0);
+	if (get().activeTypewriterLine === null) {
+		nextItem(null);
+	}
 }
 
-export function nextItem(contentItem: TerminalContentItem | null) {
+export function nextItem(newContent: TerminalContentItem | null) {
 	const state = get();
 
-	// Check if contentItem is in the currentItem
-	if (contentItem && state.currentContentItem === contentItem) {
+	// Check if newContent is in the currentItem
+	if (newContent && state.activeTypewriterLine === newContent) {
 		set({
-			terminalContent: [...state.terminalContent, contentItem],
-			currentContentItem: null,
+			terminalContent: [...state.terminalContent, newContent],
+			activeTypewriterLine: null,
 		});
 	}
 
@@ -61,7 +57,7 @@ export function nextItem(contentItem: TerminalContentItem | null) {
 		if (nextItem) {
 			set({
 				contentQueue: state.contentQueue.filter((item) => item !== nextItem),
-				currentContentItem: nextItem,
+				activeTypewriterLine: nextItem,
 			});
 		}
 	}

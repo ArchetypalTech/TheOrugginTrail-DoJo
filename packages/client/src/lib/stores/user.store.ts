@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
-// Create initial state object
 const initialState = {
 	typewriter_effect: true,
 };
