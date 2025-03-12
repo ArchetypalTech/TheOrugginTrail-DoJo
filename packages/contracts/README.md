@@ -2,10 +2,7 @@
   <h1 align="center">ZORG Contracts</h1>
 </p>
 <p align="center">
-Dojo smart contracts powering the onchain mechanics of The Oruggin Trail.
-</p>
-<p align="center">
-Where the adventure truly lives...
+This package contains the Cairo smart contracts that power ZORG onchain mechanics using the Dojo engine. The contracts define the game's core systems, entities, and logic.
 </p>
 
 ## ⚡ Setup
@@ -16,7 +13,7 @@ Where the adventure truly lives...
 bun install
 ```
 
-### 🚀 Deployment and Management
+### 💻 Deployment and Management
 
 Deploy contracts to slot:
 
@@ -36,11 +33,7 @@ Watch for contract changes:
 bun run slot:watch
 ```
 
-### 🏗️ Architecture
-
-This package contains the Cairo smart contracts that power The Oruggin Trail's onchain mechanics using the Dojo engine. The contracts define the game's core systems, entities, and logic.
-
-### 🛠️ Technologies
+### 🪴 Product may include traces of
 
 | **Technology** | **Purpose**               |
 | -------------- | ------------------------- |

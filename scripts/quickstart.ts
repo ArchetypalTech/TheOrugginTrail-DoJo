@@ -1,6 +1,6 @@
 import { $ } from "bun";
 import * as Bun from "bun";
-import { isCommandAvailable, SetupASDFPaths, versionSatisfies } from "./utils";
+import { isCommandAvailable, versionSatisfies } from "./utils";
 import {
 	bgDarkGray,
 	yellow,

@@ -1,7 +1,66 @@
 import { CallData, byteArray, type RawArgsArray } from "starknet";
-import { ORUG_CONFIG } from "@lib/config";
-import { toCairoArray } from "@lib/utils";
+import { ZORG_CONFIG } from "@lib/config";
+import { toCairoArray } from "../editor/utils";
+import { addTerminalContent } from "./stores/terminal.store";
+import WalletStore from "./stores/wallet.store";
 
+/**
+ * Sends a command to the entity contract.
+ * Clientside call for player commands.
+ *
+ * @param {string} command - The command to send
+ * @returns {Promise<void>}
+ */
+async function sendCommand(command: string): Promise<void> {
+	try {
+		const formData = new FormData();
+		formData.append("command", command);
+		formData.append("route", "sendMessage");
+
+		console.log("[KATANA-DEV] sendControllerCommand", command);
+		const { calldata } = await formatCallData(command);
+		await ZORG_CONFIG.contracts.entity.invoke("listen", [calldata]);
+	} catch (error) {
+		console.error("Error sending command:", error as Error);
+	}
+}
+
+/**
+ * Sends a command through the controller.
+ * Clientside call for controller commands.
+ *
+ * @param {string} command - The command to send
+ * @returns {Promise<void>}
+ */
+async function sendControllerCommand(command: string): Promise<void> {
+	if (!WalletStore().isConnected) {
+		addTerminalContent({
+			text: "You are not yet connected",
+			format: "hash",
+			useTypewriter: true,
+		});
+		return;
+	}
+	console.log("[CONTROLLER] sendControllerCommand", command);
+	console.time("calltime");
+	const { calldata } = await formatCallData(command);
+	WalletStore().controller?.account?.execute([
+		{
+			contractAddress: ZORG_CONFIG.contracts.entity.address,
+			entrypoint: "listen",
+			calldata,
+		},
+	]);
+	console.timeEnd("calltime");
+}
+
+/**
+ * Formats a command message into calldata for contract invocation.
+ * Splits the message into an array of commands and converts them to byte arrays.
+ *
+ * @param {string} message - The message to format
+ * @returns {Promise<{calldata: RawArgsArray, cmds: string[]}>} The formatted calldata and command array
+ */
 async function formatCallData(message: string) {
 	const cmds_raw = message.split(/\s+/);
 	const cmds = cmds_raw.filter((word) => word !== "");
@@ -10,37 +69,6 @@ async function formatCallData(message: string) {
 	const calldata = CallData.compile([cmd_array, 23]);
 	console.log("formatCallData(cmds): ", cmds, " -> calldata ->", calldata);
 	return { calldata, cmds };
-}
-
-/*
- * sendMessage
- * Serverside call for player commands
- */
-async function sendMessage(message: string) {
-	const {
-		contracts: { entity },
-	} = ORUG_CONFIG;
-	// create message as readable contract data
-	const { calldata, cmds } = await formatCallData(message);
-	try {
-		// ionvoke the contract as we are doing a write
-		const response = await entity.invoke("listen", [calldata]);
-		return new Response(
-			JSON.stringify({ tx: response.transaction_hash, cmds, calldata }),
-			{
-				headers: {
-					"Content-Type": "application/text",
-				},
-			},
-		);
-	} catch (error) {
-		console.error("sendMessage(cmds): ", cmds, " -> error ->", error);
-		return new Response(JSON.stringify({ message: (error as Error).message }), {
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-	}
 }
 
 export type DesignerCall =
@@ -54,11 +82,14 @@ type DesignerCallProps = {
 	args: unknown[];
 };
 
-/*
- * sendDesignerCall
- * Serverside call for designer commands
+/**
+ * Sends a call to the designer contract.
+ * Handles different types of calls with appropriate data formatting.
+ *
+ * @param {string} props - JSON string containing the call and args properties
+ * @returns {Promise<Response>} The response from the contract call
+ * @throws {Error} If the contract call fails
  */
-
 async function sendDesignerCall(props: string) {
 	const { call, args } = JSON.parse(props) as DesignerCallProps;
 	try {
@@ -67,7 +98,7 @@ async function sendDesignerCall(props: string) {
 			// reformat args to cairo array
 			const data = toCairoArray(args) as RawArgsArray;
 			const calldata = CallData.compile(data);
-			const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+			const response = await ZORG_CONFIG.contracts.designer.invoke(call, calldata);
 			// we do a manual wait because the waitForTransaction is super slow
 			await new Promise((r) => setTimeout(r, 500));
 			return new Response(JSON.stringify(response), {
@@ -83,7 +114,7 @@ async function sendDesignerCall(props: string) {
 		const data = [args[0], args[1], convertedString] as RawArgsArray;
 		const calldata = CallData.compile(data);
 
-		const response = await ORUG_CONFIG.contracts.designer.invoke(call, calldata);
+		const response = await ZORG_CONFIG.contracts.designer.invoke(call, calldata);
 		// we do a manual wait because the waitForTransaction is super slow
 		await new Promise((r) => setTimeout(r, 500));
 
@@ -100,8 +131,16 @@ async function sendDesignerCall(props: string) {
 	}
 }
 
+/**
+ * SystemCalls object that exports all the functions for external use.
+ *
+ * @namespace
+ * @property {Function} sendDesignerCall - Function to send calls to the designer contract
+ * @property {Function} sendCommand - Function to send commands to the entity contract
+ * @property {Function} sendControllerCommand - Function to send commands through the controller
+ */
 export const SystemCalls = {
-	sendMessage,
 	sendDesignerCall,
-	formatCallData,
+	sendCommand,
+	sendControllerCommand,
 };

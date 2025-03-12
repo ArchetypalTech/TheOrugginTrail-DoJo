@@ -3,8 +3,9 @@ import {
 	clearTerminalContent,
 } from "@lib/stores/terminal.store";
 import { commandHandler } from "./commandHandler";
-import { ORUG_CONFIG } from "@lib/config";
+import { ZORG_CONFIG } from "@lib/config";
 import WalletStore from "../stores/wallet.store";
+import { HELP_TEXTS } from "@/data/help.data";
 
 /**
  * Context object passed to each terminal command handler
@@ -95,9 +96,19 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 		// DEMO for commands that need to intercept the msd stream, and then call the contract
 		commandHandler(command, true);
 	},
+	help: () => {
+		// Handle help command
+		addTerminalContent({
+			text: `Available commands:\n\n${Object.entries(HELP_TEXTS)
+				.map(([cmd, content]) => `> ${cmd.padEnd(10)}\n${content.description}`)
+				.join("\n\n")}`,
+			format: "hash",
+			useTypewriter: true,
+		});
+	},
 	connection: async () => {
 		const dest = {
-			endpoints: ORUG_CONFIG.endpoints,
+			endpoints: ZORG_CONFIG.endpoints,
 			mode: import.meta.env.MODE,
 		};
 		addTerminalContent({

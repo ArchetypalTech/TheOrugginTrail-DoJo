@@ -21,3 +21,6 @@ export const APP_SEO = {
 	twitterCard: "summary_large_image",
 	keywords: APP_DATA.keywords.join(),
 } as const;
+
+export const APP_ICON =
+	"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y='.9em' font-size='90' transform='translate(10, 0)'>✨</text><text y='.1em' font-size='90' transform='translate(10, 35) scale(0.5,0.5)'>🥄</text></svg>";

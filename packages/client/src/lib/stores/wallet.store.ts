@@ -1,9 +1,19 @@
 import type { WalletAccount } from "starknet";
 import Controller, { type ControllerOptions } from "@cartridge/controller";
-import { ORUG_CONFIG } from "@lib/config";
+import { ZORG_CONFIG } from "@lib/config";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
+/**
+ * Interface representing the wallet state.
+ * @interface WalletStore
+ * @property {WalletAccount | undefined} account - The wallet account instance
+ * @property {string | undefined} username - The user's username
+ * @property {string | undefined} walletAddress - The wallet's address
+ * @property {Controller | undefined} controller - The cartridge controller instance
+ * @property {boolean} isConnected - Indicates if the wallet is connected
+ * @property {boolean} isLoading - Indicates if wallet operations are in progress
+ */
 export interface WalletStore {
 	account: WalletAccount | undefined;
 	username: string | undefined;
@@ -23,6 +33,10 @@ const initialState: WalletStore = {
 	isLoading: false,
 };
 
+/**
+ * Zustand store for managing wallet state.
+ * Provides state and state manipulation functions for wallet operations.
+ */
 export const useWalletStore = create<
 	WalletStore & { set: (state: Partial<WalletStore>) => void }
 >()(
@@ -35,16 +49,25 @@ export const useWalletStore = create<
 const get = () => useWalletStore.getState();
 const set = useWalletStore.getState().set;
 
+/**
+ * Updates the wallet store with new data.
+ * @param {Partial<WalletStore>} data - Partial wallet store data to update
+ */
 export const setWalletData = (data: Partial<WalletStore>) => {
 	set(data);
 };
 
+/**
+ * Sets up the Cartridge controller with required configuration.
+ * Configures policies, chains, and tokens for the controller.
+ * @returns {Promise<Controller | undefined>} The configured controller instance
+ */
 export const setupController = async () => {
-	const worldName = ORUG_CONFIG.manifest.default.world.name;
+	const worldName = ZORG_CONFIG.manifest.default.world.name;
 	const controllerConfig: ControllerOptions = {
 		policies: {
 			contracts: {
-				[ORUG_CONFIG.manifest.entity.address]: {
+				[ZORG_CONFIG.manifest.entity.address]: {
 					name: worldName, // Optional, can be added if you want a name
 					description: `Aprove submitting transactions to ${worldName}`,
 					methods: [
@@ -54,7 +77,7 @@ export const setupController = async () => {
 						},
 					],
 				},
-				[ORUG_CONFIG.token.contract_address]: {
+				[ZORG_CONFIG.token.contract_address]: {
 					name: "TOT NFT", // Optional
 					description: "Mint and transfer TOT tokens",
 					methods: [
@@ -72,15 +95,15 @@ export const setupController = async () => {
 		},
 		chains: [
 			{
-				rpcUrl: ORUG_CONFIG.env.VITE_KATANA_HTTP_RPC, // FIXME: workaround for endpoint being proxied
+				rpcUrl: ZORG_CONFIG.env.VITE_KATANA_HTTP_RPC, // FIXME: workaround for endpoint being proxied
 			},
 		],
-		defaultChainId: ORUG_CONFIG.token.chainId,
+		defaultChainId: ZORG_CONFIG.token.chainId,
 		tokens: {
-			erc20: ORUG_CONFIG.token.erc20,
+			erc20: ZORG_CONFIG.token.erc20,
 			//erc721: [addrContract],
 		},
-		slot: ORUG_CONFIG.env.VITE_SLOT,
+		slot: ZORG_CONFIG.env.VITE_SLOT,
 	};
 
 	try {
@@ -94,11 +117,17 @@ export const setupController = async () => {
 	}
 };
 
-if (ORUG_CONFIG.useSlot) {
+// Initialize controller if using slot configuration
+if (ZORG_CONFIG.useSlot) {
 	await setupController();
 	await get().controller?.probe();
 }
 
+/**
+ * Connects to the wallet using the configured controller.
+ * Sets wallet state including account, username, and address on successful connection.
+ * @throws {Error} When controller is not found or connection fails
+ */
 export const connectController = async () => {
 	const wallet = get();
 	if (wallet.isConnected) {
@@ -137,10 +166,18 @@ export const connectController = async () => {
 	}
 };
 
+/**
+ * Opens the user profile in the Controller UI.
+ * Navigates to the inventory section of the profile.
+ */
 export const openUserProfile = () => {
 	get().controller?.openProfile("inventory");
 };
 
+/**
+ * Disconnects the wallet from the application.
+ * Resets wallet state to default values.
+ */
 export const disconnectController = async () => {
 	get().controller?.disconnect(); // Disconnect the controller
 	setWalletData({
@@ -151,6 +188,11 @@ export const disconnectController = async () => {
 	});
 };
 
+/**
+ * Factory function that returns wallet store state and methods.
+ * Provides access to the entire wallet API in one object.
+ * @returns {Object} Combined wallet state and methods
+ */
 const WalletStore = () => ({
 	...useWalletStore.getState(),
 	set: useWalletStore.setState,

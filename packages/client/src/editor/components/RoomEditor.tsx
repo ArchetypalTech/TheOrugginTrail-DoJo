@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import EditorStore, { useEditorStore } from "../store";
+import EditorStore, { useEditorStore } from "../editor.store";
 import { EditorList } from "./EditorList";
 import type { Room } from "../lib/schemas";
 import { ROOM_TYPE_OPTIONS, BIOME_TYPE_OPTIONS } from "../lib/schemas";
@@ -8,10 +8,12 @@ import {
 	Header,
 	Input,
 	ItemId,
+	PublishButton,
 	Select,
 	Textarea,
 	TextDef,
 } from "./FormComponents";
+import { publishRoom } from "../publisher";
 
 export const RoomEditor = () => {
 	const { currentLevel, currentRoomIndex } = useEditorStore();
@@ -20,11 +22,6 @@ export const RoomEditor = () => {
 		console.log("currentLevel", currentLevel);
 		return { editedRoom: currentLevel.rooms[currentRoomIndex] };
 	}, [currentRoomIndex, currentLevel]);
-
-	const selectRoomIndex = (index: number) => {
-		console.log("Selected room index:", index);
-		EditorStore().set({ currentRoomIndex: index });
-	};
 
 	// Handler for input changes
 	const handleInputChange = (
@@ -60,10 +57,6 @@ export const RoomEditor = () => {
 		EditorStore().rooms.update(currentRoomIndex, updatedRoom);
 	};
 
-	const handleCreateRoom = () => {
-		EditorStore().rooms.add();
-	};
-
 	const handleDeleteRoom = () => {
 		if (!editedRoom) return;
 
@@ -83,14 +76,22 @@ export const RoomEditor = () => {
 		<div className="flex flex-row gap-2 col-span-2">
 			<EditorList
 				list={currentLevel.rooms}
-				selectionFn={selectRoomIndex}
-				addObjectFn={handleCreateRoom}
+				selectionFn={(index: number) =>
+					EditorStore().set({ currentRoomIndex: index })
+				}
+				addObjectFn={() => EditorStore().rooms.add()}
 				selectedIndex={currentRoomIndex}
-				emptyText="Create new room"
+				emptyText="🏠 Create Room"
 			/>
 			<div className="editor-inspector shrink">
 				<Header title="Room">
 					<DeleteButton onClick={handleDeleteRoom} />
+					<PublishButton
+						onClick={async () => {
+							await publishRoom(editedRoom);
+							EditorStore().notifications.clear();
+						}}
+					/>
 				</Header>
 
 				<Input

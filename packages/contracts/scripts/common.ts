@@ -25,7 +25,6 @@ export const zorgSpinner = spinner({
 
 const files = {
 	slot: "dojo_slot.toml",
-	torii: "torii-sepolia.toml",
 	scarb: "Scarb.toml",
 };
 

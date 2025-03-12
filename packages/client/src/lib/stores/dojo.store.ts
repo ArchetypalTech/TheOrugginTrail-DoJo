@@ -2,36 +2,30 @@ import type { InitDojo } from "@lib/dojo";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { addTerminalContent } from "./terminal.store";
-import { ORUG_CONFIG } from "../config";
+import { ZORG_CONFIG } from "../config";
 import WalletStore from "./wallet.store";
 
-export type Outputter = {
-	playerId: string;
-	text_o_vision: string;
-};
+// @dev Use the Dojo bindings, *avoid* recreating these where possible
+import type { Output } from "../dojo_bindings/typescript/models.gen";
+import { normalizeAddress, processWhitespaceTags } from "../utils";
 
+/**
+ * Represents the current status of the Dojo system.
+ * @typedef {Object} DojoStatus
+ * @property {'loading' | 'initialized' | 'spawning' | 'error' | 'controller'} status - Current status of the Dojo system
+ * @property {string | null} error - Error message if status is 'error', null otherwise
+ */
 export type DojoStatus = {
 	status: "loading" | "initialized" | "spawning" | "error" | "controller";
 	error: string | null;
 };
 
-export type FormatType = "input" | "hash" | "error" | "out" | "shog" | "system";
-
-export type TerminalContentItem = {
-	text: string;
-	format: FormatType;
-	useTypewriter?: boolean;
-	speed?: number;
-	style?: string;
-};
-
-// Create initial state object
 const initialState = {
 	status: {
 		status: "loading",
 		error: null,
 	} as DojoStatus,
-	outputter: undefined as Outputter | undefined,
+	outputter: undefined as Output | undefined,
 	config: undefined as Awaited<ReturnType<typeof InitDojo>> | undefined,
 	lastProcessedText: "",
 	existingSubscription: undefined as unknown | undefined,
@@ -39,6 +33,10 @@ const initialState = {
 
 type DojoState = typeof initialState;
 
+/**
+ * Zustand store for managing Dojo state
+ * Handles subscriptions, output processing, and initialization
+ */
 export const useDojoStore = create<
 	DojoState & { set: (state: Partial<DojoState>) => void }
 >()(
@@ -52,8 +50,18 @@ const get = () => useDojoStore.getState();
 const set = get().set;
 
 // Actions
+/**
+ * Updates the status of the Dojo system
+ * @param {DojoStatus} status - The new status to set
+ */
 const setStatus = (status: DojoStatus) => set({ status });
-const setOutputter = (outputter: Outputter | undefined) => {
+
+/**
+ * Processes and sets new output from a player
+ * Decodes and formats text before adding it to the terminal
+ * @param {Outputter | undefined} outputter - Output data from a player
+ */
+const setOutputter = (outputter: Output | undefined) => {
 	set({ outputter });
 
 	if (outputter === undefined) {
@@ -64,15 +72,14 @@ const setOutputter = (outputter: Outputter | undefined) => {
 		? outputter.text_o_vision.join("\n")
 		: outputter.text_o_vision || ""; // Ensure it's always a string
 
-	console.log("OUT:", newText);
+	console.log("[OUTPUTTER]:", newText);
 
+	// @dev decode and reprocess text to escape characters such as %20 and %2C, we can not create calldata with \n or other escape characters because the Starknet processor will go into an infinite loop 🥳
 	const trimmedNewText = decodeURI(newText.trim()).replaceAll("%2C", ",");
-
 	const lines: string[] = processWhitespaceTags(trimmedNewText);
 	set({ lastProcessedText: trimmedNewText });
 
 	for (const line of lines) {
-		console.log("LINE:", line);
 		addTerminalContent({
 			text: line,
 			format: "out",
@@ -81,6 +88,12 @@ const setOutputter = (outputter: Outputter | undefined) => {
 	}
 };
 
+/**
+ * Initializes the Dojo configuration and sets up subscriptions
+ * Handles subscription to entities and updates outputter when relevant data changes
+ * @param {Awaited<ReturnType<typeof InitDojo>>} config - The Dojo configuration
+ * @returns {Promise<void>}
+ */
 const initializeConfig = async (
 	config: Awaited<ReturnType<typeof InitDojo>>,
 ) => {
@@ -110,15 +123,15 @@ const initializeConfig = async (
 				"playerId" in outputData &&
 				"text_o_vision" in outputData
 			) {
-				const address = !ORUG_CONFIG.useSlot
-					? ORUG_CONFIG.wallet.address
+				const address = !ZORG_CONFIG.useSlot
+					? ZORG_CONFIG.wallet.address
 					: WalletStore().controller?.account?.address;
 
 				const normalizedPlayerId = normalizeAddress(String(outputData.playerId));
 				const normalizedAddress = normalizeAddress(String(address));
 
 				if (normalizedPlayerId === normalizedAddress) {
-					setOutputter(outputData as Outputter);
+					setOutputter(outputData as Output);
 					return;
 				}
 				return;
@@ -146,22 +159,10 @@ const initializeConfig = async (
 	}
 };
 
-// Utility function
-function processWhitespaceTags(input: string): string[] {
-	const tagRegex = /\\([nrt])/g;
-	const replacements: { [key: string]: string } = {
-		n: "\n",
-		r: "\r",
-		t: "\t",
-	};
-
-	const processedString = input.replace(
-		tagRegex,
-		(match, p1) => replacements[p1] || match,
-	);
-	return processedString.split("\n");
-}
-
+/**
+ * Factory object returning the Dojo store and its actions
+ * @returns {Object} The Dojo store with state and actions
+ */
 const DojoStore = () => ({
 	...useDojoStore.getState(),
 	set: useDojoStore.setState,
@@ -172,16 +173,3 @@ const DojoStore = () => ({
 });
 
 export default DojoStore;
-
-// Normalize addresses by removing leading zeros after 0x
-const normalizeAddress = (addr: string | undefined): string => {
-	if (!addr) return "";
-	// First convert to string and trim in case it's not already
-	const addrStr = String(addr).trim();
-	// Check if it starts with 0x
-	if (addrStr.startsWith("0x")) {
-		// Remove 0x, remove leading zeros, then add 0x back
-		return `0x${addrStr.substring(2).replace(/^0+/, "")}`;
-	}
-	return addrStr.replace(/^0+/, "");
-};

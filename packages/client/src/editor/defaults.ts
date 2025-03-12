@@ -6,7 +6,7 @@ import type {
 	TextDefinition,
 	Config,
 } from "./lib/schemas";
-import { generateNumericUniqueId } from "./utils";
+import { generateNumericUniqueId } from "./editor.utils";
 import randomName from "@scaleway/random-name";
 
 const createRandomName = () => {

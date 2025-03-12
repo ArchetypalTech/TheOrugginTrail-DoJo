@@ -85,7 +85,7 @@ const designer = new Contract(
 
 designer.connect(wallet.account);
 
-export const ORUG_CONFIG = {
+export const ZORG_CONFIG = {
 	endpoints,
 	katanaProvider,
 	contracts: {

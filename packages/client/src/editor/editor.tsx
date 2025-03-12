@@ -1,13 +1,13 @@
 import "@styles/editor.css";
 import { useEffect, useState } from "react";
-import { useEditorStore } from "./store";
+import { useEditorStore } from "./editor.store";
 import { RoomEditor } from "./components/RoomEditor";
 import ObjectEditor from "./components/ObjectEditor";
 import ActionEditor from "./components/ActionEditor";
 import Notifications from "./components/Notifications";
 import { EditorHeader } from "./components/EditorHeader";
 import { useHead } from "@unhead/react";
-import EditorStore from "./store";
+import EditorStore from "./editor.store";
 
 export const Editor = () => {
 	const { currentLevel } = useEditorStore();

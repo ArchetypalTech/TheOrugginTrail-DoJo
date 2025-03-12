@@ -10,7 +10,7 @@ import Typewriter from "./Typewriter";
 import TerminalLine from "./TerminalLine";
 import "./Terminal.css";
 import { commandHandler } from "../../lib/terminalCommands/commandHandler";
-import { ORUG_CONFIG } from "@/lib/config";
+import { ZORG_CONFIG } from "@/lib/config";
 import WalletStore from "@/lib/stores/wallet.store";
 
 export default function Terminal() {
@@ -62,7 +62,7 @@ export default function Terminal() {
 				speed: 4,
 				style: { textAlign: "center" },
 			});
-			if (ORUG_CONFIG.useSlot) {
+			if (ZORG_CONFIG.useSlot) {
 				if (!WalletStore().isConnected) {
 					addTerminalContent({
 						text: "type [wallet] to connect.",

@@ -18,6 +18,7 @@ export const TagInput = ({ value, onChange, className }: TagInputProps) => {
 		// Check if conditions are met to add a tag
 		if (
 			event.type !== "blur" &&
+			(event as KeyboardEvent<HTMLInputElement>).key !== " " &&
 			(event as KeyboardEvent<HTMLInputElement>).key !== "," &&
 			(event as KeyboardEvent<HTMLInputElement>).key !== "Enter"
 		) {
@@ -63,24 +64,27 @@ export const TagInput = ({ value, onChange, className }: TagInputProps) => {
 				)}
 			/>
 			<div className="flex flex-wrap mt-2">
-				{value.map((tag, index) => (
-					<span
-						key={index}
-						className="tag inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-					>
-						{tag}{" "}
-						<a
-							href="#del"
-							className="tag-handler ml-2 text-black no-underline"
-							onClick={(e) => {
-								e.preventDefault();
-								handleRemoveTag(index);
-							}}
+				{value.map((tag, index) => {
+					if (tag === "") return null;
+					return (
+						<span
+							key={index}
+							className="tag inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
 						>
-							⨉
-						</a>
-					</span>
-				))}
+							{tag}{" "}
+							<a
+								href="#del"
+								className="tag-handler ml-2 text-black no-underline"
+								onClick={(e) => {
+									e.preventDefault();
+									handleRemoveTag(index);
+								}}
+							>
+								⨉
+							</a>
+						</span>
+					);
+				})}
 			</div>
 		</>
 	);

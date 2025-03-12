@@ -3,10 +3,9 @@ import "./styles/index.css";
 import { Client } from "./client/client";
 import { Editor } from "./editor/editor";
 import { useHead } from "@unhead/react";
-import { APP_SEO } from "./data/app";
-import type { PropsWithChildren, ReactNode } from "react";
+import { APP_SEO } from "./data/app.data";
 
-const App = (_: PropsWithChildren<ReactNode>) => {
+const App = () => {
 	useHead({
 		title: APP_SEO.title,
 		meta: Object.entries(APP_SEO).map(([key, value]) => {

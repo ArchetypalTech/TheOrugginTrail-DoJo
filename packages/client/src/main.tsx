@@ -5,15 +5,14 @@ import { InitDojo } from "@lib/dojo.ts";
 import DojoStore from "@lib/stores/dojo.store.ts";
 import { createHead, UnheadProvider } from "@unhead/react/client";
 
-const head = createHead();
-
 const initializeRoot = async () => {
+	// boot up the Dojo SDK outside React scope
 	DojoStore().initializeConfig(await InitDojo());
 
 	// launch the reaaact
 	createRoot(document.getElementById("root")!).render(
 		<StrictMode>
-			<UnheadProvider head={head}>
+			<UnheadProvider head={createHead()}>
 				<App />
 			</UnheadProvider>
 		</StrictMode>,

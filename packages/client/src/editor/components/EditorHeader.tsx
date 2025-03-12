@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
-import EditorStore from "../store";
-import { ORUG_CONFIG } from "@lib/config";
+import { useRef } from "react";
+import EditorStore from "../editor.store";
+import { ZORG_CONFIG } from "@lib/config";
+import UserStore, { useUserStore } from "@/lib/stores/user.store";
 
 export const EditorHeader = () => {
-	const [isDarkMode, setIsDarkMode] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const { dark_mode } = useUserStore();
 
 	// Handler for file upload
 	const handleImportConfig = () => {
@@ -34,20 +35,12 @@ export const EditorHeader = () => {
 		await EditorStore().config.publishToContract();
 	};
 
-	// Toggle dark mode
-	const toggleDarkMode = () => {
-		setIsDarkMode(!isDarkMode);
-		// You might want to implement actual dark mode functionality here
-		// This is a placeholder for the dark mode toggle in the Svelte version
-		document.documentElement.classList.toggle("dark");
-	};
-
 	return (
 		<header className="flex flex-row justify-between gap-2 my-4 items-center">
 			<div className="flex flex-col">
 				<h1 className="text-xl font-bold font-mono textFreak">ZORGTOR</h1>
 				<a
-					href={`${ORUG_CONFIG.endpoints.torii.http}/sql`}
+					href={`${ZORG_CONFIG.endpoints.torii.http}/sql`}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="hover:underline text-xs textFreak"
@@ -76,8 +69,8 @@ export const EditorHeader = () => {
 				>
 					📤 Publish
 				</button>
-				<button className="btn" onClick={toggleDarkMode}>
-					{isDarkMode ? "☀️" : "🌑"}
+				<button className="btn" onClick={() => UserStore().toggleDarkMode()}>
+					{dark_mode ? "☀️" : "🌑"}
 				</button>
 			</div>
 		</header>

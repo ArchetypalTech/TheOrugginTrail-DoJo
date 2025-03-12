@@ -1,4 +1,4 @@
-import { ORUG_CONFIG } from "@lib/config";
+import { ZORG_CONFIG } from "@lib/config";
 import { createDojoConfig, DojoProvider } from "@dojoengine/core";
 import {
 	init,
@@ -20,8 +20,8 @@ import {
  * @returns An object containing the initialized SDK, config, provider, and query functions
  */
 export const InitDojo = async () => {
-	const manifest = ORUG_CONFIG.manifest.default;
-	const rpcUrl = ORUG_CONFIG.endpoints.katana;
+	const manifest = ZORG_CONFIG.manifest.default;
+	const rpcUrl = ZORG_CONFIG.endpoints.katana;
 	const dojoConfig = createDojoConfig({
 		manifest,
 	});
@@ -29,7 +29,7 @@ export const InitDojo = async () => {
 	const sdkConfig = {
 		client: {
 			rpcUrl,
-			toriiUrl: ORUG_CONFIG.endpoints.torii.http,
+			toriiUrl: ZORG_CONFIG.endpoints.torii.http,
 			relayUrl: "/ip4/127.0.0.1/tcp/9090/tcp/80",
 			worldAddress: dojoConfig.manifest.world.address,
 		},

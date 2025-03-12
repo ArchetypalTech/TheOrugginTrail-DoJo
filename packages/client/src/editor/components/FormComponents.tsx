@@ -6,7 +6,7 @@ export const Header = ({
 	children,
 }: { title: string; children?: React.ReactNode }) => {
 	return (
-		<div className="flex justify-between flex-row">
+		<div className="flex justify-between flex-row gap-2">
 			<h2>{title}</h2>
 			<div className="grow" />
 			{children}
@@ -16,7 +16,7 @@ export const Header = ({
 
 export const DeleteButton = ({ onClick }: { onClick: () => void }) => {
 	return (
-		<button className="btn btn-danger" onClick={onClick}>
+		<button className="btn btn-danger btn-sm" onClick={onClick}>
 			❌
 		</button>
 	);
@@ -24,7 +24,7 @@ export const DeleteButton = ({ onClick }: { onClick: () => void }) => {
 
 export const PublishButton = ({ onClick }: { onClick: () => void }) => {
 	return (
-		<button className="btn" onClick={onClick}>
+		<button className="btn btn-sm" onClick={onClick}>
 			🕊️
 		</button>
 	);
@@ -83,8 +83,8 @@ export const TagInput = ({
 			<label htmlFor={id} className="block text-sm font-medium text-gray-700">
 				{id}
 			</label>
-			<Tags value={value.split(",")} onChange={onChange} className={className} />
 			<p className="mt-1 text-xs text-gray-500">{description}</p>
+			<Tags value={value.split(",")} onChange={onChange} className={className} />
 		</div>
 	);
 };
@@ -210,6 +210,9 @@ export const ItemId = ({ id }: { id: string }) => {
 	return (
 		<div className="form-group">
 			<label className="block text-sm font-medium text-gray-700">Room ID</label>
+			<p className="mt-1 text-xs text-gray-500">
+				This ID is generated automatically and should not be changed.
+			</p>
 			<input
 				type="text"
 				id={id}
@@ -217,9 +220,6 @@ export const ItemId = ({ id }: { id: string }) => {
 				className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
 				disabled
 			/>
-			<p className="mt-1 text-xs text-gray-500">
-				This ID is generated automatically and should not be changed.
-			</p>
 		</div>
 	);
 };

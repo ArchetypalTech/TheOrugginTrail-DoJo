@@ -30,19 +30,24 @@ Automated installer for installing [scarb](https://github.com/software-mansion/s
 bun run quickstart
 ```
 
-### 🕹️ Run development mode:
+### 🕹️ Development:
 
-Local development:
+Development MODE (local):
 
 ```bash
 bun run dev
 ```
 
-Slot development:
+- 🛖 Development MODE (local) runs a local instance of Katana, Torii and the client at `http://localhost:5173` and `http://localhost:5173/editor` (no _SSL_, use `http`)
+
+Slot MODE:
+_will create a local SSL certificate with mkcert and asks for sudo password_
 
 ```bash
 bun run dev:slot
 ```
+
+- 🎲 Slot MODE watches + compiles local contracts and allows you to deploy to slot & configures the client to connect to Slot at `https://localhost:5173` and `https://localhost:5173/editor` (use _https_)
 
 ### 🗺️ World deployment:
 
@@ -67,5 +72,3 @@ This is a monorepo containing the following packages:
 | ----------- | --------------- |
 | `client`    | Game client     |
 | `contracts` | Dojo contracts  |
-
-![ad_2_final](https://github.com/ArchetypalTech/TheOrugginTrail/assets/983878/b90bcc55-2ba1-4564-94e1-d08184c1e49c)

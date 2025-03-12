@@ -2,16 +2,18 @@ import { useMemo, useState, useEffect } from "react";
 import type { ChangeEvent } from "react";
 import type { Action } from "../lib/schemas";
 import { ACTION_TYPE_OPTIONS } from "../lib/schemas";
-import EditorStore from "../store";
+import EditorStore from "../editor.store";
 import { EditorList } from "./EditorList";
 import {
 	DeleteButton,
 	Header,
 	ItemId,
+	PublishButton,
 	Select,
 	Textarea,
 	Toggle,
 } from "./FormComponents";
+import { publishAction } from "../publisher";
 
 export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
 	const { currentLevel, currentRoomIndex } = EditorStore();
@@ -130,7 +132,7 @@ export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
 				selectionFn={selectActionIndex}
 				selectedIndex={currentActionIndex}
 				addObjectFn={handleAddAction}
-				emptyText="Create new action"
+				emptyText="🩰 Create Action"
 			/>
 
 			{!currentAction ? (
@@ -139,6 +141,12 @@ export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
 				<div className="editor-inspector">
 					<Header title="Action">
 						<DeleteButton onClick={handleDeleteAction} />
+						<PublishButton
+							onClick={async () => {
+								await publishAction(currentAction);
+								EditorStore().notifications.clear();
+							}}
+						/>
 					</Header>
 					<Select
 						id="actionType"

@@ -67,8 +67,8 @@ torii_local_db
 .tool-versions
 
 # svelte
-.svelte-kit
 build
+dist
 
 # ssl
 ssl

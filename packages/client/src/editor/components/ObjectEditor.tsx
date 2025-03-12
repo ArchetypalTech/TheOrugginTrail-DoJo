@@ -6,7 +6,7 @@ import {
 	MATERIAL_TYPE_OPTIONS,
 	DIRECTION_OPTIONS,
 } from "../lib/schemas";
-import EditorStore, { useEditorStore } from "../store";
+import EditorStore, { useEditorStore } from "../editor.store";
 import { EditorList } from "./EditorList";
 import {
 	Header,
@@ -17,7 +17,9 @@ import {
 	TagInput,
 	ItemId,
 	Input,
+	PublishButton,
 } from "./FormComponents";
+import { publishObject } from "../publisher";
 
 export const ObjectEditor = ({
 	currentObjectIndex,
@@ -151,7 +153,7 @@ export const ObjectEditor = ({
 				selectionFn={selectObjectIndex}
 				selectedIndex={currentObjectIndex}
 				addObjectFn={handleAddObject}
-				emptyText="Create new object"
+				emptyText="🪴 Create Object"
 			/>
 
 			{!currentObject ? (
@@ -162,6 +164,12 @@ export const ObjectEditor = ({
 				<div className="editor-inspector">
 					<Header title="Object">
 						<DeleteButton onClick={handleDeleteObject} />
+						<PublishButton
+							onClick={async () => {
+								await publishObject(currentObject);
+								EditorStore().notifications.clear();
+							}}
+						/>
 					</Header>
 					<Input
 						id="objName"
@@ -172,7 +180,7 @@ export const ObjectEditor = ({
 						id="altNames"
 						value={currentObject.altNames.join(", ")}
 						onChange={handleTagChange}
-						description={`Alternative ways to address this object, use \",\" to separate multiple names`}
+						description={`Alternative ways to address this object`}
 					/>
 					<Select
 						id="objectType"

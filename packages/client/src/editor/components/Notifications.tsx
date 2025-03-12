@@ -1,39 +1,36 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import type { FC } from "react";
-import "../../styles/notifications.css";
-import { useNotificationStore } from "../store";
+import "@styles/notifications.css";
+import { useNotificationStore } from "../editor.store";
 
 interface NotificationsProps {
 	onDismiss?: () => void;
 }
 
+let timer: ReturnType<typeof setTimeout> | null = null;
+
 const Notifications: FC<NotificationsProps> = ({ onDismiss }) => {
 	const { type, message, blocking, logs, timeout } = useNotificationStore();
-
-	// Timer reference for auto-dismiss
-	const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
 
 	// Handle dismiss button click
 	const handleDismiss = useCallback(() => {
 		if (timer) clearTimeout(timer);
 		onDismiss?.();
-	}, [timer, onDismiss]);
+	}, [onDismiss]);
 
 	// Set up auto-dismiss timer if timeout is provided
 	useEffect(() => {
-		if (timeout && message) {
-			if (timer) clearTimeout(timer);
-			const newTimer = setTimeout(() => {
+		if (timeout && message && logs === undefined) {
+			timer = setTimeout(() => {
 				handleDismiss();
 			}, timeout);
-			setTimer(newTimer);
 		}
 
 		// Clean up timer on component unmount
 		return () => {
 			if (timer) clearTimeout(timer);
 		};
-	}, [timeout, message, timer, handleDismiss]);
+	}, [timeout, message, handleDismiss, logs]);
 
 	// Get notification style classes based on type
 	const getNotificationClass = () => {
@@ -108,7 +105,7 @@ const Notifications: FC<NotificationsProps> = ({ onDismiss }) => {
 					)}
 				</div>
 
-				{logs && logs.length > 0 && (
+				{logs !== undefined && logs.length > 0 && (
 					<div className="mt-4 log-container">
 						{[...logs].reverse().map((log, index) => (
 							<div

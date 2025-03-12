@@ -12,7 +12,7 @@ import {
 	validateConfig,
 	formatValidationError,
 	ensureInlineTextDefinitions,
-} from "@editor/utils";
+} from "@/editor/editor.utils";
 import {
 	createDefaultLevel,
 	createDefaultRoom,
@@ -23,7 +23,7 @@ import {
 import type { NotificationState } from "@editor/notifications";
 import { initialNotificationState } from "@editor/notifications";
 import { publishConfigToContract } from "@editor/publisher";
-import { saveConfigToFile, loadConfigFromFile } from "@editor/utils";
+import { saveConfigToFile, loadConfigFromFile } from "@/editor/editor.utils";
 
 // Initialize the editor state
 const initialState: EditorState = {
@@ -110,6 +110,7 @@ export const actions = {
 				type: "error",
 				message,
 				blocking,
+				logs: undefined,
 			});
 		},
 		showSuccess: (message: string, timeout = 3000) => {
@@ -120,6 +121,7 @@ export const actions = {
 				type: "success",
 				message,
 				blocking: false,
+				logs: undefined,
 				timeout,
 			});
 		},
@@ -128,6 +130,7 @@ export const actions = {
 				type: "loading",
 				message,
 				blocking: true,
+				logs: undefined,
 			});
 		},
 		startPublishing: async (message = "Publishing to contract...") => {
@@ -149,7 +152,7 @@ export const actions = {
 		 */
 		addPublishingLog: (log: CustomEvent) => {
 			const state = getNotification();
-			if (state.type !== "publishing" || !state.logs) {
+			if (state.type !== "publishing" || state.logs === undefined) {
 				console.warn("Cannot add log to non-publishing notification");
 				return;
 			}
@@ -210,7 +213,7 @@ export const actions = {
 		/**
 		 * Auto-save the current config to localStorage
 		 */
-		autoSave: async () => {
+		autoSave: async (quiet = false) => {
 			const state = get();
 			const config = {
 				levels: [state.currentLevel],
@@ -225,7 +228,9 @@ export const actions = {
 			}
 
 			await window.localStorage.setItem("editorConfig", JSON.stringify(config));
-			actions.notifications.showSuccess("Autosaved", 1000);
+			if (!quiet) {
+				actions.notifications.showSuccess("Autosaved", 1000);
+			}
 		},
 
 		/**
@@ -382,7 +387,7 @@ export const actions = {
 			updateWorld((draft) => {
 				draft.currentLevel.rooms[roomIndex] = room;
 			});
-			actions.config.autoSave();
+			actions.config.autoSave(true);
 		},
 
 		/**
@@ -431,7 +436,7 @@ export const actions = {
 				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
 				room.objects[objectIndex] = object;
 			});
-			actions.config.autoSave();
+			actions.config.autoSave(true);
 		},
 
 		/**
@@ -453,7 +458,7 @@ export const actions = {
 				const object = room.objects[objectIndex];
 				object.actions.push(createDefaultAction());
 			});
-			actions.config.autoSave();
+			actions.config.autoSave(true);
 		},
 
 		/**
@@ -465,7 +470,7 @@ export const actions = {
 				const object = room.objects[objectIndex];
 				object.actions[actionIndex] = action;
 			});
-			actions.config.autoSave();
+			actions.config.autoSave(true);
 		},
 
 		/**

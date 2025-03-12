@@ -6,10 +6,10 @@ import {
 	directionToIndex,
 	materialTypeToIndex,
 	actionTypeToIndex,
-} from "./utils";
+} from "./editor.utils";
 import { SystemCalls, type DesignerCall } from "../lib/systemCalls";
-import { ByteArray, TempInt } from "@lib/utils";
-import { actions } from "./store";
+import { ByteArray, TempInt } from "@/editor/utils";
+import { actions } from "./editor.store";
 
 /**
  * Publishes a game configuration to the contract
