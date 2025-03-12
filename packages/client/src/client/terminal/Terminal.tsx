@@ -169,7 +169,7 @@ export default function Terminal() {
 	};
 
 	return (
-		<div className="flex items-center justify-center w-full h-full crt">
+		<div className="flex items-center justify-center w-full h-full crt buzzing">
 			<form
 				ref={terminalFormRef}
 				onSubmit={handleSubmit}
@@ -178,7 +178,7 @@ export default function Terminal() {
 				aria-label="Terminal"
 				role=""
 				id="terminal"
-				className="font-mono overflow-y-auto h-full bg-black text-green-500 border rounded-md p-4 w-full"
+				className="buzzing font-mono overflow-y-auto h-full bg-black text-green-500 border rounded-md p-4 w-full"
 				style={{
 					borderColor:
 						status === "error" ? "var(--terminal-error)" : "var(--terminal-system)",

@@ -1,3 +1,68 @@
+@keyframes brightbuzz {
+  0% {
+    filter: brightness(90%);
+  }
+  5% {
+    filter: brightness(95%);
+  }
+  10% {
+    filter: brightness(92%);
+  }
+  15% {
+    filter: brightness(110%);
+  }
+  20% {
+    filter: brightness(91%);
+  }
+  25% {
+    filter: brightness(108%);
+  }
+  30% {
+    filter: brightness(102%);
+  }
+  35% {
+    filter: brightness(103%);
+  }
+  40% {
+    filter: brightness(93%);
+  }
+  45% {
+    filter: brightness(109%);
+  }
+  50% {
+    filter: brightness(120%);
+  }
+  55% {
+    filter: brightness(90%);
+  }
+  60% {
+    filter: brightness(92%);
+  }
+  65% {
+    filter: brightness(104%);
+  }
+  70% {
+    filter: brightness(99%);
+  }
+  75% {
+    filter: brightness(95%);
+  }
+  80% {
+    filter: brightness(105%);
+  }
+  85% {
+    filter: brightness(104%);
+  }
+  90% {
+    filter: brightness(103%);
+  }
+  95% {
+    filter: brightness(95%);
+  }
+  100% {
+    filter: brightness(92%);
+  }
+}
 @keyframes flicker {
   0% {
     opacity: 0.27861;
@@ -182,9 +247,6 @@
   background-size: 100% 2px, 3px 100%;
   pointer-events: none;
 }
-.crt {
-  /* animation: textShadow 1.6s infinite; */
-}
 
 .slowPulse {
   animation: flicker 1000s infinite;
@@ -196,4 +258,8 @@
 
 .textFreak {
   animation: textShadow 500s infinite;
+}
+
+.buzzing {
+  animation: brightbuzz 240s infinite;
 }
