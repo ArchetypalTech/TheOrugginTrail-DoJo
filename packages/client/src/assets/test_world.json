@@ -1,0 +1,284 @@
+{
+	"levels": [
+		{
+			"levelName": "Level 1",
+			"rooms": [
+				{
+					"roomID": "7892581999139148",
+					"roomName": "The Last Saloon",
+					"roomDescription": {
+						"id": "1727978682793373",
+						"owner": "7892581999139148",
+						"text": "A neon sign flickers weakly against the dying light of the final stars.\n\nThis establishment is sat at the very edge of existence, where reality is stretched thin as a piece of cosmic taffy.\n\nJust a piece."
+					},
+					"roomType": "Room",
+					"biomeType": "Prarie",
+					"objects": [
+						{
+							"objID": "8036631752425715",
+							"type": "Path",
+							"material": "Wood",
+							"objDescription": {
+								"id": "2265716758974091",
+								"owner": "8036631752425715",
+								"text": "its wooden boards stretch out like a glitch"
+							},
+							"direction": "E",
+							"destination": "1813360010128938",
+							"actions": [
+								{
+									"actionID": "3274716649273954",
+									"type": "Open",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								},
+								{
+									"actionID": "7248238721138660",
+									"type": "Look",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "it's hard to look straight at it without feeling like something is splitting your brain in two",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "hanging bridge",
+							"altNames": ["bridge"]
+						},
+						{
+							"objID": "2853341687110344",
+							"type": "Petrol",
+							"material": "Dirt",
+							"objDescription": {
+								"id": "4146558480175946",
+								"owner": "2853341687110344",
+								"text": "dented and heavily disfigured"
+							},
+							"direction": "None",
+							"destination": "",
+							"actions": [
+								{
+									"actionID": "3843115892214033",
+									"type": "Take",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "it's unique, and yours",
+									"dBit": true,
+									"affectsAction": null
+								},
+								{
+									"actionID": "1141639215830360",
+									"type": "Look",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "it looks like it was dropped from a great height and had an unfortunate landing",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "oil barrel",
+							"altNames": ["barrel", "oil"]
+						}
+					]
+				},
+				{
+					"roomID": "1813360010128938",
+					"roomName": "Burning Plains",
+					"roomDescription": {
+						"id": "1019591991774877",
+						"owner": "1813360010128938",
+						"text": "Winged wreckages are strewn across the plains.\nEither they landed embracing another or otherwise tumbled under and over.\n\nSkeletons of passengers, their belongings.\nA backpack gives some color."
+					},
+					"roomType": "Plain",
+					"biomeType": "Arctic",
+					"objects": [
+						{
+							"objID": "2930275921402090",
+							"type": "Path",
+							"material": "Metal",
+							"objDescription": {
+								"id": "3187459247322318",
+								"owner": "2930275921402090",
+								"text": "wobbly, wobble"
+							},
+							"direction": "N",
+							"destination": "7892581999139148",
+							"actions": [
+								{
+									"actionID": "1217229823394771",
+									"type": "Open",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "hanging bridge",
+							"altNames": ["bridge", "path"]
+						},
+						{
+							"objID": "3077567912312934",
+							"type": "Door",
+							"material": "Wood",
+							"objDescription": {
+								"id": "2707168234362189",
+								"owner": "3077567912312934",
+								"text": "it's a wreck, the only one you could still make out as an individual"
+							},
+							"direction": "S",
+							"destination": "3083798950382847",
+							"actions": [
+								{
+									"actionID": "8334127661179225",
+									"type": "Open",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								},
+								{
+									"actionID": "2997855095189201",
+									"type": "Look",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "it has little ant sized men walking around in it, weird6",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "airplane",
+							"altNames": ["plane", "airplane", "aeroplane"]
+						},
+						{
+							"objID": "2557288028312067",
+							"type": "Door",
+							"material": "Wood",
+							"objDescription": {
+								"id": "2957188363207111",
+								"owner": "2557288028312067",
+								"text": "it's definitely colorful"
+							},
+							"direction": "None",
+							"destination": null,
+							"actions": [
+								{
+									"actionID": "2218316118126558",
+									"type": "Open",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "backpack",
+							"altNames": ["backpack"]
+						},
+						{
+							"objID": "3831001493093643",
+							"type": "Door",
+							"material": "Wood",
+							"objDescription": {
+								"id": "1075237329173336",
+								"owner": "3831001493093643",
+								"text": "this is the only one, it's one of a kind"
+							},
+							"direction": "N",
+							"destination": null,
+							"actions": [
+								{
+									"actionID": "2504971749364749",
+									"type": "Look",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "it's a double rainbow",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "rainbow",
+							"altNames": ["color", "rainbow", "colors"]
+						}
+					]
+				},
+				{
+					"roomID": "3083798950382847",
+					"roomName": "Room of Intelligent Stonebraker",
+					"roomDescription": {
+						"id": "4150971553572188",
+						"owner": "3083798950382847",
+						"text": "This looks new, like someone recently willed it into existence and forgot about it."
+					},
+					"roomType": "Room",
+					"biomeType": "Temporate",
+					"objects": [
+						{
+							"objID": "2762898783749284",
+							"type": "Door",
+							"material": "Wood",
+							"objDescription": {
+								"id": "1891535614164334",
+								"owner": "2762898783749284",
+								"text": "it's voidy, windy, even."
+							},
+							"direction": "N",
+							"destination": "7892581999139148",
+							"actions": [
+								{
+									"actionID": "4167628462370577",
+									"type": "Open",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								},
+								{
+									"actionID": "2695551172327927",
+									"type": "Move",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "void door",
+							"altNames": []
+						},
+						{
+							"objID": "3686036944397710",
+							"type": "Door",
+							"material": "Wood",
+							"objDescription": {
+								"id": "3910196849374807",
+								"owner": "3686036944397710",
+								"text": "just some flag, "
+							},
+							"direction": "N",
+							"destination": null,
+							"actions": [
+								{
+									"actionID": "2784368869741032",
+									"type": "Open",
+									"enabled": true,
+									"revertable": false,
+									"dBitText": "Describe what happens when this action is performed...",
+									"dBit": true,
+									"affectsAction": null
+								}
+							],
+							"name": "small flag",
+							"altNames": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

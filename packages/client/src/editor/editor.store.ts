@@ -18,12 +18,12 @@ import {
 	createDefaultRoom,
 	createDefaultObject,
 	createDefaultAction,
-	createDefaultConfig,
 } from "@editor/defaults";
 import type { NotificationState } from "@editor/notifications";
 import { initialNotificationState } from "@editor/notifications";
 import { publishConfigToContract } from "@editor/publisher";
 import { saveConfigToFile, loadConfigFromFile } from "@/editor/editor.utils";
+import test_config from "@/assets/test_world.json";
 
 // Initialize the editor state
 const initialState: EditorState = {
@@ -175,7 +175,7 @@ export const actions = {
 				actions.config.loadConfig(config);
 				return;
 			}
-			actions.config.loadConfig(createDefaultConfig());
+			actions.config.loadConfig(test_config);
 		},
 
 		/**

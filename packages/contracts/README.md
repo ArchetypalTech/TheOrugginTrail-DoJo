@@ -33,6 +33,8 @@ Watch for contract changes:
 bun run slot:watch
 ```
 
+- Deploymentscripts will use variables in `dojo_slot.toml`, `Scarb.toml`. `dojo_slot.toml` requires `slot_name` to be set to target deployment.
+
 ### 🪴 Product may include traces of
 
 | **Technology** | **Purpose**               |
