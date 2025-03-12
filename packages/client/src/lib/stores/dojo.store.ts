@@ -7,6 +7,7 @@ import WalletStore from "./wallet.store";
 import type { Output } from "../dojo_bindings/typescript/models.gen";
 import { normalizeAddress, processWhitespaceTags } from "../utils/utils";
 import { StoreBuilder } from "../utils/storebuilder";
+import EditorData from "@/editor/editor.data";
 
 /**
  * Represents the current status of the Dojo system.
@@ -87,7 +88,7 @@ const initializeConfig = async (
 	if (existingSubscription !== undefined) return;
 
 	try {
-		const [_, subscription] = await config.sub((response) => {
+		const [initialEntities, subscription] = await config.sub((response) => {
 			if (response.error) {
 				console.error("Error setting up entity sync:", response.error);
 				setStatus({
@@ -118,11 +119,23 @@ const initializeConfig = async (
 				return;
 			}
 
+			for (const _D of response?.data || []) {
+				if (_D.models?.the_oruggin_trail) {
+					EditorData().syncObject(_D.models.the_oruggin_trail);
+				}
+			}
+
 			console.info(
 				"[DOJO]: initial response",
 				JSON.stringify(response?.data?.[0]?.models),
 			);
 		});
+		for (const _D of initialEntities || []) {
+			console.log(_D);
+			if (_D.models?.the_oruggin_trail) {
+				EditorData().syncObject(_D.models.the_oruggin_trail);
+			}
+		}
 
 		setStatus({
 			status: "initialized",

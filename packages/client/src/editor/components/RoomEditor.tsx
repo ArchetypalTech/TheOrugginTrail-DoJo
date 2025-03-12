@@ -14,9 +14,12 @@ import {
 	TextDef,
 } from "./FormComponents";
 import { publishRoom } from "../publisher";
+import EditorData, { useEditorData } from "../editor.data";
 
 export const RoomEditor = () => {
 	const { currentLevel, currentRoomIndex } = useEditorStore();
+
+	const { rooms } = useEditorData();
 
 	const { editedRoom } = useMemo(() => {
 		console.log("currentLevel", currentLevel);
@@ -72,10 +75,12 @@ export const RoomEditor = () => {
 		});
 	};
 
+	console.log(Object.values(rooms));
+
 	return (
 		<div className="flex flex-row gap-2 col-span-2">
 			<EditorList
-				list={currentLevel.rooms}
+				list={Object.values(rooms)}
 				selectionFn={(index: number) =>
 					EditorStore().set({ currentRoomIndex: index })
 				}

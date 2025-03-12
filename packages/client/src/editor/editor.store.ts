@@ -159,7 +159,7 @@ export const actions = {
 				actions.config.loadConfig(config);
 				return;
 			}
-			actions.config.loadConfig(test_config as Config);
+			// actions.config.loadConfig(test_config as Config);
 		},
 
 		/**

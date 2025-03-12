@@ -15,43 +15,30 @@ export const StoreBuilder = <T>(
 	persistConfig?: PersistConfig,
 ) => {
 	type StoreState = T;
-	type StoreActions = {
-		set: (updater: Partial<StoreState>) => void;
-	};
 
 	// Create store with or without persistence
 	const useStore = persistConfig
-		? create<StoreState & StoreActions>()(
+		? create<StoreState>()(
 				persist(
-					immer((set) => ({
+					immer((_set) => ({
 						...initialState,
-						set: (updater) =>
-							set((state) => {
-								Object.assign(state, updater);
-							}),
 					})),
 					{
 						name: persistConfig.name,
 						storage: persistConfig.storage,
-						partialize: persistConfig.partialize as (
-							state: StoreState & StoreActions,
-						) => object,
+						partialize: persistConfig.partialize as (state: StoreState) => object,
 						version: persistConfig.version,
 					},
 				),
 			)
-		: create<StoreState & StoreActions>()(
-				immer((set) => ({
+		: create<StoreState>()(
+				immer((_set) => ({
 					...initialState,
-					set: (updater) =>
-						set((state) => {
-							Object.assign(state, updater);
-						}),
 				})),
 			);
 
 	const get = () => useStore.getState();
-	const set = useStore.getState().set;
+	const set = useStore.setState;
 	const subscribe = useStore.subscribe;
 
 	/**
