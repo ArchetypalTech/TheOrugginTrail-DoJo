@@ -1,13 +1,12 @@
 import type { InitDojo } from "@lib/dojo";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 import { addTerminalContent } from "./terminal.store";
 import { ZORG_CONFIG } from "../config";
 import WalletStore from "./wallet.store";
 
 // @dev Use the Dojo bindings, *avoid* recreating these where possible
 import type { Output } from "../dojo_bindings/typescript/models.gen";
-import { normalizeAddress, processWhitespaceTags } from "../utils";
+import { normalizeAddress, processWhitespaceTags } from "../utils/utils";
+import { StoreBuilder } from "../utils/storebuilder";
 
 /**
  * Represents the current status of the Dojo system.
@@ -20,7 +19,12 @@ export type DojoStatus = {
 	error: string | null;
 };
 
-const initialState = {
+const {
+	get,
+	set,
+	useStore: useDojoStore,
+	createFactory,
+} = StoreBuilder({
 	status: {
 		status: "loading",
 		error: null,
@@ -29,31 +33,8 @@ const initialState = {
 	config: undefined as Awaited<ReturnType<typeof InitDojo>> | undefined,
 	lastProcessedText: "",
 	existingSubscription: undefined as unknown | undefined,
-};
+});
 
-type DojoState = typeof initialState;
-
-/**
- * Zustand store for managing Dojo state
- * Handles subscriptions, output processing, and initialization
- */
-export const useDojoStore = create<
-	DojoState & { set: (state: Partial<DojoState>) => void }
->()(
-	immer((set) => ({
-		...initialState,
-		set,
-	})),
-);
-
-const get = () => useDojoStore.getState();
-const set = get().set;
-
-// Actions
-/**
- * Updates the status of the Dojo system
- * @param {DojoStatus} status - The new status to set
- */
 const setStatus = (status: DojoStatus) => set({ status });
 
 /**
@@ -163,13 +144,11 @@ const initializeConfig = async (
  * Factory object returning the Dojo store and its actions
  * @returns {Object} The Dojo store with state and actions
  */
-const DojoStore = () => ({
-	...useDojoStore.getState(),
-	set: useDojoStore.setState,
-	subscribe: useDojoStore.subscribe,
+const DojoStore = createFactory({
 	setStatus,
 	setOutputter,
 	initializeConfig,
 });
 
 export default DojoStore;
+export { useDojoStore };

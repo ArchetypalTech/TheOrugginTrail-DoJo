@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import type { Action, Room, ZorgObject } from "../lib/schemas";
 
 export const EditorList = <T extends Room | ZorgObject | Action>({

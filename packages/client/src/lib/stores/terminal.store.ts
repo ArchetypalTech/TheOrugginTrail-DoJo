@@ -1,6 +1,5 @@
 import type { HTMLAttributes } from "react";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { StoreBuilder } from "../utils/storebuilder";
 
 /**
  * Types of formatting that can be applied to terminal content.
@@ -16,29 +15,16 @@ export type TerminalContentItem = {
 	style?: HTMLAttributes<HTMLDivElement>["style"];
 };
 
-const initialState = {
+const {
+	get,
+	set,
+	useStore: useTerminalStore,
+	createFactory,
+} = StoreBuilder({
 	terminalContent: [] as TerminalContentItem[],
 	activeTypewriterLine: null as TerminalContentItem | null,
 	contentQueue: [] as TerminalContentItem[],
-};
-
-type TerminalState = typeof initialState;
-
-/**
- * Zustand store hook for managing terminal state.
- * Handles terminal content, typewriter effects, and the content queue.
- */
-export const useTerminalStore = create<
-	TerminalState & { set: (state: Partial<TerminalState>) => void }
->()(
-	immer((set) => ({
-		...initialState,
-		set,
-	})),
-);
-
-const get = () => useTerminalStore.getState();
-const set = get().set;
+});
 
 /**
  * Adds a new item to the terminal content queue.
@@ -94,13 +80,11 @@ export function clearTerminalContent() {
  * Can be used to access the terminal store outside of React components.
  * @returns {Object} The terminal store state and methods
  */
-const TerminalStore = () => ({
-	...useTerminalStore.getState(),
-	set: useTerminalStore.setState,
-	subscribe: useTerminalStore.subscribe,
+const TerminalStore = createFactory({
 	addTerminalContent,
 	nextItem,
 	clearTerminalContent,
 });
 
 export default TerminalStore;
+export { useTerminalStore };

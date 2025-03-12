@@ -1,5 +1,3 @@
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 import type {
 	Config,
 	EditorState,
@@ -24,30 +22,25 @@ import { initialNotificationState } from "@editor/notifications";
 import { publishConfigToContract } from "@editor/publisher";
 import { saveConfigToFile, loadConfigFromFile } from "@/editor/editor.utils";
 import test_config from "@/assets/test_world.json";
+import { StoreBuilder } from "@/lib/utils/storebuilder";
 
-// Initialize the editor state
-const initialState: EditorState = {
+const {
+	get,
+	set,
+	useStore: useEditorStore,
+	createFactory,
+} = StoreBuilder<EditorState>({
 	currentLevel: createDefaultLevel(),
 	currentRoomIndex: 0,
 	isDirty: false,
 	errors: [],
-};
+});
 
-/**
- * Create the editor store using Zustand
- */
-export const useEditorStore = create<
-	EditorState & { set: (state: Partial<EditorState>) => void }
->()(
-	immer((set) => ({
-		...initialState,
-		set,
-	})),
-);
-
-// Helper functions to access the store
-const get = () => useEditorStore.getState();
-const set = useEditorStore.getState().set;
+const {
+	get: getNotification,
+	set: setNotification,
+	useStore: useNotificationStore,
+} = StoreBuilder<NotificationState>(initialNotificationState);
 
 // Helper method to run validation and auto-save
 const saveAndValidate = async (state: EditorState) => {
@@ -86,15 +79,6 @@ export const updateWorld = (updater: (draft: EditorState) => void) => {
 		}
 	});
 };
-
-// Create the notification store
-export const useNotificationStore = create<NotificationState>()(
-	immer(() => initialNotificationState),
-);
-
-// Helper functions for notification store
-const getNotification = () => useNotificationStore.getState();
-const setNotification = useNotificationStore.setState;
 
 /**
  * Combined actions for the editor, organized by functionality
@@ -175,7 +159,7 @@ export const actions = {
 				actions.config.loadConfig(config);
 				return;
 			}
-			actions.config.loadConfig(test_config);
+			actions.config.loadConfig(test_config as Config);
 		},
 
 		/**
@@ -487,15 +471,13 @@ export const actions = {
 };
 
 // Export a composable store object with all functionality
-const EditorStore = () => ({
-	...useEditorStore.getState(),
-	set: useEditorStore.setState,
-	subscribe: useEditorStore.subscribe,
+const EditorStore = createFactory({
 	updateWorld,
 	...actions,
 });
 
 export default EditorStore;
+export { useEditorStore, useNotificationStore };
 
 // Helper for React components to get current room
 export const getCurrentRoom = () => {

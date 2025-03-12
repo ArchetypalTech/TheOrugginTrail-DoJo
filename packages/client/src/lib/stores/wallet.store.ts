@@ -1,8 +1,7 @@
 import type { WalletAccount } from "starknet";
 import Controller, { type ControllerOptions } from "@cartridge/controller";
 import { ZORG_CONFIG } from "@lib/config";
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
+import { StoreBuilder } from "../utils/storebuilder";
 
 /**
  * Interface representing the wallet state.
@@ -14,7 +13,7 @@ import { immer } from "zustand/middleware/immer";
  * @property {boolean} isConnected - Indicates if the wallet is connected
  * @property {boolean} isLoading - Indicates if wallet operations are in progress
  */
-export interface WalletStore {
+interface WalletStore {
 	account: WalletAccount | undefined;
 	username: string | undefined;
 	walletAddress: string | undefined;
@@ -23,46 +22,21 @@ export interface WalletStore {
 	isLoading: boolean;
 }
 
-// Create initial state
-const initialState: WalletStore = {
+const { get, set, createFactory } = StoreBuilder<WalletStore>({
 	account: undefined,
 	username: undefined,
 	walletAddress: undefined,
 	controller: undefined,
 	isConnected: false,
 	isLoading: false,
-};
-
-/**
- * Zustand store for managing wallet state.
- * Provides state and state manipulation functions for wallet operations.
- */
-export const useWalletStore = create<
-	WalletStore & { set: (state: Partial<WalletStore>) => void }
->()(
-	immer((set) => ({
-		...initialState,
-		set,
-	})),
-);
-
-const get = () => useWalletStore.getState();
-const set = useWalletStore.getState().set;
-
-/**
- * Updates the wallet store with new data.
- * @param {Partial<WalletStore>} data - Partial wallet store data to update
- */
-export const setWalletData = (data: Partial<WalletStore>) => {
-	set(data);
-};
+});
 
 /**
  * Sets up the Cartridge controller with required configuration.
  * Configures policies, chains, and tokens for the controller.
  * @returns {Promise<Controller | undefined>} The configured controller instance
  */
-export const setupController = async () => {
+const setupController = async () => {
 	const worldName = ZORG_CONFIG.manifest.default.world.name;
 	const controllerConfig: ControllerOptions = {
 		policies: {
@@ -108,7 +82,7 @@ export const setupController = async () => {
 
 	try {
 		const controller = new Controller(controllerConfig);
-		setWalletData({
+		set({
 			controller,
 		});
 		return controller;
@@ -128,12 +102,12 @@ if (ZORG_CONFIG.useSlot) {
  * Sets wallet state including account, username, and address on successful connection.
  * @throws {Error} When controller is not found or connection fails
  */
-export const connectController = async () => {
+const connectController = async () => {
 	const wallet = get();
 	if (wallet.isConnected) {
 		return;
 	}
-	setWalletData({ isLoading: true });
+	set({ isLoading: true });
 	try {
 		const controller = get().controller;
 		if (!controller) {
@@ -157,12 +131,12 @@ export const connectController = async () => {
 			"address:",
 			data.walletAddress,
 		);
-		setWalletData(data);
+		set(data);
 	} catch (e) {
 		console.error(e);
 		throw e;
 	} finally {
-		setWalletData({ isLoading: false });
+		set({ isLoading: false });
 	}
 };
 
@@ -170,7 +144,7 @@ export const connectController = async () => {
  * Opens the user profile in the Controller UI.
  * Navigates to the inventory section of the profile.
  */
-export const openUserProfile = () => {
+const openUserProfile = () => {
 	get().controller?.openProfile("inventory");
 };
 
@@ -178,9 +152,9 @@ export const openUserProfile = () => {
  * Disconnects the wallet from the application.
  * Resets wallet state to default values.
  */
-export const disconnectController = async () => {
+const disconnectController = async () => {
 	get().controller?.disconnect(); // Disconnect the controller
-	setWalletData({
+	set({
 		account: undefined,
 		username: undefined,
 		walletAddress: undefined,
@@ -193,11 +167,7 @@ export const disconnectController = async () => {
  * Provides access to the entire wallet API in one object.
  * @returns {Object} Combined wallet state and methods
  */
-const WalletStore = () => ({
-	...useWalletStore.getState(),
-	set: useWalletStore.setState,
-	subscribe: useWalletStore.subscribe,
-	setWalletData,
+const WalletStore = createFactory({
 	setupController,
 	connectController,
 	openUserProfile,
