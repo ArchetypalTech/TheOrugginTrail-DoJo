@@ -1,4 +1,4 @@
-import type { HTMLAttributes, HtmlHTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 

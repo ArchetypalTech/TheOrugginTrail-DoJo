@@ -5,7 +5,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 
 export interface WalletStore {
-	accountController: WalletAccount | undefined;
+	account: WalletAccount | undefined;
 	username: string | undefined;
 	walletAddress: string | undefined;
 	controller: Controller | undefined;
@@ -15,7 +15,7 @@ export interface WalletStore {
 
 // Create initial state
 const initialState: WalletStore = {
-	accountController: undefined,
+	account: undefined,
 	username: undefined,
 	walletAddress: undefined,
 	controller: undefined,
@@ -115,7 +115,7 @@ export const connectController = async () => {
 			throw new Error("No response from Cartridge Game Controller");
 		}
 		const data = {
-			accountController: res,
+			account: res,
 			username: await controller.username(),
 			walletAddress: res.address,
 			isConnected: true,
@@ -144,7 +144,7 @@ export const openUserProfile = () => {
 export const disconnectController = async () => {
 	get().controller?.disconnect(); // Disconnect the controller
 	setWalletData({
-		accountController: undefined,
+		account: undefined,
 		username: undefined,
 		walletAddress: undefined,
 		isConnected: false,

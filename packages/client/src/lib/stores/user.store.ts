@@ -16,7 +16,10 @@ export const useUserStore = create<
 	})),
 );
 
-export const user_store = {
-	get: () => useUserStore.getState(),
-	set: (state: Partial<UserState>) => useUserStore.getState().set(state),
-};
+const UserStore = () => ({
+	...useUserStore.getState(),
+	set: useUserStore.setState,
+	subscribe: useUserStore.subscribe,
+});
+
+export default UserStore;

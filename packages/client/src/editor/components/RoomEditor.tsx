@@ -36,17 +36,24 @@ export const RoomEditor = () => {
 		const updatedRoom: Room = { ...editedRoom };
 
 		// Update the appropriate field based on input id
-		if (id === "roomName") {
-			updatedRoom.roomName = value;
-		} else if (id === "roomDescription") {
-			updatedRoom.roomDescription = {
-				...updatedRoom.roomDescription,
-				text: value,
-			};
-		} else if (id === "roomType") {
-			updatedRoom.roomType = value;
-		} else if (id === "biomeType") {
-			updatedRoom.biomeType = value;
+		switch (id) {
+			case "roomName":
+				updatedRoom.roomName = value;
+				break;
+			case "roomDescription":
+				updatedRoom.roomDescription = {
+					...updatedRoom.roomDescription,
+					text: value,
+				};
+				break;
+			case "roomType":
+				updatedRoom.roomType = value;
+				break;
+			case "biomeType":
+				updatedRoom.biomeType = value;
+				break;
+			default:
+				break;
 		}
 
 		// Update the room in the store

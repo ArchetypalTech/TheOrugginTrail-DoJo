@@ -1,29 +1,8 @@
 import { DojoProvider, DojoCall } from "@dojoengine/core";
-import { Account, AccountInterface, BigNumberish, ByteArray } from "starknet";
-import type { Action, Room } from "./models.gen";
+import { Account, AccountInterface, BigNumberish, CairoOption, CairoCustomEnum, ByteArray } from "starknet";
+import * as models from "./models.gen";
 
 export function setupWorld(provider: DojoProvider) {
-
-	const build_meatpuppet_commandShoggoth_calldata = (victim: BigNumberish, wish: Array<ByteArray>): DojoCall => {
-		return {
-			contractName: "meatpuppet",
-			entrypoint: "command_shoggoth",
-			calldata: [victim, wish],
-		};
-	};
-
-	const meatpuppet_commandShoggoth = async (snAccount: Account | AccountInterface, victim: BigNumberish, wish: Array<ByteArray>) => {
-		try {
-			return await provider.execute(
-				snAccount,
-				build_meatpuppet_commandShoggoth_calldata(victim, wish),
-				"the_oruggin_trail",
-			);
-		} catch (error) {
-			console.error(error);
-			throw error;
-		}
-	};
 
 	const build_designer_createActions_calldata = (t: Array<Action>): DojoCall => {
 		return {
@@ -133,12 +112,6 @@ export function setupWorld(provider: DojoProvider) {
 
 
 	return {
-		meatpuppet: {
-			commandShoggoth: meatpuppet_commandShoggoth,
-			buildCommandShoggothCalldata: build_meatpuppet_commandShoggoth_calldata,
-			listen: meatpuppet_listen,
-			buildListenCalldata: build_meatpuppet_listen_calldata,
-		},
 		designer: {
 			createActions: designer_createActions,
 			buildCreateActionsCalldata: build_designer_createActions_calldata,
@@ -148,6 +121,10 @@ export function setupWorld(provider: DojoProvider) {
 			buildCreateRoomsCalldata: build_designer_createRooms_calldata,
 			createTxt: designer_createTxt,
 			buildCreateTxtCalldata: build_designer_createTxt_calldata,
+		},
+		meatpuppet: {
+			listen: meatpuppet_listen,
+			buildListenCalldata: build_meatpuppet_listen_calldata,
 		},
 	};
 }

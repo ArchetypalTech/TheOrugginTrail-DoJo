@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { TerminalContentItem } from "@lib/stores/terminal.store";
 import { nextItem, useTerminalStore } from "@lib/stores/terminal.store";
-import { user_store } from "@lib/stores/user.store";
+import { UserStore } from "@lib/stores/user.store";
 import TerminalLine from "./TerminalLine";
 
 export default function Typewriter() {
@@ -24,7 +24,7 @@ export default function Typewriter() {
 		// Fast mode - instant display
 		if (
 			activeTypewriterLine.useTypewriter === false ||
-			user_store.get().typewriter_effect === false
+			UserStore.get().typewriter_effect === false
 		) {
 			nextItem(activeTypewriterLine);
 			return;
