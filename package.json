@@ -27,12 +27,10 @@
 		"typescript": "^5"
 	},
 	"trustedDependencies": [
-		"@sveltejs/kit",
 		"@swc/core",
 		"cbor-extract",
 		"esbuild",
 		"keccak",
-		"secp256k1",
-		"svelte-preprocess"
+		"secp256k1"
 	]
 }

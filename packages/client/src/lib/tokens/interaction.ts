@@ -1,5 +1,4 @@
 // // Internals
-// import { get } from "svelte/store";
 // import { addrContract, initializeContracts } from "./constants.js";
 // import WalletStore from "@lib/stores/wallet.store";
 

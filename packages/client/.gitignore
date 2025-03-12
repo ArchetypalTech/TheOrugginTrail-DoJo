@@ -66,7 +66,7 @@ torii_local_db
 # asdf
 .tool-versions
 
-# svelte
+# build output
 build
 dist
 

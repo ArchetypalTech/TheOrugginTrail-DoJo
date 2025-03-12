@@ -25,9 +25,6 @@
 	"[javascriptreact]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
-	"[svelte]": {
-		"editor.defaultFormatter": "svelte.svelte-vscode"
-	},
 	"[html]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},

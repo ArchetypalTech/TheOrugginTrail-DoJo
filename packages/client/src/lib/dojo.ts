@@ -58,7 +58,6 @@ export const InitDojo = async () => {
 
 	/**
 	 * Dojo Entity Subscription Query
-	 * @dev we do not do the subscription in the `hooks.client.ts` hook, but we subscribe to it further in the Svelte client
 	 */
 	const sub = async (
 		callback: (response: {
