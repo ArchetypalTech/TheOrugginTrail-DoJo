@@ -8,6 +8,7 @@ import Notifications from "./components/Notifications";
 import { EditorHeader } from "./components/EditorHeader";
 import { useHead } from "@unhead/react";
 import EditorStore from "./editor.store";
+import { APP_EDITOR_SEO } from "@/data/app.data";
 
 export const Editor = () => {
 	const { currentLevel } = useEditorStore();
@@ -18,7 +19,20 @@ export const Editor = () => {
 	}, [currentLevel]);
 
 	useHead({
-		title: "ZORGTOR",
+		title: APP_EDITOR_SEO.title,
+		link: [{ rel: "icon", href: APP_EDITOR_SEO.icon }],
+		meta: Object.entries(APP_EDITOR_SEO).map(([key, value]) => {
+			if (key.startsWith("og")) {
+				return {
+					property: `og:${key.replace("og", "")}`,
+					content: value,
+				};
+			}
+			return {
+				name: key,
+				content: value,
+			};
+		}),
 	});
 
 	const handleDismissNotification = () => {

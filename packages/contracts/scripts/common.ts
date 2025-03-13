@@ -93,7 +93,9 @@ export const cmd_deploy_slot = [
 ];
 
 // console.dir(config, { depth: null });
-export const cmd_sozo_build = [`sozo build --profile slot`];
+export const cmd_sozo_build = [
+	`sozo build --profile slot --typescript --bindings-output ../client/src/lib/dojo_bindings/`,
+];
 
 export const cmd_sozo_migrate = [`sozo migrate --profile slot`];
 

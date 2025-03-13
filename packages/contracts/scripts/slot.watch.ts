@@ -12,7 +12,7 @@ const runBuild = async () => {
 		buildProcess.kill();
 	}
 	const cmd =
-		"sozo build --profile dev --typescript --bindings-output ../react-client/src/lib/dojo_bindings/";
+		"sozo build --profile dev --typescript --bindings-output ../client/src/lib/dojo_bindings/";
 	buildProcess = Bun.spawn(cmd.split(" "), {
 		stdout: "inherit",
 		stderr: "inherit",
