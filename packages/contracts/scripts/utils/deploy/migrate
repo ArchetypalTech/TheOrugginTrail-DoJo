@@ -1,9 +1,0 @@
-#!/usr/bin/env sh
-
-pushd "$(dirname "$0")/src" >/dev/null
-sozo build
-sozo migrate apply
-# get world address
-world=$(cat ../manifests/dev/deployment/manifest.json | jq -r '.world.address')
-sozo auth grant --world $world --wait writer model:the_oruggin_trail-Output,the_oruggin_trail-meatpuppet
-popd >/dev/null

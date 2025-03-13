@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+:root {
+  --terminal-hash: #ffd700;
+  --terminal-out: #36ad11;
+  --terminal-shog: #06b6d4;
+  --terminal-input: #25642a;
+  --terminal-system: #4ade80;
+  --terminal-error: #dc2626;
+  --terminal-magenta: #d946ef;
+}

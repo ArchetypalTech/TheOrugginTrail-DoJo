@@ -1,31 +1,71 @@
-import fs from "node:fs";
 import path from "node:path";
-import { sveltekit } from "@sveltejs/kit/vite";
-import { type UserConfig, defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { black, bgGreen } from "ansicolor";
+import mkcert from "vite-plugin-mkcert";
 import wasm from "vite-plugin-wasm";
 import topLevelAwait from "vite-plugin-top-level-await";
 import { patchBindings } from "./scripts/vite-fix-bindings";
-import tailwindcss from "@tailwindcss/vite";
 
-const config: UserConfig = {
-	plugins: [
-		sveltekit(),
-		wasm(),
-		topLevelAwait(),
-		tailwindcss(),
-		patchBindings(), // Patcher for `models.gen.ts` starknet BigNumberish type import
-	],
-	build: {
-		target: "esnext",
-	},
-	server: {
-		// add SSL certificates
-		https: {
-			key: fs.readFileSync(path.resolve(__dirname, "ssl", "localhost-key.pem")), // Path to your private key
-			cert: fs.readFileSync(path.resolve(__dirname, "ssl", "localhost-cert.pem")), // Path to your certificate
+//TODO: https://github.com/nksaraf/vinxi
+// https://www.npmjs.com/package/wouter
+
+export default defineConfig(async ({ mode }) => {
+	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
+	console.log(`\n🦨💕 ZORG IN (${mode}) MODE`);
+	const isSlot = mode === "slot";
+	const isProd = mode === "production";
+	const isDev = mode === "development";
+	if (isSlot)
+		console.info(
+			black(
+				bgGreen(
+					" Mkcert may prompt for sudo password to generate SSL certificates. ",
+				),
+			),
+		);
+
+	return {
+		plugins: [
+			isSlot &&
+				mkcert({
+					hosts: ["localhost"],
+					autoUpgrade: true,
+					savePath: path.resolve(__dirname, "ssl"),
+				}),
+			wasm(),
+			topLevelAwait(),
+			tailwindcss(),
+			react(),
+			patchBindings(),
+		],
+		build: {
+			target: "esnext",
+			minify: true,
+			sourcemap: true,
+			reportCompressedSize: false,
 		},
-		cors: true,
-	},
-};
-
-export default defineConfig(config);
+		server: {
+			proxy: {
+				"/katana": {
+					target: process.env.VITE_KATANA_HTTP_RPC,
+					changeOrigin: true,
+				},
+			},
+			cors: true,
+		},
+		resolve: {
+			alias: {
+				"@": path.resolve(__dirname, "./src"),
+				"@components": path.resolve(__dirname, "./src/components"),
+				"@lib": path.resolve(__dirname, "./src/lib"),
+				"@styles": path.resolve(__dirname, "./src/styles"),
+				"@editor": path.resolve(__dirname, "./src/editor"),
+				"@zorg/contracts/manifest": isSlot
+					? "@zorg/contracts/manifest_slot.json"
+					: "@zorg/contracts/manifest_dev.json",
+			},
+		},
+	};
+});

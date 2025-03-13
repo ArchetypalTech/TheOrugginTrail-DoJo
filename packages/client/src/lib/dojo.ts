@@ -1,11 +1,14 @@
-import { ORUG_CONFIG } from "./config";
+import { ZORG_CONFIG } from "@lib/config";
 import { createDojoConfig, DojoProvider } from "@dojoengine/core";
 import {
 	init,
 	ToriiQueryBuilder,
 	type StandardizedQueryResult,
 } from "@dojoengine/sdk";
-import { type SchemaType, schema } from "./dojo/typescript/models.gen";
+import {
+	type SchemaType,
+	schema,
+} from "@lib/dojo_bindings/typescript/models.gen";
 
 /**
  * ## Initializes the Dojo SDK and configuration
@@ -17,8 +20,8 @@ import { type SchemaType, schema } from "./dojo/typescript/models.gen";
  * @returns An object containing the initialized SDK, config, provider, and query functions
  */
 export const InitDojo = async () => {
-	const manifest = ORUG_CONFIG.manifest.default;
-	const rpcUrl = ORUG_CONFIG.endpoints.katana;
+	const manifest = ZORG_CONFIG.manifest.default;
+	const rpcUrl = ZORG_CONFIG.endpoints.katana;
 	const dojoConfig = createDojoConfig({
 		manifest,
 	});
@@ -26,7 +29,7 @@ export const InitDojo = async () => {
 	const sdkConfig = {
 		client: {
 			rpcUrl,
-			toriiUrl: ORUG_CONFIG.endpoints.torii.http,
+			toriiUrl: ZORG_CONFIG.endpoints.torii.http,
 			relayUrl: "/ip4/127.0.0.1/tcp/9090/tcp/80",
 			worldAddress: dojoConfig.manifest.world.address,
 		},
@@ -44,49 +47,26 @@ export const InitDojo = async () => {
 
 	const provider = new DojoProvider(manifest, rpcUrl);
 
-	const query = (id: number = 23) => {
+	const query = () => {
 		const builder = new ToriiQueryBuilder<SchemaType>();
 		const query = builder
 			.addEntityModel("the_oruggin_trail-Output")
-			// .addEntityModel("the_oruggin_trail-OutputValue")
-			// .includeHashedKeys()
-			// .withClause(
-			// 	new ClauseBuilder()
-			// 		.compose()
-			// 		.and([
-			// 			new ClauseBuilder().where(
-			// 				"the_oruggin_trail-Output",
-			// 				"playerId",
-			// 				"Eq",
-			// 				id,
-			// 			),
-			// 		])
-			// 		.build(),
-			// );
 			.withOffset(0)
 			.withLimit(1000);
-		// .withClause(
-		// 	new ClauseBuilder()
-		// 		.where("the_oruggin_trail-Output", "playerId", "Eq", id)
-		// 		.build(),
-		// )
-		// .includeHashedKeys();
 		return query;
 	};
 
 	/**
 	 * Dojo Entity Subscription Query
-	 * @dev we do not do the subscription in the `hooks.client.ts` hook, but we subscribe to it further in the Svelte client
 	 */
 	const sub = async (
-		playerId: number,
 		callback: (response: {
 			data?: StandardizedQueryResult<SchemaType> | undefined;
 			error?: Error;
 		}) => void,
 	) => {
 		return await sdk.subscribeEntityQuery({
-			query: query(playerId),
+			query: query(),
 			callback,
 		});
 	};

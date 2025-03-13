@@ -1,0 +1,1 @@
+- [ ] Publish button for the Room / Object / Action editors

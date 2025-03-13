@@ -1,17 +1,16 @@
-// Starknet.js
-import { ORUG_CONFIG } from "$lib/config";
+import { ZORG_CONFIG } from "@lib/config";
 import { Contract, RpcProvider } from "starknet";
 
 // Initialize provider with Sepolia Testnet node
 // Sepolia: https://starknet-sepolia.public.blastapi.io
 export const provider = new RpcProvider({
-	nodeUrl: ORUG_CONFIG.token.provider,
+	nodeUrl: ZORG_CONFIG.token.provider,
 });
 export const providerSepolia = new RpcProvider({
 	nodeUrl: "https://starknet-sepolia.public.blastapi.io",
 });
 
-export const addrContract = ORUG_CONFIG.token.contract_address;
+export const addrContract = ZORG_CONFIG.token.contract_address;
 
 // Contract address for the TOT NFT Token in Sepolia
 export const addrContractSepolia =
