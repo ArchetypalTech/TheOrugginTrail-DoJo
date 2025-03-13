@@ -44,24 +44,25 @@ export type T_TextDefinition = z.infer<typeof T_TextDefinitionSchema>;
 // Define the Action schema
 export const T_ActionSchema = z.object({
 	actionId: z.string(),
-	type: ActionTypeEnum,
+	actionType: ActionTypeEnum,
+	dBitTxt: z.string(),
 	enabled: z.boolean(),
 	revertable: z.boolean(),
-	dBitText: z.string(),
 	dBit: z.boolean(),
-	affectsAction: z.string().transform((val) => val || "0"),
+	affectsActionId: z.string().transform((val) => val || "0"),
+	affectedByActionId: z.string().transform((val) => val || "0"),
 });
 export type T_Action = z.infer<typeof T_ActionSchema>;
 
 // Define the Object schema
 export const T_ObjectSchema = z.object({
-	objId: z.string(),
-	type: ObjectTypeEnum,
-	material: MaterialTypeEnum,
-	objDescription: z.string(),
-	direction: DirectionEnum,
-	destination: z.string().transform((val) => val || "0"),
-	actions: z.array(z.string()),
+	objectId: z.string(),
+	objType: ObjectTypeEnum,
+	dirType: DirectionEnum,
+	destId: z.string().transform((val) => val || "0"),
+	matType: MaterialTypeEnum,
+	objectActionIds: z.array(z.string()),
+	txtDefId: z.string().transform((val) => val || "0"),
 	name: z.string(),
 	altNames: z.array(z.string()),
 });
@@ -70,11 +71,11 @@ export type T_Object = z.infer<typeof T_ObjectSchema>;
 // Define the Room schema
 export const T_RoomSchema = z.object({
 	roomId: z.string(),
-	roomName: z.string(),
-	roomDescription: z.string(),
 	roomType: RoomTypeEnum,
 	biomeType: BiomeTypeEnum,
 	objectIds: z.array(z.string()).transform((val) => val || "0"),
 	dirObjIds: z.array(z.string()).transform((val) => val || "0"),
+	txtDefId: z.string().transform((val) => val || "0"),
+	shortTxt: z.string().transform((val) => val || "0"),
 });
 export type T_Room = z.infer<typeof T_RoomSchema>;

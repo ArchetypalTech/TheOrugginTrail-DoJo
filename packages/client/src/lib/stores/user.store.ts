@@ -17,7 +17,8 @@ const {
 		typewriter_effect: true,
 	},
 	{
-		name: "user",
+		// persist config
+		name: "ZORG-USERDATA",
 	},
 );
 

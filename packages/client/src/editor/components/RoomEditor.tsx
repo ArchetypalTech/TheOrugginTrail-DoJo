@@ -1,7 +1,6 @@
-import { useMemo } from "react";
-import EditorStore, { useEditorStore } from "../editor.store";
+import { useMemo, useState } from "react";
+import EditorStore from "../editor.store";
 import { EditorList } from "./EditorList";
-import type { Room } from "../lib/schemas";
 import { ROOM_TYPE_OPTIONS, BIOME_TYPE_OPTIONS } from "../lib/schemas";
 import {
 	DeleteButton,
@@ -15,16 +14,26 @@ import {
 } from "./FormComponents";
 import { publishRoom } from "../publisher";
 import EditorData, { useEditorData } from "../editor.data";
+import type { T_Room, T_TextDefinition } from "../lib/types";
+import { decodeDojoText, normalizeAddress } from "@/lib/utils/utils";
 
-export const RoomEditor = () => {
-	const { currentLevel, currentRoomIndex } = useEditorStore();
+export const RoomEditor = ({
+	editedRoom,
+	currentRoomIndex,
+	setCurrentRoomIndex,
+}: {
+	editedRoom: T_Room;
+	currentRoomIndex: number;
+	setCurrentRoomIndex: (index: number) => void;
+}) => {
+	const { rooms, isDirty } = useEditorData();
 
-	const { rooms } = useEditorData();
-
-	const { editedRoom } = useMemo(() => {
-		console.log("currentLevel", currentLevel);
-		return { editedRoom: currentLevel.rooms[currentRoomIndex] };
-	}, [currentRoomIndex, currentLevel]);
+	const { txtDef } = useMemo(() => {
+		console.log("currentRoomIndex", editedRoom);
+		return {
+			txtDef: EditorData().getItem(editedRoom?.txtDefId) as T_TextDefinition,
+		};
+	}, [editedRoom, isDirty]);
 
 	// Handler for input changes
 	const handleInputChange = (
@@ -33,18 +42,19 @@ export const RoomEditor = () => {
 		>,
 	) => {
 		const { id, value } = e.target;
-		const updatedRoom: Room = { ...editedRoom };
+		const updatedRoom: T_Room = { ...editedRoom };
 
 		// Update the appropriate field based on input id
 		switch (id) {
 			case "roomName":
-				updatedRoom.roomName = value;
+				updatedRoom.shortTxt = value;
 				break;
 			case "roomDescription":
-				updatedRoom.roomDescription = {
-					...updatedRoom.roomDescription,
-					text: value,
-				};
+				{
+					const _t = { ...txtDef };
+					_t.text = value;
+					EditorData().syncItem({ Txtdef: _t });
+				}
 				break;
 			case "roomType":
 				updatedRoom.roomType = value;
@@ -57,7 +67,7 @@ export const RoomEditor = () => {
 		}
 
 		// Update the room in the store
-		EditorStore().rooms.update(currentRoomIndex, updatedRoom);
+		EditorData().syncItem({ Room: updatedRoom });
 	};
 
 	const handleDeleteRoom = () => {
@@ -75,16 +85,16 @@ export const RoomEditor = () => {
 		});
 	};
 
-	console.log(Object.values(rooms));
-
+	if (Object.values(rooms).length === 0 || !editedRoom) {
+		return null;
+	}
+	console.log(Object.values(rooms), editedRoom, txtDef);
 	return (
 		<div className="flex flex-row gap-2 col-span-2">
 			<EditorList
 				list={Object.values(rooms)}
-				selectionFn={(index: number) =>
-					EditorStore().set({ currentRoomIndex: index })
-				}
-				addObjectFn={() => EditorStore().rooms.add()}
+				selectionFn={(index: number) => setCurrentRoomIndex(index)}
+				addObjectFn={() => EditorData().newRoom()}
 				selectedIndex={currentRoomIndex}
 				emptyText="🏠 Create Room"
 			/>
@@ -101,19 +111,19 @@ export const RoomEditor = () => {
 
 				<Input
 					id="roomName"
-					value={editedRoom.roomName}
+					value={editedRoom.shortTxt}
 					onChange={handleInputChange}
 				/>
 
 				<Textarea
 					id="roomDescription"
-					value={editedRoom.roomDescription.text}
+					value={decodeDojoText(txtDef.text)}
 					onChange={handleInputChange}
 					rows={4}
 				>
 					<TextDef
-						id={editedRoom.roomDescription.id}
-						owner={editedRoom.roomDescription.owner}
+						id={normalizeAddress(txtDef.id)}
+						owner={normalizeAddress(txtDef.owner)}
 					/>
 				</Textarea>
 
@@ -131,7 +141,7 @@ export const RoomEditor = () => {
 					options={BIOME_TYPE_OPTIONS}
 				/>
 
-				<ItemId id={editedRoom.roomID} />
+				<ItemId id={editedRoom.roomId} />
 			</div>
 		</div>
 	);

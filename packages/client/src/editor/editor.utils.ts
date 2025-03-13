@@ -23,6 +23,7 @@ import {
 	RoomTypeEnum,
 	BiomeTypeEnum,
 } from "@editor/lib/schemas";
+import randomName from "@scaleway/random-name";
 
 /**
  * Convert a string to a text definition object
@@ -829,4 +830,11 @@ export const validateAndNormalizeConfig = (
 		config: configCopy,
 		errors: [...schemaErrors],
 	};
+};
+
+export const createRandomName = () => {
+	return `${randomName("", " ")
+		.split(" ")
+		.map((word) => word[0].toUpperCase() + word.slice(1))
+		.join(" ")}`;
 };

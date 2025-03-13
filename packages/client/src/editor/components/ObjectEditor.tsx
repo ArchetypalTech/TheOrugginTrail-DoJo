@@ -1,12 +1,11 @@
 import { useMemo, useEffect } from "react";
 import type { ChangeEvent } from "react";
-import type { ZorgObject, Direction } from "../lib/schemas";
 import {
 	OBJECT_TYPE_OPTIONS,
 	MATERIAL_TYPE_OPTIONS,
 	DIRECTION_OPTIONS,
 } from "../lib/schemas";
-import EditorStore, { useEditorStore } from "../editor.store";
+import EditorStore from "../editor.store";
 import { EditorList } from "./EditorList";
 import {
 	Header,
@@ -20,35 +19,37 @@ import {
 	PublishButton,
 } from "./FormComponents";
 import { publishObject } from "../publisher";
+import type { T_Object, T_Room, T_TextDefinition } from "../lib/types";
+import EditorData from "../editor.data";
+import { decodeDojoText } from "@/lib/utils/utils";
 
 export const ObjectEditor = ({
+	editedRoom,
+	editedObject,
 	currentObjectIndex,
 	setCurrentObjectIndex,
 }: {
+	editedRoom: T_Room;
+	editedObject: T_Object;
 	currentObjectIndex: number;
 	setCurrentObjectIndex: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-	const { currentLevel, currentRoomIndex } = useEditorStore();
-
-	// Get the current room from global state
-	const currentRoom = useMemo(() => {
-		return currentLevel.rooms[currentRoomIndex];
-	}, [currentLevel, currentRoomIndex]);
-
-	// Get the current object based on selected index
-	const currentObject = useMemo(() => {
-		return currentRoom?.objects?.[currentObjectIndex] || null;
-	}, [currentRoom, currentObjectIndex]);
+	const { txtDef } = useMemo(() => {
+		console.log("currentRoomIndex", editedRoom);
+		return {
+			txtDef: EditorData().getItem(editedObject?.txtDefId) as T_TextDefinition,
+		};
+	}, [editedObject]);
 
 	// Handle out-of-bounds index when objects change
 	useEffect(() => {
 		if (
-			currentRoom?.objects?.length > 0 &&
-			currentObjectIndex >= currentRoom.objects.length
+			editedRoom?.objectIds?.length > 0 &&
+			currentObjectIndex >= editedRoom.objectIds.length
 		) {
 			setCurrentObjectIndex(0);
 		}
-	}, [currentRoom, currentObjectIndex, setCurrentObjectIndex]);
+	}, [editedRoom, currentObjectIndex, setCurrentObjectIndex]);
 
 	// Select a different object
 	const selectObjectIndex = (index: number) => {
@@ -57,106 +58,84 @@ export const ObjectEditor = ({
 
 	// Add a new object to the room
 	const handleAddObject = () => {
-		EditorStore().objects.add();
+		EditorData().newObject(editedRoom);
 		// Select the new object on next render
-		const newIndex = currentRoom.objects.length;
 		setTimeout(() => {
+			const newIndex = editedRoom.objectIds.length;
 			setCurrentObjectIndex(newIndex);
 		}, 0);
 	};
 
 	// Delete the current object
 	const handleDeleteObject = () => {
-		if (!currentObject) return;
+		if (!editedObject) return;
 
 		EditorStore().objects.delete(currentObjectIndex);
 		// Adjust the current object index if needed
-		if (currentObjectIndex >= currentRoom.objects.length - 1) {
-			setCurrentObjectIndex(Math.max(0, currentRoom.objects.length - 2));
+		if (currentObjectIndex >= editedRoom.objectIds.length - 1) {
+			setCurrentObjectIndex(Math.max(0, editedRoom.objectIds.length - 2));
 		}
 	};
 
-	// Update text fields
-	const handleTextChange = (id: string, value: string) => {
-		if (!currentObject) return;
-
-		const updatedObject: ZorgObject = { ...currentObject };
-
-		if (id === "objName") {
-			updatedObject.name = value;
-		} else if (id === "objDescription") {
-			updatedObject.objDescription = {
-				...updatedObject.objDescription,
-				text: value,
-			};
-		}
-
-		EditorStore().objects.update(currentObjectIndex, updatedObject);
-	};
-
-	// Update select dropdowns - simplified to reduce complexity
-	const handleSelectChange = (id: string, value: string) => {
-		if (!currentObject) return;
-
-		const updatedObject: ZorgObject = { ...currentObject };
-
-		switch (id) {
-			case "objectType":
-				updatedObject.type = value;
-				break;
-			case "material":
-				updatedObject.material = value;
-				break;
-			case "direction":
-				updatedObject.direction = value === "None" ? null : (value as Direction);
-				if (value === "None") {
-					updatedObject.destination = null;
-				}
-				break;
-			case "destination":
-				updatedObject.destination = value === "null" ? null : value;
-				break;
-		}
-
-		EditorStore().objects.update(currentObjectIndex, updatedObject);
-	};
-
-	// Handle input changes - delegate to appropriate handlers
 	const handleInputChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
 	) => {
 		const { id, value } = e.target;
+		if (!editedObject) return;
 
-		if (id === "objName" || id === "objDescription") {
-			handleTextChange(id, value);
-		} else {
-			handleSelectChange(id, value);
+		const updatedObject: T_Object = { ...editedObject };
+
+		switch (id) {
+			case "objName":
+				updatedObject.name = value;
+				break;
+			case "objDescription":
+				{
+					const _t = { ...txtDef };
+					_t.text = value;
+					EditorData().syncItem({ Txtdef: _t });
+				}
+				break;
+			case "objectType":
+				updatedObject.objType = value;
+				break;
+			case "material":
+				updatedObject.matType = value;
+				break;
+			case "direction":
+				updatedObject.dirType = value;
+				break;
+			case "destination":
+				updatedObject.destId = value;
+				break;
 		}
+
+		EditorData().syncItem({ Object: updatedObject });
 	};
 
 	// Handle tag input changes - properly implemented
 	const handleTagChange = (tags: string[]) => {
-		if (!currentObject) return;
+		if (!editedObject) return;
 
-		const updatedObject: ZorgObject = {
-			...currentObject,
+		const updatedObject: T_Object = {
+			...editedObject,
 			altNames: tags,
 		};
 
-		EditorStore().objects.update(currentObjectIndex, updatedObject);
+		EditorData().syncItem({ Object: updatedObject });
 	};
 
 	return (
 		<div className="flex flex-col gap-4">
 			<EditorList
-				list={currentRoom?.objects || []}
+				list={editedRoom?.objectIds.map((o) => EditorData().objects[o]) || []}
 				selectionFn={selectObjectIndex}
 				selectedIndex={currentObjectIndex}
 				addObjectFn={handleAddObject}
 				emptyText="🪴 Create Object"
 			/>
 
-			{!currentObject ? (
+			{!editedObject ? (
 				<div className="flex flex-col space-y-4">
 					<p>No objects.</p>
 				</div>
@@ -166,63 +145,60 @@ export const ObjectEditor = ({
 						<DeleteButton onClick={handleDeleteObject} />
 						<PublishButton
 							onClick={async () => {
-								await publishObject(currentObject);
+								await publishObject(editedObject);
 								EditorStore().notifications.clear();
 							}}
 						/>
 					</Header>
 					<Input
 						id="objName"
-						value={currentObject.name}
+						value={editedObject.name}
 						onChange={handleInputChange}
 					/>
 					<TagInput
 						id="altNames"
-						value={currentObject.altNames.join(", ")}
+						value={editedObject.altNames.join(", ")}
 						onChange={handleTagChange}
 						description={`Alternative ways to address this object`}
 					/>
 					<Select
 						id="objectType"
-						value={currentObject.type}
+						value={editedObject.objType}
 						onChange={handleInputChange}
 						options={OBJECT_TYPE_OPTIONS}
 					/>
 					<Select
 						id="material"
-						value={currentObject.material}
+						value={editedObject.matType}
 						onChange={handleInputChange}
 						options={MATERIAL_TYPE_OPTIONS}
 					/>
 					<Textarea
 						id="objDescription"
-						value={currentObject.objDescription.text}
+						value={decodeDojoText(txtDef.text)}
 						onChange={handleInputChange}
 						rows={3}
 					>
-						<TextDef
-							id={currentObject.objDescription.id}
-							owner={currentObject.objDescription.owner}
-						/>
+						<TextDef id={txtDef.id} owner={txtDef.owner} />
 					</Textarea>
 					<Select
 						id="direction"
-						value={currentObject.direction || "None"}
+						value={editedObject.dirType || "None"}
 						onChange={handleInputChange}
 						options={DIRECTION_OPTIONS}
 					/>
 					<Select
 						id="destination"
-						value={currentObject.destination || "null"}
+						value={editedObject.destId || "null"}
 						onChange={handleInputChange}
-						options={EditorStore()
-							.rooms.getAllRooms()
+						options={EditorData()
+							.getRooms()
 							.map((room) => ({
-								value: room.roomID,
-								label: room.roomName,
+								value: room.roomId,
+								label: room.shortTxt,
 							}))}
 					/>
-					<ItemId id={currentObject.objID} />
+					<ItemId id={editedObject.objectId} />
 				</div>
 			)}
 		</div>

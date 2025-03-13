@@ -2,10 +2,13 @@ import type { InitDojo } from "@lib/dojo";
 import { addTerminalContent } from "./terminal.store";
 import { ZORG_CONFIG } from "../config";
 import WalletStore from "./wallet.store";
-
 // @dev Use the Dojo bindings, *avoid* recreating these where possible
 import type { Output } from "../dojo_bindings/typescript/models.gen";
-import { normalizeAddress, processWhitespaceTags } from "../utils/utils";
+import {
+	normalizeAddress,
+	processWhitespaceTags,
+	decodeDojoText,
+} from "../utils/utils";
 import { StoreBuilder } from "../utils/storebuilder";
 import EditorData from "@/editor/editor.data";
 
@@ -57,7 +60,7 @@ const setOutputter = (outputter: Output | undefined) => {
 	console.log("[OUTPUTTER]:", newText);
 
 	// @dev decode and reprocess text to escape characters such as %20 and %2C, we can not create calldata with \n or other escape characters because the Starknet processor will go into an infinite loop 🥳
-	const trimmedNewText = decodeURI(newText.trim()).replaceAll("%2C", ",");
+	const trimmedNewText = decodeDojoText(newText.trim());
 	const lines: string[] = processWhitespaceTags(trimmedNewText);
 	set({ lastProcessedText: trimmedNewText });
 
@@ -118,10 +121,10 @@ const initializeConfig = async (
 				}
 				return;
 			}
-
+			console.log(response.data);
 			for (const _D of response?.data || []) {
 				if (_D.models?.the_oruggin_trail) {
-					EditorData().syncObject(_D.models.the_oruggin_trail);
+					EditorData().syncItem(_D.models.the_oruggin_trail);
 				}
 			}
 
@@ -133,7 +136,7 @@ const initializeConfig = async (
 		for (const _D of initialEntities || []) {
 			console.log(_D);
 			if (_D.models?.the_oruggin_trail) {
-				EditorData().syncObject(_D.models.the_oruggin_trail);
+				EditorData().syncItem(_D.models.the_oruggin_trail);
 			}
 		}
 

@@ -1,6 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
 import type { ChangeEvent } from "react";
-import type { Action } from "../lib/schemas";
 import { ACTION_TYPE_OPTIONS } from "../lib/schemas";
 import EditorStore from "../editor.store";
 import { EditorList } from "./EditorList";
@@ -14,31 +13,32 @@ import {
 	Toggle,
 } from "./FormComponents";
 import { publishAction } from "../publisher";
+import type { T_Action, T_Object } from "../lib/types";
+import EditorData, { useEditorData } from "../editor.data";
+import { decodeDojoText } from "@/lib/utils/utils";
 
-export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
-	const { currentLevel, currentRoomIndex } = EditorStore();
-	const [currentActionIndex, setCurrentActionIndex] = useState(0);
-
-	// Get the current object and action
-	const { currentObject, currentAction } = useMemo(() => {
-		const room = currentLevel.rooms[currentRoomIndex];
-		const obj = room?.objects?.[objectIndex];
-		const action = obj?.actions?.[currentActionIndex] || null;
-		return {
-			currentObject: obj,
-			currentAction: action,
-		};
-	}, [currentLevel, currentRoomIndex, objectIndex, currentActionIndex]);
+export const ActionEditor = ({
+	editedAction,
+	editedObject,
+	currentActionIndex,
+	setCurrentActionIndex,
+}: {
+	editedAction: T_Action;
+	editedObject: T_Object;
+	currentActionIndex: number;
+	setCurrentActionIndex: React.Dispatch<React.SetStateAction<number>>;
+}) => {
+	const { isDirty } = useEditorData();
 
 	// Handle out-of-bounds index when actions change
 	useEffect(() => {
 		if (
-			currentObject?.actions?.length > 0 &&
-			currentActionIndex >= currentObject.actions.length
+			editedObject?.objectActionIds?.length > 0 &&
+			currentActionIndex >= editedObject.objectActionIds.length
 		) {
 			setCurrentActionIndex(0);
 		}
-	}, [currentObject, currentActionIndex]);
+	}, [editedObject, currentActionIndex, isDirty]);
 
 	// Select a different action
 	const selectActionIndex = (index: number) => {
@@ -47,22 +47,22 @@ export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
 
 	// Add a new action
 	const handleAddAction = () => {
-		EditorStore().objects.addAction(objectIndex);
+		EditorData().newAction(editedObject);
 		// Select the new action on next render
-		const newIndex = currentObject?.actions?.length || 0;
 		setTimeout(() => {
+			const newIndex = editedObject?.objectActionIds?.length || 0;
 			setCurrentActionIndex(newIndex);
 		}, 0);
 	};
 
 	// Delete current action
 	const handleDeleteAction = () => {
-		if (!currentAction) return;
+		if (!editedAction) return;
 
-		EditorStore().objects.deleteAction(objectIndex, currentActionIndex);
+		EditorStore().objects.deleteAction(editedObject.objectId, currentActionIndex);
 		// Adjust the current action index if needed
-		if (currentActionIndex >= currentObject.actions.length - 1) {
-			setCurrentActionIndex(Math.max(0, currentObject.actions.length - 2));
+		if (currentActionIndex >= editedObject.actions.length - 1) {
+			setCurrentActionIndex(Math.max(0, editedObject.actions.length - 2));
 		}
 	};
 
@@ -70,38 +70,22 @@ export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
 	const handleInputChange = (
 		e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
 	) => {
-		if (!currentAction) return;
+		if (!editedAction) return;
 
 		const { id, value } = e.target;
-		const updatedAction: Action = { ...currentAction };
+		const checked = (e as ChangeEvent<HTMLInputElement>).target.checked;
+		const updatedAction: T_Action = { ...editedAction };
 
 		switch (id) {
 			case "actionType":
-				updatedAction.type = value;
+				updatedAction.actionType = value;
 				break;
-			case "dBitText":
-				updatedAction.dBitText = value;
+			case "dBitTxt":
+				updatedAction.dBitTxt = value;
 				break;
 			case "affectsAction":
-				updatedAction.affectsAction = value === "null" ? null : value;
+				updatedAction.affectsActionId = value || "";
 				break;
-		}
-
-		EditorStore().objects.updateAction(
-			objectIndex,
-			currentActionIndex,
-			updatedAction,
-		);
-	};
-
-	// Handle checkbox changes
-	const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
-		if (!currentAction) return;
-
-		const { id, checked } = e.target;
-		const updatedAction: Action = { ...currentAction };
-
-		switch (id) {
 			case "enabled":
 				updatedAction.enabled = checked;
 				break;
@@ -113,29 +97,27 @@ export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
 				break;
 		}
 
-		EditorStore().objects.updateAction(
-			objectIndex,
-			currentActionIndex,
-			updatedAction,
-		);
+		EditorData().syncItem({ Action: updatedAction });
 	};
 
 	// Early return if no object exists
-	if (!currentObject) {
+	if (!editedObject) {
 		return <div />;
 	}
 
 	return (
 		<div className="flex flex-col gap-2">
 			<EditorList
-				list={currentObject?.actions || []}
+				list={
+					editedObject?.objectActionIds.map((o) => EditorData().actions[o]) || []
+				}
 				selectionFn={selectActionIndex}
 				selectedIndex={currentActionIndex}
 				addObjectFn={handleAddAction}
 				emptyText="🩰 Create Action"
 			/>
 
-			{!currentAction ? (
+			{!editedAction ? (
 				<div className="flex flex-col space-y-4" />
 			) : (
 				<div className="editor-inspector">
@@ -143,51 +125,51 @@ export const ActionEditor = ({ objectIndex }: { objectIndex: number }) => {
 						<DeleteButton onClick={handleDeleteAction} />
 						<PublishButton
 							onClick={async () => {
-								await publishAction(currentAction);
+								await publishAction(editedAction);
 								EditorStore().notifications.clear();
 							}}
 						/>
 					</Header>
 					<Select
 						id="actionType"
-						value={currentAction.type}
+						value={editedAction.actionType}
 						onChange={handleInputChange}
 						options={ACTION_TYPE_OPTIONS}
 					/>
 					<Textarea
-						id="dBitText"
-						value={currentAction.dBitText}
+						id="dBitTxt"
+						value={decodeDojoText(editedAction.dBitTxt)}
 						onChange={handleInputChange}
 						rows={3}
 					/>
 					<Toggle
 						id="enabled"
-						checked={currentAction.enabled}
-						onChange={handleCheckboxChange}
+						checked={editedAction.enabled}
+						onChange={handleInputChange}
 					/>
 					<Toggle
 						id="revertable"
-						checked={currentAction.revertable}
-						onChange={handleCheckboxChange}
+						checked={editedAction.revertable}
+						onChange={handleInputChange}
 					/>
 					<Toggle
 						id="dBit"
-						checked={currentAction.dBit}
-						onChange={handleCheckboxChange}
+						checked={editedAction.dBit}
+						onChange={handleInputChange}
 					/>
 					<Select
 						id="affectsAction"
-						value={currentAction.affectsAction || "null"}
+						value={editedAction.affectsActionId || "null"}
 						onChange={handleInputChange}
 						options={EditorStore()
 							.objects.getAllActionIDs()
-							.filter((id) => id !== currentAction.actionID)
+							.filter((id) => id !== editedAction.actionId)
 							.map((actionId) => ({
 								value: actionId,
 								label: actionId,
 							}))}
 					/>
-					<ItemId id={currentAction.actionID} />
+					<ItemId id={editedAction.actionId} />
 				</div>
 			)}
 		</div>

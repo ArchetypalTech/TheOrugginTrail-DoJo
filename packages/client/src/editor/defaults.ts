@@ -6,15 +6,7 @@ import type {
 	TextDefinition,
 	Config,
 } from "./lib/schemas";
-import { generateNumericUniqueId } from "./editor.utils";
-import randomName from "@scaleway/random-name";
-
-const createRandomName = () => {
-	return `${randomName("", " ")
-		.split(" ")
-		.map((word) => word[0].toUpperCase() + word.slice(1))
-		.join(" ")}`;
-};
+import { createRandomName, generateNumericUniqueId } from "./editor.utils";
 
 /**
  * Create a default TextDefinition

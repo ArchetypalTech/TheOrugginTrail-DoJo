@@ -1,8 +1,7 @@
-import { cn } from "@/lib/utils/utils";
-import type { Action, ZorgObject } from "../lib/schemas";
-import type { T_Room } from "../lib/types";
+import { cn, normalizeAddress } from "@/lib/utils/utils";
+import type { T_Action, T_Object, T_Room } from "../lib/types";
 
-export const EditorList = <T extends Room | ZorgObject | Action>({
+export const EditorList = <T extends T_Room | T_Object | T_Action>({
 	list,
 	selectionFn,
 	selectedIndex,
@@ -19,11 +18,13 @@ export const EditorList = <T extends Room | ZorgObject | Action>({
 		<div className="flex flex-col gap-2">
 			{list.map((r, idx) => {
 				const id =
-					(r as T_Room).roomId || (r as ZorgObject).objID || (r as Action).actionID;
+					(r as T_Room).roomId ||
+					(r as T_Object).objectId ||
+					(r as T_Action).actionId;
 				const name =
 					(r as T_Room).shortTxt ||
-					(r as ZorgObject).name ||
-					`${(r as Action).type} ${(r as Action).actionID}`;
+					(r as T_Object).name ||
+					`${(r as T_Action).actionType} ${normalizeAddress((r as T_Action).actionId)}`;
 				const isSelected = idx === selectedIndex;
 				return (
 					<button

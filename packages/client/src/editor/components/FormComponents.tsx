@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils/utils";
+import { cn, normalizeAddress } from "@/lib/utils/utils";
 import { TagInput as Tags } from "./TagInput";
 
 export const Header = ({
@@ -216,8 +216,8 @@ export const ItemId = ({ id }: { id: string }) => {
 			<input
 				type="text"
 				id={id}
-				value={id}
-				className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+				value={normalizeAddress(id)}
+				className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-xs"
 				disabled
 			/>
 		</div>

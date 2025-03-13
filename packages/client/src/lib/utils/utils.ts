@@ -40,3 +40,8 @@ export function processWhitespaceTags(input: string): string[] {
 	);
 	return processedString.split("\n");
 }
+
+export const decodeDojoText = (text: string) => {
+	const decodedText = decodeURI(text.trimStart()).replaceAll("%2C", ",");
+	return decodedText;
+};
