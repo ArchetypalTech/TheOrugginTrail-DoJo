@@ -26,6 +26,8 @@ bun install
 
 Automated installer for installing [scarb](https://github.com/software-mansion/scarb) and [dojo](https://book.dojoengine.org/getting-started#install-using-asdf) using [asdf](https://asdf-vm.com/) and [homebrew](https://brew.sh/).
 
+🚸 Update your `$PATH` [getting started with ASDF](https://asdf-vm.com/guide/getting-started.html) variables to make sure `katana` works.
+
 ```bash
 bun run quickstart
 ```
