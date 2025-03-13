@@ -2,6 +2,7 @@ import { StoreBuilder } from "@/lib/utils/storebuilder";
 import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
 import { createDefaultObject } from "./defaults";
 import { createRandomName, generateNumericUniqueId } from "./editor.utils";
+import { byteArray, cairo, encode, hash, shortString } from "starknet";
 
 type AnyObject = T_Action | T_Room | T_Object | T_TextDefinition;
 
@@ -101,14 +102,16 @@ const newObject = (room: T_Room) => {
 		name: `${createRandomName()}`,
 		altNames: [],
 	};
-	room.objectIds.push(objectId);
-	syncItem({ Room: room });
+	const _room = { ...room, objectIds: [...room.objectIds, objectId] };
+	syncItem({ Room: _room });
 	syncItem({ Object: newObject });
 	return newObject;
 };
 
 const newRoom = () => {
-	const roomId = generateNumericUniqueId();
+	const roomId =
+		getRooms().length < 1 ? "0x1c0a42f26b594c" : generateNumericUniqueId();
+
 	const txt = newTxtDef(roomId);
 	const newRoom: T_Room = {
 		roomId,
@@ -135,8 +138,11 @@ const newAction = (object: T_Object) => {
 		affectsActionId: "",
 		affectedByActionId: "",
 	};
-	object.objectActionIds.push(actionId);
-	syncItem({ Object: object });
+	const _object = {
+		...object,
+		objectActionIds: [...object.objectActionIds, actionId],
+	};
+	syncItem({ Object: _object });
 	syncItem({ Action: newAction });
 	return newAction;
 };

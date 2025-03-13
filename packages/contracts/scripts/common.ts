@@ -13,7 +13,7 @@ import {
 import { intro, log, outro, spinner } from "@clack/prompts";
 
 console.log("\n");
-intro(`${yellow("🦨💕 ZORG DEPLOYER")}`);
+intro(`${yellow("🦨💕 ZORGKIT")}`);
 
 // @dev custom impl of spinner, did a PR to @clack/prompts but it's not merged yet
 export const zorgSpinner = spinner({

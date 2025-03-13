@@ -2,10 +2,12 @@ import { useRef } from "react";
 import EditorStore from "../editor.store";
 import { ZORG_CONFIG } from "@lib/config";
 import UserStore, { useUserStore } from "@/lib/stores/user.store";
+import EditorData, { useEditorData } from "../editor.data";
 
 export const EditorHeader = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { dark_mode } = useUserStore();
+	const { rooms } = useEditorData();
 
 	// Handler for file upload
 	const handleImportConfig = () => {
@@ -57,6 +59,14 @@ export const EditorHeader = () => {
 					className="hidden"
 					onChange={handleFileChange}
 				/>
+				{Object.values(rooms).length < 1 && (
+					<button
+						className="btn btn-sm btn-success"
+						onClick={() => EditorData().newRoom()}
+					>
+						New
+					</button>
+				)}
 				<button className="btn btn-sm btn-success" onClick={handleImportConfig}>
 					Import Config
 				</button>

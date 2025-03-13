@@ -48,7 +48,7 @@ export const Editor = () => {
 
 	useHead({
 		title: APP_EDITOR_SEO.title,
-		link: [{ rel: "icon", href: APP_EDITOR_SEO.icon }],
+		link: [{ rel: "icon", href: APP_EDITOR_SEO.icon() }],
 		meta: Object.entries(APP_EDITOR_SEO).map(([key, value]) => {
 			if (key.startsWith("og")) {
 				return {

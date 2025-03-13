@@ -10,8 +10,8 @@ const APP_DATA = {
 
 const APP_EDITOR_DATA = {
 	title: "ZORGTOR",
-	icon:
-		"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y='.9em' font-size='90' transform='translate(110, 5) scale(-.975,.975)'>🐦‍🔥</text><text y='.1em' font-size='90' transform='translate(45, 30) scale(0.5,0.5)'>✨</text></svg>",
+	icon: () =>
+		`data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y='.9em' font-size='90' transform='translate(110, 5) scale(-.975,.975)'>${APP_RANDOM_ICON()}</text><text y='.1em' font-size='90' transform='translate(45, 30) scale(0.5,0.5)'>✨</text></svg>`,
 	description: "",
 	keywords: [],
 	image: "",
@@ -47,3 +47,7 @@ export const APP_EDITOR_SEO = {
 	keywords: APP_EDITOR_DATA.keywords.join(),
 	icon: APP_EDITOR_DATA.icon,
 } as const;
+
+const RND_ICONS = ["🐦‍🔥", "🥾", "🚪", "🗝️", "📦", "🥄"];
+const APP_RANDOM_ICON = () =>
+	RND_ICONS[Math.floor(Math.random() * RND_ICONS.length)];
