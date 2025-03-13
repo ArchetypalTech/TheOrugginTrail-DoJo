@@ -17,6 +17,7 @@ export const EditorList = <T extends T_Room | T_Object | T_Action>({
 	return (
 		<div className="flex flex-col gap-2">
 			{list.map((r, idx) => {
+				if (r === undefined) return;
 				const id =
 					(r as T_Room).roomId ||
 					(r as T_Object).objectId ||

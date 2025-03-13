@@ -121,17 +121,11 @@ const initializeConfig = async (
 				}
 				return;
 			}
-			console.log(response.data);
 			for (const _D of response?.data || []) {
 				if (_D.models?.the_oruggin_trail) {
 					EditorData().syncItem(_D.models.the_oruggin_trail);
 				}
 			}
-
-			console.info(
-				"[DOJO]: initial response",
-				JSON.stringify(response?.data?.[0]?.models),
-			);
 		});
 		for (const _D of initialEntities || []) {
 			console.log(_D);

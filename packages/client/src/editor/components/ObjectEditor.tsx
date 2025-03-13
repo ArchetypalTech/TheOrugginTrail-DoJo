@@ -163,13 +163,13 @@ export const ObjectEditor = ({
 					/>
 					<Select
 						id="objectType"
-						value={editedObject.objType}
+						value={editedObject.objType || "None"}
 						onChange={handleInputChange}
 						options={OBJECT_TYPE_OPTIONS}
 					/>
 					<Select
 						id="material"
-						value={editedObject.matType}
+						value={editedObject.matType || "None"}
 						onChange={handleInputChange}
 						options={MATERIAL_TYPE_OPTIONS}
 					/>
@@ -189,7 +189,7 @@ export const ObjectEditor = ({
 					/>
 					<Select
 						id="destination"
-						value={editedObject.destId || "null"}
+						value={editedObject.destId || ""}
 						onChange={handleInputChange}
 						options={EditorData()
 							.getRooms()

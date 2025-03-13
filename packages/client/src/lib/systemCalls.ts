@@ -90,8 +90,9 @@ type DesignerCallProps = {
  * @returns {Promise<Response>} The response from the contract call
  * @throws {Error} If the contract call fails
  */
-async function sendDesignerCall(props: string) {
-	const { call, args } = JSON.parse(props) as DesignerCallProps;
+async function sendDesignerCall(props: DesignerCallProps) {
+	const { call, args } = props;
+	console.log(call, args);
 	try {
 		// other calls follow the same format Array<Object> see Cairo Models
 		if (call !== "create_txt") {

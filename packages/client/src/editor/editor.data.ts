@@ -1,8 +1,7 @@
 import { StoreBuilder } from "@/lib/utils/storebuilder";
 import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
-import { createDefaultObject } from "./defaults";
 import { createRandomName, generateNumericUniqueId } from "./editor.utils";
-import { byteArray, cairo, encode, hash, shortString } from "starknet";
+import { decodeDojoText } from "@/lib/utils/utils";
 
 type AnyObject = T_Action | T_Room | T_Object | T_TextDefinition;
 
@@ -16,13 +15,12 @@ const {
 	rooms: {} as Record<string, T_Room>,
 	objects: {} as Record<string, T_Object>,
 	actions: {} as Record<string, T_Action>,
-	textDefs: {} as Record<string, T_TextDefinition>,
+	txtDefs: {} as Record<string, T_TextDefinition>,
 	currentRoom: undefined as T_Room | undefined,
 	isDirty: Date.now(),
 });
 
 const setItem = (obj: AnyObject, id: string) => {
-	console.log(obj);
 	set((prev) => ({
 		...prev,
 		dataPool: new Map<string, AnyObject>(get().dataPool).set(id, obj),
@@ -32,38 +30,37 @@ const setItem = (obj: AnyObject, id: string) => {
 const getItem = (id: string) => get().dataPool.get(id);
 
 const syncItem = (obj: unknown) => {
+	console.log("syncing obj", obj, get());
 	if ("Room" in (obj as { Room: T_Room })) {
-		console.log("syncing room", obj);
 		const r = obj as { Room: T_Room };
 		setItem(r.Room, r.Room.roomId);
 		set((prev) => {
 			prev.rooms = { ...prev.rooms, [r.Room.roomId]: r.Room };
 		});
-		console.log("room", get());
 	}
 	if ("Object" in (obj as { Object: T_Object })) {
 		const o = obj as { Object: T_Object };
+		console.log(o.Object);
 		setItem(o.Object, o.Object.objectId);
 		set((prev) => {
 			prev.objects = { ...prev.objects, [o.Object.objectId]: o.Object };
 		});
-		console.log("object", get());
 	}
 	if ("Action" in (obj as { Action: T_Action })) {
 		const a = obj as { Action: T_Action };
+		a.Action.dBitTxt = decodeDojoText(a.Action.dBitTxt);
 		setItem(a.Action, a.Action.actionId);
 		set((prev) => {
 			prev.actions = { ...prev.actions, [a.Action.actionId]: a.Action };
 		});
-		console.log("action", get());
 	}
 	if ("Txtdef" in (obj as { Txtdef: T_TextDefinition })) {
 		const t = obj as { Txtdef: T_TextDefinition };
+		t.Txtdef.text = decodeDojoText(t.Txtdef.text);
 		setItem(t.Txtdef, t.Txtdef.id);
 		set((prev) => {
-			prev.textDefs = { ...prev.textDefs, [t.Txtdef.id]: t.Txtdef };
+			prev.txtDefs = { ...prev.txtDefs, [t.Txtdef.id]: t.Txtdef };
 		});
-		console.log("txtDef", get());
 	}
 	setTimeout(() => {
 		set({

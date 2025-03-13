@@ -23,7 +23,6 @@ export const Editor = () => {
 	// FIXME: needs proper state management
 	const { editedRoom } = useMemo(() => {
 		const editedRoom = Object.values(rooms).at(currentRoomIndex) as T_Room;
-		console.log("currentRoomIndex", editedRoom);
 		return {
 			editedRoom,
 		};
@@ -31,7 +30,6 @@ export const Editor = () => {
 
 	const { editedObject } = useMemo(() => {
 		const editedObject = objects[editedRoom?.objectIds[currentObjectIndex]];
-		console.log("currentObjectIndex", editedObject);
 		return {
 			editedObject,
 		};
@@ -40,7 +38,6 @@ export const Editor = () => {
 	const { editedAction } = useMemo(() => {
 		const editedAction =
 			actions[editedObject?.objectActionIds[currentActionIndex]];
-		console.log("currentActionIndex", editedAction);
 		return {
 			editedAction,
 		};

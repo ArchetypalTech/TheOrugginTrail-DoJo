@@ -322,7 +322,7 @@ export const directionToIndex = (
 	const values = Object.values(DirectionEnum.enum);
 	const index = values.indexOf(direction as Direction);
 	// Return the index if found, or the index of "None" as fallback
-	return index;
+	return index >= 0 ? index : 0;
 };
 
 /**
@@ -335,7 +335,7 @@ export const objectTypeToIndex = (
 	const values = Object.values(ObjectTypeEnum.enum);
 	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
-	return index;
+	return index >= 0 ? index : 0;
 };
 
 /**
@@ -348,7 +348,7 @@ export const actionTypeToIndex = (
 	const values = Object.values(ActionTypeEnum.enum);
 	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
-	return index;
+	return index >= 0 ? index : 0;
 };
 
 /**
@@ -361,7 +361,7 @@ export const materialTypeToIndex = (
 	const values = Object.values(MaterialTypeEnum.enum);
 	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
-	return index;
+	return index >= 0 ? index : 0;
 };
 
 /**
@@ -374,7 +374,7 @@ export const roomTypeToIndex = (
 	const values = Object.values(RoomTypeEnum.enum);
 	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
-	return index;
+	return index >= 0 ? index : 0;
 };
 
 /**
@@ -387,7 +387,7 @@ export const biomeTypeToIndex = (
 	const values = Object.values(BiomeTypeEnum.enum);
 	const index = values.indexOf(type);
 	// Return the index if found, or the index of "None" as fallback
-	return index;
+	return index >= 0 ? index : 0;
 };
 
 /**

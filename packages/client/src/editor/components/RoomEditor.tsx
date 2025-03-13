@@ -29,7 +29,6 @@ export const RoomEditor = ({
 	const { rooms, isDirty } = useEditorData();
 
 	const { txtDef } = useMemo(() => {
-		console.log("currentRoomIndex", editedRoom);
 		return {
 			txtDef: EditorData().getItem(editedRoom?.txtDefId) as T_TextDefinition,
 		};
@@ -88,7 +87,7 @@ export const RoomEditor = ({
 	if (Object.values(rooms).length === 0 || !editedRoom) {
 		return null;
 	}
-	console.log(Object.values(rooms), editedRoom, txtDef);
+	// console.log(editedRoom);
 	return (
 		<div className="flex flex-row gap-2 col-span-2">
 			<EditorList
@@ -129,14 +128,14 @@ export const RoomEditor = ({
 
 				<Select
 					id="roomType"
-					value={editedRoom.roomType}
+					value={editedRoom.roomType || "None"}
 					onChange={handleInputChange}
 					options={ROOM_TYPE_OPTIONS}
 				/>
 
 				<Select
 					id="biomeType"
-					value={editedRoom.biomeType}
+					value={editedRoom.biomeType || "None"}
 					onChange={handleInputChange}
 					options={BIOME_TYPE_OPTIONS}
 				/>

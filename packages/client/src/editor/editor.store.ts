@@ -127,7 +127,6 @@ export const actions = {
 				logs: [],
 			});
 			const currentNotification = getNotification();
-			console.log("Current notification:", currentNotification);
 			return currentNotification.logs || [];
 		},
 

@@ -8,7 +8,6 @@ import {
 	actionTypeToIndex,
 } from "./editor.utils";
 import { SystemCalls, type DesignerCall } from "../lib/systemCalls";
-import { ByteArray, TempInt } from "@/editor/utils";
 import { actions } from "./editor.store";
 import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
 import EditorData from "./editor.data";
@@ -35,23 +34,32 @@ export const publishConfigToContract = async (): Promise<void> => {
 	}
 };
 
+export const processTxtDef = async (txtDef: T_TextDefinition) => {
+	if (txtDef.id === "0") {
+		return;
+	}
+	const t = txtDef.text;
+	actions.notifications.startPublishing();
+	await dispatchDesignerCall("create_txt", [
+		parseInt(txtDef.id), // ID for the text
+		parseInt(txtDef.owner), // Owner ID
+		encodeURI(decodeDojoText(t)), // The actual text content
+	]);
+};
+
 export const publishRoom = async (room: T_Room) => {
 	actions.notifications.startPublishing();
 	const txtDef = EditorData().getItem(room.txtDefId) as T_TextDefinition;
-	await dispatchDesignerCall("create_txt", [
-		txtDef.id, // ID for the text
-		txtDef.owner, // Owner ID
-		encodeURI(decodeDojoText(txtDef.text)), // The actual text content
-	]);
+	await processTxtDef(txtDef);
 	const roomData = [
-		new TempInt(room.roomId),
+		parseInt(room.roomId),
 		roomTypeToIndex(room.roomType), // Map to index
 		biomeTypeToIndex(room.biomeType), // Map to index
 		// Use text definition ID from the roomDescription object if available
-		new TempInt(room.txtDefId),
-		new ByteArray(room.shortTxt),
-		room.objectIds.map((id: string) => new TempInt(id)) || [],
-		room.dirObjIds.map((id: string) => new TempInt(id)) || [],
+		parseInt(room.txtDefId),
+		room.shortTxt,
+		room.objectIds.map((id: string) => parseInt(id)) || 0,
+		room.dirObjIds.map((id: string) => parseInt(id)) || 0,
 		0,
 	];
 	await dispatchDesignerCall("create_rooms", [roomData]);
@@ -77,23 +85,21 @@ export const processObjects = async (obj: T_Object) => {
 export const publishObject = async (obj: T_Object) => {
 	actions.notifications.startPublishing();
 	const objData = [
-		new TempInt(obj.objectId),
+		parseInt(obj.objectId),
 		objectTypeToIndex(obj.objType || "None"), // Map to index with fallback
 		directionToIndex(obj.dirType), // Map to index (already handles null)
-		new TempInt(obj.destId || ""),
+		parseInt(obj.destId || ""),
 		materialTypeToIndex(obj.matType || "None"), // Map to index with fallback
-		obj.objectActionIds.map((a: string) => new TempInt(a)),
+		obj.objectActionIds.length > 0
+			? obj.objectActionIds.map((x) => parseInt(x))
+			: 0,
 		// Use text definition ID from the objDescription object if available
-		new TempInt(obj.txtDefId),
-		obj.name.length > 0 ? new ByteArray(obj.name) : 0,
-		obj.altNames.length > 0 ? obj.altNames.map((name) => new ByteArray(name)) : 0,
+		parseInt(obj.txtDefId),
+		obj.name.length > 0 ? obj.name : 0,
+		obj.altNames.length > 0 ? obj.altNames.map((name) => name) : 0,
 	];
 	const txtDef = EditorData().getItem(obj.txtDefId) as T_TextDefinition;
-	await dispatchDesignerCall("create_txt", [
-		txtDef.id, // ID for the text
-		txtDef.owner, // Owner ID
-		encodeURI(decodeDojoText(txtDef.text)), // The actual text content
-	]);
+	await processTxtDef(txtDef);
 	console.log("Creating object:", objData);
 	await dispatchDesignerCall("create_objects", [objData]);
 };
@@ -130,14 +136,15 @@ export const processObjectActions = async (obj: T_Object): Promise<void> => {
 
 export const publishAction = async (action: T_Action) => {
 	actions.notifications.startPublishing();
+	const t = encodeURI(decodeDojoText(action.dBitTxt));
 	const actionData = [
-		new TempInt(action.actionId),
+		parseInt(action.actionId),
 		actionTypeToIndex(action.actionType || "None"), // Map to index with fallback
-		new ByteArray(encodeURI(decodeDojoText(action.dBitTxt))), // Get the text content from either string or object
+		t || "", // Get the text content from either string or object
 		action.enabled, // Convert boolean to 0/1
 		action.revertable ? 1 : 0, // Convert boolean to 0/1
 		action.dBit ? 1 : 0, // Convert boolean to 0/1
-		new TempInt(action.affectsActionId || ""),
+		0,
 		0, //affectedByActionId
 	];
 	console.log("Creating action:", actionData);
@@ -155,12 +162,7 @@ export const dispatchDesignerCall = async (
 	args: unknown[],
 ) => {
 	try {
-		const response = await SystemCalls.sendDesignerCall(
-			JSON.stringify({ call, args }),
-		);
-		if (!response.ok || response.status !== 200) {
-			throw new Error("Failed to send designer call");
-		}
+		const response = await SystemCalls.sendDesignerCall({ call, args });
 		actions.notifications.addPublishingLog(
 			new CustomEvent("designerCall", { detail: { call, args } }),
 		);
