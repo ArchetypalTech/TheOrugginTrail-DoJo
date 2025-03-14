@@ -1,13 +1,18 @@
-import { cn } from "@/lib/utils/utils";
+import { cn, normalizeAddress } from "@/lib/utils/utils";
 import { TagInput as Tags } from "./TagInput";
 
 export const Header = ({
 	title,
 	children,
-}: { title: string; children?: React.ReactNode }) => {
+	onClickTitle,
+}: {
+	title: string;
+	children?: React.ReactNode;
+	onClickTitle?: () => void;
+}) => {
 	return (
 		<div className="flex justify-between flex-row gap-2">
-			<h2>{title}</h2>
+			<h2 onClick={onClickTitle}>{title}</h2>
 			<div className="grow" />
 			{children}
 		</div>
@@ -216,8 +221,8 @@ export const ItemId = ({ id }: { id: string }) => {
 			<input
 				type="text"
 				id={id}
-				value={id}
-				className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+				value={normalizeAddress(id)}
+				className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-xs"
 				disabled
 			/>
 		</div>

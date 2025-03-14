@@ -1,11 +1,10 @@
 import { z } from "zod";
-import {
-	schema,
-	type ObjectType,
-	type ActionType,
-	type MaterialType,
-	type RoomType,
-	type BiomeType,
+import type {
+	ObjectType,
+	ActionType,
+	MaterialType,
+	RoomType,
+	BiomeType,
 } from "@lib/dojo_bindings/typescript/models.gen";
 export type { ObjectType, ActionType, MaterialType, RoomType, BiomeType };
 // Helper function to convert camelCase to spaced words
@@ -34,10 +33,16 @@ function formatLabel(value: string): string {
 	return value.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
-const manifest = schema.the_oruggin_trail.Object.objType.variant;
-
 // Define enum values as const arrays - single source of truth
-export const DIRECTIONS = ["None", "N", "E", "S", "W", "U", "D"] as const;
+export const DIRECTIONS = [
+	"None",
+	"North",
+	"East",
+	"South",
+	"West",
+	"Up",
+	"Down",
+] as const;
 export const OBJECT_TYPES: [string, ...(keyof ObjectType)[]] = [
 	"None",
 	"Ball",
@@ -143,7 +148,7 @@ export const BiomeTypeEnum = z.enum(BIOME_TYPES);
 
 // Define the validation error schema
 export const ValidationErrorSchema = z.object({
-	type: z.enum(["RoomID", "ObjectID", "ActionID", "AffectsActionID"]),
+	type: z.enum(["RoomID", "ObjectID", "ActionID", "TxtDefID"]),
 	message: z.string(),
 	details: z.object({
 		id: z.string().optional(),
@@ -153,74 +158,6 @@ export const ValidationErrorSchema = z.object({
 	}),
 });
 export type ValidationError = z.infer<typeof ValidationErrorSchema>;
-
-// Define the TextDefinition schema
-export const TextDefinitionSchema = z.object({
-	id: z.string(),
-	owner: z.string().transform((val) => val || "0"),
-	text: z.string(),
-});
-export type TextDefinition = z.infer<typeof TextDefinitionSchema>;
-
-// Define the Action schema
-export const ActionSchema = z.object({
-	actionID: z.string(),
-	type: ActionTypeEnum,
-	enabled: z.boolean(),
-	revertable: z.boolean(),
-	dBitText: z.string(),
-	dBit: z.boolean(),
-	affectsAction: z.string().nullable(),
-});
-export type Action = z.infer<typeof ActionSchema>;
-
-// Define the Object schema
-export const ObjectSchema = z.object({
-	objID: z.string(),
-	type: ObjectTypeEnum,
-	material: MaterialTypeEnum,
-	objDescription: TextDefinitionSchema,
-	direction: DirectionEnum.nullable(),
-	destination: z.string().nullable(),
-	actions: z.array(ActionSchema),
-	name: z.string(),
-	altNames: z.array(z.string()),
-});
-export type ZorgObject = z.infer<typeof ObjectSchema>;
-
-// Define the Room schema
-export const RoomSchema = z.object({
-	roomID: z.string(),
-	roomName: z.string(),
-	roomDescription: TextDefinitionSchema,
-	roomType: RoomTypeEnum,
-	biomeType: BiomeTypeEnum,
-	objects: z.array(ObjectSchema),
-	objectIds: z.array(z.string()).optional(),
-	dirObjIds: z.array(z.string()).optional(),
-});
-export type Room = z.infer<typeof RoomSchema>;
-
-export const LevelSchema = z.object({
-	levelName: z.string(),
-	rooms: z.array(RoomSchema),
-});
-export type Level = z.infer<typeof LevelSchema>;
-
-// Define the Config schema
-export const ConfigSchema = z.object({
-	levels: z.array(LevelSchema),
-});
-export type Config = z.infer<typeof ConfigSchema>;
-
-// Define the EditorState schema
-export const EditorStateSchema = z.object({
-	currentLevel: LevelSchema,
-	currentRoomIndex: z.number().int().nonnegative(),
-	isDirty: z.boolean(),
-	errors: z.array(ValidationErrorSchema),
-});
-export type EditorState = z.infer<typeof EditorStateSchema>;
 
 // Helper type for form inputs with Zod schema
 export const SelectOptionSchema = z.object({
@@ -270,38 +207,28 @@ export const BIOME_TYPE_OPTIONS: SelectOption[] = BIOME_TYPES.map((value) => ({
 export function transformWithSchema<T>(
 	schema: z.ZodSchema<T>,
 	data: unknown,
-): T {
+): { data: T; errors: ValidationError[] } {
 	const result = schema.safeParse(data);
 	if (result.success) {
-		return result.data;
+		console.log(result);
+		return { data: result.data, errors: [] };
 	}
-	throw new Error(`Invalid data format: ${result.error.message}`);
-}
-
-// Validate data against a schema and return validation errors
-export function validateWithSchema<T>(
-	schema: z.ZodSchema<T>,
-	data: unknown,
-): ValidationError[] {
-	const result = schema.safeParse(data);
-
-	if (result.success) {
-		return []; // No validation errors
-	}
-
-	// Convert Zod errors to our ValidationError format
-	return result.error.errors.map((err) => {
+	console.error(result.error);
+	const errors: ValidationError[] = result.error.errors.map((err) => {
 		const path = err.path.join(".");
-		let type: "RoomID" | "ObjectID" | "ActionID" | "AffectsActionID" = "RoomID";
+		let type: "RoomID" | "ObjectID" | "ActionID" | "TxtDefID" = "RoomID";
 
-		if (path.includes("objects")) {
+		if (path.includes("objectId")) {
 			type = "ObjectID";
 		}
-		if (path.includes("actions")) {
+		if (path.includes("actionId")) {
 			type = "ActionID";
 		}
-		if (path.includes("affectsAction")) {
-			type = "AffectsActionID";
+		if (path.includes("roomId")) {
+			type = "RoomID";
+		}
+		if (path.includes("txtDefId")) {
+			type = "TxtDefID";
 		}
 
 		return {
@@ -310,4 +237,6 @@ export function validateWithSchema<T>(
 			details: {},
 		};
 	});
+
+	return { data: result.data as T, errors };
 }

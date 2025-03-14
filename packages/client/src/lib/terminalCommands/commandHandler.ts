@@ -14,11 +14,14 @@ import WalletStore from "@lib/stores/wallet.store";
  */
 export const commandHandler = async (command: string, bypassSystem = false) => {
 	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
-	addTerminalContent({
-		text: `\n> ${command}`,
-		format: "input",
-		useTypewriter: false,
-	});
+	// Hide _ commands
+	if (command[0] !== "_") {
+		addTerminalContent({
+			text: `\n> ${command}`,
+			format: "input",
+			useTypewriter: false,
+		});
+	}
 
 	const context = {
 		command: command.trim().toLowerCase(),
@@ -38,7 +41,7 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 		// check if player is allowed to interact (tokengating) {}
 		if (!WalletStore().isConnected) {
 			addTerminalContent({
-				text: "Connect",
+				text: "type [wallet] to connect.",
 				format: "hash",
 				useTypewriter: true,
 			});

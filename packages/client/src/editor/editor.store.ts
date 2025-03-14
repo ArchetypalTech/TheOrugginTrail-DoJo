@@ -1,39 +1,23 @@
-import type {
-	Config,
-	EditorState,
-	Action,
-	ZorgObject,
-	Room,
-} from "@editor/lib/schemas";
-import {
-	transformConfig,
-	validateConfig,
-	formatValidationError,
-	ensureInlineTextDefinitions,
-} from "@/editor/editor.utils";
-import {
-	createDefaultLevel,
-	createDefaultRoom,
-	createDefaultObject,
-	createDefaultAction,
-} from "@editor/defaults";
+import type { ValidationError } from "@editor/lib/schemas";
+import { transformWithSchema } from "@editor/lib/schemas";
+import { formatValidationError } from "@/editor/editor.utils";
 import type { NotificationState } from "@editor/notifications";
 import { initialNotificationState } from "@editor/notifications";
 import { publishConfigToContract } from "@editor/publisher";
 import { saveConfigToFile, loadConfigFromFile } from "@/editor/editor.utils";
-import test_config from "@/assets/test_world.json";
 import { StoreBuilder } from "@/lib/utils/storebuilder";
+import EditorData from "./editor.data";
+import { tick } from "@/lib/utils/utils";
+import { ConfigSchema, type Config } from "./lib/types";
 
 const {
 	get,
 	set,
 	useStore: useEditorStore,
 	createFactory,
-} = StoreBuilder<EditorState>({
-	currentLevel: createDefaultLevel(),
-	currentRoomIndex: 0,
+} = StoreBuilder({
 	isDirty: false,
-	errors: [],
+	errors: [] as ValidationError[],
 });
 
 const {
@@ -41,44 +25,6 @@ const {
 	set: setNotification,
 	useStore: useNotificationStore,
 } = StoreBuilder<NotificationState>(initialNotificationState);
-
-// Helper method to run validation and auto-save
-const saveAndValidate = async (state: EditorState) => {
-	const config = {
-		levels: [state.currentLevel],
-	};
-
-	const errors = validateConfig(config);
-
-	// Only auto-save if no errors
-	if (errors.length === 0) {
-		await window.localStorage.setItem("editorConfig", JSON.stringify(config));
-	}
-
-	return errors;
-};
-
-// Update world function that handles validation and auto-save
-export const updateWorld = (updater: (draft: EditorState) => void) => {
-	const state = get();
-	// Create a deep copy for mutation
-	const draft = JSON.parse(JSON.stringify(state)) as EditorState;
-
-	// Apply the updates to the draft
-	updater(draft);
-	draft.isDirty = true;
-
-	// Set the new state
-	set(draft);
-
-	// Run validation and auto-save in the background
-	saveAndValidate(draft).then((errors) => {
-		if (errors.length > 0) {
-			// Just update the errors without triggering another auto-save
-			set({ errors });
-		}
-	});
-};
 
 /**
  * Combined actions for the editor, organized by functionality
@@ -127,7 +73,6 @@ export const actions = {
 				logs: [],
 			});
 			const currentNotification = getNotification();
-			console.log("Current notification:", currentNotification);
 			return currentNotification.logs || [];
 		},
 
@@ -153,13 +98,13 @@ export const actions = {
 		 * Initialize the editor with a config
 		 */
 		initialize: async () => {
-			const localConfig = await window.localStorage.getItem("editorConfig");
-			if (localConfig) {
-				const config = transformConfig(JSON.parse(localConfig));
-				actions.config.loadConfig(config);
-				return;
-			}
-			actions.config.loadConfig(test_config as Config);
+			// const localConfig = await window.localStorage.getItem("editorConfig");
+			// if (localConfig) {
+			// 	const config = transformConfig(JSON.parse(localConfig));
+			// 	actions.config.loadConfig(config);
+			// 	return;
+			// }
+			// actions.config.loadConfig(test_config as Config);
 		},
 
 		/**
@@ -169,24 +114,18 @@ export const actions = {
 			console.log("Loading config into editor:", config);
 
 			// Validate the config using our Zod schema
-			const errors = validateConfig(config);
+			const { errors } = transformWithSchema(ConfigSchema, config);
 			console.log("Validation errors in loadConfig:", errors);
 
-			if (!config.levels || !config.levels[0]) {
-				console.error("Invalid config: missing levels or first level");
-				return;
-			}
-
-			// Ensure textDefinitions exists and has proper owner references
-			const level = { ...config.levels[0] };
-			console.log("Setting current level:", level);
-
 			set({
-				currentLevel: level,
-				currentRoomIndex: 0,
 				isDirty: false,
 				errors,
 			});
+
+			for (const obj of config.dataPool) {
+				const _t = EditorData().tagItem(obj);
+				EditorData().syncItem(_t);
+			}
 
 			// Force UI refresh
 			setTimeout(() => {
@@ -198,19 +137,14 @@ export const actions = {
 		 * Auto-save the current config to localStorage
 		 */
 		autoSave: async (quiet = false) => {
-			const state = get();
-			const config = {
-				levels: [state.currentLevel],
-			};
+			const { config, errors } = await actions.config.validateConfig();
 
 			// Validate the config using our Zod schema
-			const errors = validateConfig(config);
-
+			// const errors = validateConfig(config);
 			if (errors.length > 0) {
 				console.error("Config has validation errors:", errors);
 				return;
 			}
-
 			await window.localStorage.setItem("editorConfig", JSON.stringify(config));
 			if (!quiet) {
 				actions.notifications.showSuccess("Autosaved", 1000);
@@ -220,40 +154,33 @@ export const actions = {
 		/**
 		 * Save the current config to a JSON file
 		 */
-		saveConfig: () => {
-			actions.config.autoSave();
-
-			const state = get();
+		validateConfig: async () => {
 			const config = {
-				levels: [state.currentLevel],
-			};
+				dataPool: [...EditorData().dataPool.values()],
+			} as Config;
 
 			// Validate the config using our Zod schema
-			const errors = validateConfig(config);
+			const { errors } = transformWithSchema(ConfigSchema, config);
 
 			set({
-				errors,
 				isDirty: false,
 			});
 
-			// Ensure text definitions are properly formatted and download the file
 			if (errors.length === 0) {
 				actions.notifications.showSuccess("Config saved successfully");
 			} else {
 				actions.notifications.showError(
 					`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
 				);
+				console.error("Config has validation errors:", errors);
 			}
-
-			// Return config and errors for external use
 			return { config, errors };
 		},
 
 		saveConfigToFile: async () => {
-			const { config, errors } = await actions.config.saveConfig();
+			const { config, errors } = await actions.config.validateConfig();
 			// Ensure text definitions are properly formatted and download the file
-			const configWithInlineTexts = ensureInlineTextDefinitions(config);
-			saveConfigToFile(configWithInlineTexts);
+			saveConfigToFile(config);
 			if (errors.length === 0) {
 				actions.notifications.showSuccess("Config saved successfully");
 			} else {
@@ -271,25 +198,6 @@ export const actions = {
 
 			try {
 				const config = await loadConfigFromFile(file);
-
-				// Check if the config has the expected structure
-				if (!config || !config.levels || !config.levels[0]) {
-					actions.notifications.clear();
-					actions.notifications.showError("Invalid config file: Missing level data");
-					return null;
-				}
-
-				const errors = validateConfig(config);
-
-				if (errors.length > 0) {
-					actions.notifications.clear();
-					actions.notifications.showError(
-						`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
-					);
-					return null;
-				}
-
-				// Force the level to be properly cloned to ensure reactivity
 				const configClone = JSON.parse(JSON.stringify(config));
 				actions.config.loadConfig(configClone);
 				actions.notifications.clear();
@@ -308,23 +216,17 @@ export const actions = {
 		 * Publish the current config to the contract
 		 */
 		publishToContract: async () => {
-			const { config, errors } = actions.config.saveConfig();
-
-			if (errors.length > 0) {
-				actions.notifications.showError(
-					`Config has ${errors.length} validation errors. First error: ${formatValidationError(errors[0])}`,
-				);
-				return false;
-			}
+			actions.config.validateConfig();
 
 			try {
-				const configWithInlineTexts = ensureInlineTextDefinitions(config);
 				await actions.notifications.startPublishing();
-				await publishConfigToContract(configWithInlineTexts);
+				await publishConfigToContract();
 				actions.notifications.clear();
 				actions.notifications.showSuccess(
 					"World published to contract successfully",
 				);
+				await tick();
+				console.log(EditorData().dataPool);
 				return true;
 			} catch (error) {
 				const errorMsg = error instanceof Error ? error.message : String(error);
@@ -335,154 +237,14 @@ export const actions = {
 			}
 		},
 	},
-
-	// Room operations
-	rooms: {
-		/**
-		 * Get all rooms from the current level
-		 */
-		getAllRooms: () => {
-			return get().currentLevel.rooms;
-		},
-
-		/**
-		 * Set the current room index
-		 */
-		setCurrentIndex: (index: number) => {
-			set({
-				currentRoomIndex: index,
-			});
-		},
-
-		/**
-		 * Add a new room
-		 */
-		add: () => {
-			updateWorld((draft) => {
-				draft.currentLevel.rooms.push(createDefaultRoom());
-				draft.currentRoomIndex = draft.currentLevel.rooms.length - 1;
-			});
-		},
-
-		/**
-		 * Update a room
-		 */
-		update: (roomIndex: number, room: Room) => {
-			updateWorld((draft) => {
-				draft.currentLevel.rooms[roomIndex] = room;
-			});
-			actions.config.autoSave(true);
-		},
-
-		/**
-		 * Delete a room
-		 */
-		delete: (roomIndex: number) => {
-			updateWorld((draft) => {
-				draft.currentLevel.rooms = draft.currentLevel.rooms.filter(
-					(_: Room, i: number) => i !== roomIndex,
-				);
-				draft.currentRoomIndex = Math.min(
-					draft.currentRoomIndex,
-					draft.currentLevel.rooms.length - 1,
-				);
-				if (draft.currentRoomIndex < 0) draft.currentRoomIndex = 0;
-			});
-		},
-	},
-
-	// Object operations
-	objects: {
-		getAllActionIDs: () => {
-			const actions = get().currentLevel.rooms.flatMap((room: Room) =>
-				room.objects.flatMap((object: ZorgObject) => object.actions),
-			);
-			return actions.map((action: Action) => action.actionID);
-		},
-
-		/**
-		 * Add an object to the current room
-		 */
-		add: () => {
-			updateWorld((draft) => {
-				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
-				const newObject = createDefaultObject();
-
-				room.objects.push(newObject);
-			});
-		},
-
-		/**
-		 * Update an object in the current room
-		 */
-		update: (objectIndex: number, object: ZorgObject) => {
-			updateWorld((draft) => {
-				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
-				room.objects[objectIndex] = object;
-			});
-			actions.config.autoSave(true);
-		},
-
-		/**
-		 * Delete an object from the current room
-		 */
-		delete: (objectIndex: number) => {
-			updateWorld((draft) => {
-				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
-				room.objects.splice(objectIndex, 1);
-			});
-		},
-
-		/**
-		 * Add an action to an object
-		 */
-		addAction: (objectIndex: number) => {
-			updateWorld((draft) => {
-				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
-				const object = room.objects[objectIndex];
-				object.actions.push(createDefaultAction());
-			});
-			actions.config.autoSave(true);
-		},
-
-		/**
-		 * Update an action in an object
-		 */
-		updateAction: (objectIndex: number, actionIndex: number, action: Action) => {
-			updateWorld((draft) => {
-				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
-				const object = room.objects[objectIndex];
-				object.actions[actionIndex] = action;
-			});
-			actions.config.autoSave(true);
-		},
-
-		/**
-		 * Delete an action from an object
-		 */
-		deleteAction: (objectIndex: number, actionIndex: number) => {
-			updateWorld((draft) => {
-				const room = draft.currentLevel.rooms[draft.currentRoomIndex];
-				const object = room.objects[objectIndex];
-				object.actions.splice(actionIndex, 1);
-			});
-		},
-	},
 };
 
 // Export a composable store object with all functionality
 const EditorStore = createFactory({
-	updateWorld,
 	...actions,
 });
 
 export default EditorStore;
 export { useEditorStore, useNotificationStore };
-
-// Helper for React components to get current room
-export const getCurrentRoom = () => {
-	const state = get();
-	return state.currentLevel.rooms[state.currentRoomIndex];
-};
 
 EditorStore().config.initialize();

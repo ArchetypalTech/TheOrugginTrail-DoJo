@@ -7,6 +7,16 @@ interface NotificationsProps {
 	onDismiss?: () => void;
 }
 
+const styles = {
+	error: { icon: "❌", class: "notification-error" },
+	success: { icon: "✓", class: "notification-success" },
+	warning: { icon: "⚠️", class: "notification-warning" },
+	info: { icon: "ℹ️", class: "notification-default" },
+	loading: { icon: "⌛", class: "notification-loading" },
+	publishing: { icon: "📤", class: "notification-loading" },
+	default: { icon: "ℹ️", class: "notification-default" },
+};
+
 let timer: ReturnType<typeof setTimeout> | null = null;
 
 const Notifications: FC<NotificationsProps> = ({ onDismiss }) => {
@@ -33,42 +43,12 @@ const Notifications: FC<NotificationsProps> = ({ onDismiss }) => {
 	}, [timeout, message, handleDismiss, logs]);
 
 	// Get notification style classes based on type
-	const getNotificationClass = () => {
-		switch (type) {
-			case "error":
-				return "notification-error";
-			case "success":
-				return "notification-success";
-			case "warning":
-				return "notification-warning";
-			case "loading":
-			case "publishing":
-				return "notification-loading";
-			case "info":
-				return "notification-default";
-			default:
-				return "notification-default";
-		}
-	};
+	const getNotificationClass = () =>
+		styles[type as keyof typeof styles]?.class || styles.default.class;
 
 	// Get default icon based on type
-	const getDefaultIcon = () => {
-		switch (type) {
-			case "error":
-				return "❌";
-			case "success":
-				return "✓";
-			case "warning":
-				return "⚠️";
-			case "info":
-				return "ℹ️";
-			case "loading":
-			case "publishing":
-				return null;
-			default:
-				return null;
-		}
-	};
+	const getDefaultIcon = () =>
+		styles[type as keyof typeof styles]?.icon || styles.default.icon;
 
 	// Display icon
 	const displayIcon = getDefaultIcon();

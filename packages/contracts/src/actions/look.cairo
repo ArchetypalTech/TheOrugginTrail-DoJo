@@ -9,8 +9,7 @@ pub mod lookat {
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{
-        player::Player, room::Room,
-        zrk_enums::{material_type_to_str, object_type_to_str, direction_type_to_str, ActionType},
+        player::Player, room::Room, zrk_enums::{direction_type_to_str, ActionType, DirectionType},
         txtdef::Txtdef, object::Object, object,
     };
 
@@ -88,11 +87,7 @@ pub mod lookat {
         }
         let txtModel: Txtdef = world.read_model(room.txtDefId);
         let txt: ByteArray = txtModel.text;
-        // let connective_txt: ByteArray = "the";
-        // let place_type: ByteArray = room_type_to_str(room.roomType);
-        // let exit_txt: ByteArray = collate_exits(world, location);
         let obj_txt: ByteArray = collate_objects(world, location);
-        // return format!("{}\n{}\n{}", txt, exit_txt, obj_txt);
         return format!("{}\n{}", txt, obj_txt);
         // }
     }
@@ -102,37 +97,29 @@ pub mod lookat {
         let room: Room = world.read_model(location);
         let objects = world::getRoomObjects(world, room);
         let mut out: ByteArray = "";
-        let base: ByteArray = "You can see a";
+        let base: ByteArray = "You can see ";
         for object in objects {
+            let mut t: ByteArray = "";
             let text = world::getTextById(world, object.txtDefId);
-            let objName = object::getObjectName(object);
-            let desc: ByteArray = format!("{} {}, {}\n", base.clone(), objName, text.clone());
+            if text.len() > 0 {
+                t = format!(", {}", text.clone());
+            }
+            let exit = get_exit(world.clone(), object.clone());
+            if exit.len() > 0 {
+                t = format!("{}, {}", t, exit);
+            }
+            let objName = object::getObjectName(object.clone());
+            let desc: ByteArray = format!("{} {}{}\n", base.clone(), objName, t);
             out.append(@desc);
         };
         out
     }
 
-    fn collate_exits(world: WorldStorage, location: felt252) -> ByteArray {
-        let room: Room = world.read_model(location);
-        let mut exits: Array<felt252> = room.dirObjIds.clone();
-        let mut idx: u32 = 0;
-        let mut out: ByteArray = "";
-        let base: ByteArray = "there is a";
-        let dir_connective: ByteArray = "to the";
-        while idx < exits.len() {
-            let rm_id: felt252 = exits.at(idx).clone();
-            let exit: Object = world.read_model(rm_id);
-            let mut desc: ByteArray = format!(
-                "{} {} {} {} {}\n",
-                base.clone(),
-                material_type_to_str(exit.matType),
-                object_type_to_str(exit.objType),
-                dir_connective.clone(),
-                direction_type_to_str(exit.dirType),
-            );
-            out.append(@desc);
-            idx += 1;
-        };
-        out
+    fn get_exit(world: WorldStorage, object: Object) -> ByteArray {
+        let mut _out: ByteArray = "leading ";
+        if object.dirType == DirectionType::None {
+            return "";
+        }
+        format!("{} {}", _out, direction_type_to_str(object.dirType))
     }
 }

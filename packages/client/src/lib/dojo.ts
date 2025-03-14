@@ -49,10 +49,7 @@ export const InitDojo = async () => {
 
 	const query = () => {
 		const builder = new ToriiQueryBuilder<SchemaType>();
-		const query = builder
-			.addEntityModel("the_oruggin_trail-Output")
-			.withOffset(0)
-			.withLimit(1000);
+		const query = builder.withOffset(0).withLimit(1000);
 		return query;
 	};
 

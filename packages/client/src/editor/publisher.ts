@@ -1,4 +1,3 @@
-import type { Config, Room, ZorgObject, Action } from "./lib/schemas";
 import {
 	roomTypeToIndex,
 	biomeTypeToIndex,
@@ -8,19 +7,19 @@ import {
 	actionTypeToIndex,
 } from "./editor.utils";
 import { SystemCalls, type DesignerCall } from "../lib/systemCalls";
-import { ByteArray, TempInt } from "@/editor/utils";
 import { actions } from "./editor.store";
+import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
+import EditorData from "./editor.data";
+import { decodeDojoText } from "@/lib/utils/utils";
 
 /**
  * Publishes a game configuration to the contract
  * @param config The game configuration to publish
  * @returns A promise that resolves when the publishing is complete
  */
-export const publishConfigToContract = async (
-	config: Config,
-): Promise<void> => {
+export const publishConfigToContract = async (): Promise<void> => {
 	// Then process each room in the config
-	for (const room of config.levels[0].rooms) {
+	for (const room of EditorData().getRooms()) {
 		// Create room
 		console.log("Creating room:", room);
 		try {
@@ -34,28 +33,34 @@ export const publishConfigToContract = async (
 	}
 };
 
-export const publishRoom = async (room: Room) => {
+export const processTxtDef = async (txtDef: T_TextDefinition) => {
+	if (txtDef.id === "0") {
+		return;
+	}
+	const t = txtDef.text;
 	actions.notifications.startPublishing();
-	const objectIds = room.objects.map((obj) => obj.objID);
-	const dirObjIds = room.objects
-		.filter((obj) => obj.direction !== "None")
-		.map((obj) => obj.objID);
+	await dispatchDesignerCall("create_txt", [
+		parseInt(txtDef.id), // ID for the text
+		parseInt(txtDef.owner), // Owner ID
+		encodeURI(decodeDojoText(t)), // The actual text content
+	]);
+};
+
+export const publishRoom = async (room: T_Room) => {
+	actions.notifications.startPublishing();
+	const txtDef = EditorData().getItem(room.txtDefId) as T_TextDefinition;
+	await processTxtDef(txtDef);
 	const roomData = [
-		new TempInt(room.roomID),
+		parseInt(room.roomId),
 		roomTypeToIndex(room.roomType), // Map to index
 		biomeTypeToIndex(room.biomeType), // Map to index
 		// Use text definition ID from the roomDescription object if available
-		new TempInt(room.roomDescription.id),
-		new ByteArray(room.roomName),
-		objectIds.map((id) => new TempInt(id)) || [],
-		dirObjIds.map((id) => new TempInt(id)) || [],
+		parseInt(room.txtDefId),
+		room.shortTxt,
+		room.objectIds.map((id: string) => parseInt(id)) || 0,
+		room.dirObjIds.map((id: string) => parseInt(id)) || 0,
 		0,
 	];
-	await dispatchDesignerCall("create_txt", [
-		room.roomDescription.id, // ID for the text
-		room.roomID, // Owner ID
-		room.roomDescription.text, // The actual text content
-	]);
 	await dispatchDesignerCall("create_rooms", [roomData]);
 	await processRoomObjects(room);
 };
@@ -64,36 +69,43 @@ export const publishRoom = async (room: Room) => {
  * Processes all objects in a room
  * @param room The room containing objects to process
  */
-export const processRoomObjects = async (room: Room): Promise<void> => {
-	for (const obj of room.objects) {
-		await processObjects(obj);
+export const processRoomObjects = async (room: T_Room): Promise<void> => {
+	for (const obj of room.objectIds) {
+		console.log("Processing object", obj);
+		const _obj = EditorData().getItem(obj) as T_Object;
+		if (_obj) {
+			await processObjects(_obj);
+		}
 	}
 };
 
-export const processObjects = async (obj: ZorgObject) => {
+export const processObjects = async (obj: T_Object) => {
 	await publishObject(obj);
 	await processObjectActions(obj);
 };
 
-export const publishObject = async (obj: ZorgObject) => {
+export const publishObject = async (obj: T_Object) => {
 	actions.notifications.startPublishing();
+	console.log("Publishing object", obj);
+	const destId = parseInt(obj.destId || "0");
 	const objData = [
-		new TempInt(obj.objID),
-		objectTypeToIndex(obj.type || "None"), // Map to index with fallback
-		directionToIndex(obj.direction), // Map to index (already handles null)
-		new TempInt(obj.destination || ""),
-		materialTypeToIndex(obj.material || "None"), // Map to index with fallback
-		obj.actions.map((a: Action) => new TempInt(a.actionID)),
+		parseInt(obj.objectId),
+		objectTypeToIndex(obj.objType || "None"), // Map to index with fallback
+		directionToIndex(obj.dirType), // Map to index (already handles null)
+		Number.isNaN(destId) ? 0 : destId,
+		materialTypeToIndex(obj.matType || "None"), // Map to index with fallback
+		obj.objectActionIds.length > 0
+			? obj.objectActionIds.map((x) => parseInt(x))
+			: 0,
 		// Use text definition ID from the objDescription object if available
-		new TempInt(obj.objDescription.id),
-		obj.name.length > 0 ? new ByteArray(obj.name) : 0,
-		obj.altNames.length > 0 ? obj.altNames.map((name) => new ByteArray(name)) : 0,
+		parseInt(obj.txtDefId),
+		obj.name.length > 0 ? obj.name : 0,
+		obj.altNames.length > 0
+			? obj.altNames.filter((x) => x.length > 0).map((name) => name)
+			: 0,
 	];
-	await dispatchDesignerCall("create_txt", [
-		obj.objDescription.id, // ID for the text
-		obj.objID, // Owner ID
-		obj.objDescription.text, // The actual text content
-	]);
+	const txtDef = EditorData().getItem(obj.txtDefId) as T_TextDefinition;
+	await processTxtDef(txtDef);
 	console.log("Creating object:", objData);
 	await dispatchDesignerCall("create_objects", [objData]);
 };
@@ -102,41 +114,24 @@ export const publishObject = async (obj: ZorgObject) => {
  * Processes all actions for an object
  * @param obj The object containing actions to process
  */
-export const processObjectActions = async (obj: ZorgObject): Promise<void> => {
-	for (const action of obj.actions) {
-		// const actionsInterface:
-		// 	| {
-		// 			actionId: TempInt;
-		// 			actionType: number;
-		// 			dBitTxt: ByteArray;
-		// 			affectsActionId: TempInt;
-		// 			affectedByActionId: TempInt;
-		// 	  }
-		// 	| Action = {
-		// 	actionId: new TempInt(action.actionID),
-		// 	actionType: actionTypeToIndex(action.type || "None"),
-		// 	dBitTxt: action.dBitText,
-		// 	enabled: action.enabled,
-		// 	revertable: action.revertable,
-		// 	dBit: action.dBit,
-		// 	affectsActionId: new TempInt(action.affectsAction || ""),
-		// 	affectedByActionId: "",
-		// };
-		// Create action
-		await publishAction(action);
+export const processObjectActions = async (obj: T_Object): Promise<void> => {
+	for (const action of obj.objectActionIds) {
+		const _action = EditorData().getItem(action) as T_Action;
+		await publishAction(_action);
 	}
 };
 
-export const publishAction = async (action: Action) => {
+export const publishAction = async (action: T_Action) => {
 	actions.notifications.startPublishing();
+	const t = encodeURI(decodeDojoText(action.dBitTxt));
 	const actionData = [
-		new TempInt(action.actionID),
-		actionTypeToIndex(action.type || "None"), // Map to index with fallback
-		new ByteArray(action.dBitText), // Get the text content from either string or object
+		parseInt(action.actionId),
+		actionTypeToIndex(action.actionType || "None"), // Map to index with fallback
+		t || "", // Get the text content from either string or object
 		action.enabled, // Convert boolean to 0/1
 		action.revertable ? 1 : 0, // Convert boolean to 0/1
 		action.dBit ? 1 : 0, // Convert boolean to 0/1
-		new TempInt(action.affectsAction || ""),
+		0,
 		0, //affectedByActionId
 	];
 	console.log("Creating action:", actionData);
@@ -154,12 +149,7 @@ export const dispatchDesignerCall = async (
 	args: unknown[],
 ) => {
 	try {
-		const response = await SystemCalls.sendDesignerCall(
-			JSON.stringify({ call, args }),
-		);
-		if (!response.ok || response.status !== 200) {
-			throw new Error("Failed to send designer call");
-		}
+		const response = await SystemCalls.sendDesignerCall({ call, args });
 		actions.notifications.addPublishingLog(
 			new CustomEvent("designerCall", { detail: { call, args } }),
 		);
@@ -170,6 +160,11 @@ export const dispatchDesignerCall = async (
 				detail: { error: { message: (error as Error).message }, call, args },
 			}),
 		);
+		if ((error as Error).message.includes("too many")) {
+			console.error(
+				"Torii && Katana might need a reset when it says too many connections",
+			);
+		}
 		console.error(
 			`Error sending designer call: ${(error as Error).message}, ${call}, ${args}`,
 		);

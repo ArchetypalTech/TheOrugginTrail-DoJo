@@ -2,11 +2,15 @@ import type { InitDojo } from "@lib/dojo";
 import { addTerminalContent } from "./terminal.store";
 import { ZORG_CONFIG } from "../config";
 import WalletStore from "./wallet.store";
-
 // @dev Use the Dojo bindings, *avoid* recreating these where possible
 import type { Output } from "../dojo_bindings/typescript/models.gen";
-import { normalizeAddress, processWhitespaceTags } from "../utils/utils";
+import {
+	normalizeAddress,
+	processWhitespaceTags,
+	decodeDojoText,
+} from "../utils/utils";
 import { StoreBuilder } from "../utils/storebuilder";
+import EditorData from "@/editor/editor.data";
 
 /**
  * Represents the current status of the Dojo system.
@@ -18,6 +22,8 @@ export type DojoStatus = {
 	status: "loading" | "initialized" | "spawning" | "error" | "controller";
 	error: string | null;
 };
+
+let connectionTimeout: Timer | undefined;
 
 const {
 	get,
@@ -56,7 +62,7 @@ const setOutputter = (outputter: Output | undefined) => {
 	console.log("[OUTPUTTER]:", newText);
 
 	// @dev decode and reprocess text to escape characters such as %20 and %2C, we can not create calldata with \n or other escape characters because the Starknet processor will go into an infinite loop 🥳
-	const trimmedNewText = decodeURI(newText.trim()).replaceAll("%2C", ",");
+	const trimmedNewText = decodeDojoText(newText.trim());
 	const lines: string[] = processWhitespaceTags(trimmedNewText);
 	set({ lastProcessedText: trimmedNewText });
 
@@ -83,11 +89,18 @@ const initializeConfig = async (
 	if (config === undefined) return;
 
 	console.log("[DOJO]: CONFIG ", config);
+	connectionTimeout = setTimeout(() => {
+		setStatus({
+			status: "error",
+			error: "Connection timeout",
+		});
+		window.location.reload();
+	}, 5000);
 
 	if (existingSubscription !== undefined) return;
 
 	try {
-		const [_, subscription] = await config.sub((response) => {
+		const [initialEntities, subscription] = await config.sub((response) => {
 			if (response.error) {
 				console.error("Error setting up entity sync:", response.error);
 				setStatus({
@@ -117,12 +130,19 @@ const initializeConfig = async (
 				}
 				return;
 			}
-
-			console.info(
-				"[DOJO]: initial response",
-				JSON.stringify(response?.data?.[0]?.models),
-			);
+			for (const _D of response?.data || []) {
+				if (_D.models?.the_oruggin_trail) {
+					EditorData().syncItem(_D.models.the_oruggin_trail);
+				}
+			}
 		});
+		for (const _D of initialEntities || []) {
+			if (_D.models?.the_oruggin_trail) {
+				EditorData().syncItem(_D.models.the_oruggin_trail);
+			}
+		}
+
+		clearTimeout(connectionTimeout);
 
 		setStatus({
 			status: "initialized",

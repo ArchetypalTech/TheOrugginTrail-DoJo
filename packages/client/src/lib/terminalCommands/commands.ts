@@ -6,6 +6,7 @@ import { commandHandler } from "./commandHandler";
 import { ZORG_CONFIG } from "@lib/config";
 import WalletStore from "../stores/wallet.store";
 import { HELP_TEXTS } from "@/data/help.data";
+import { APP_DATA } from "@/data/app.data";
 
 /**
  * Context object passed to each terminal command handler
@@ -60,11 +61,24 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 } = {
 	_intro: () => {
 		addTerminalContent({
-			text: `
-			Welcome to the Oruggin Trail, a text adventure game.
-			You are a young adventurer, seeking to find the Oruggin Trail, a mysterious and dangerous path.
-			`,
+			text: APP_DATA.intro,
 			format: "system",
+			useTypewriter: true,
+			speed: 4,
+			style: { textAlign: "center" },
+		});
+	},
+	_hint: () => {
+		addTerminalContent({
+			text: 'type [command] [target], or type "help"',
+			format: "input",
+			useTypewriter: true,
+		});
+	},
+	_connectWallet: () => {
+		addTerminalContent({
+			text: "type [wallet] to connect.",
+			format: "hash",
 			useTypewriter: true,
 		});
 	},
