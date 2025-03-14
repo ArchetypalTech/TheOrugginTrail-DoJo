@@ -1,11 +1,14 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import EditorStore from "../editor.store";
 import UserStore, { useUserStore } from "@/lib/stores/user.store";
 import { APP_EDITOR_DATA } from "@/data/app.data";
+import { ZORG_CONFIG } from "@/lib/config";
+import WalletStore, { useWalletStore } from "@/lib/stores/wallet.store";
 
 export const EditorHeader = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { dark_mode } = useUserStore();
+	const { isConnected } = useWalletStore();
 
 	// Handler for file upload
 	const handleImportConfig = () => {
@@ -35,6 +38,11 @@ export const EditorHeader = () => {
 		await EditorStore().config.publishToContract();
 	};
 
+	const requireConnect = useMemo(() => {
+		const useSlot = ZORG_CONFIG.useSlot;
+		return !isConnected && useSlot;
+	}, [isConnected]);
+
 	return (
 		<header className="flex flex-row justify-between gap-2 items-center pb-2 w-full lg:container">
 			<div className="flex flex-col font-mono textFreak">
@@ -45,25 +53,38 @@ export const EditorHeader = () => {
 			</div>
 			<div className="flex grow" />
 			<div className="flex gap-2">
-				<input
-					type="file"
-					ref={fileInputRef}
-					accept=".json"
-					className="hidden"
-					onChange={handleFileChange}
-				/>
-				<button className="btn btn-sm btn-success" onClick={handleImportConfig}>
-					Import Config
-				</button>
-				<button className="btn btn-sm btn-success" onClick={handleExportConfig}>
-					Export Config
-				</button>
-				<button
-					className="btn btn-sm btn-warning hover:textFreak"
-					onClick={handlePublish}
-				>
-					📤 Publish
-				</button>
+				{requireConnect ? (
+					<button
+						className="btn btn-sm btn-warning"
+						onClick={async () => {
+							await WalletStore().connectController();
+						}}
+					>
+						Connect Controller
+					</button>
+				) : (
+					<>
+						<input
+							type="file"
+							ref={fileInputRef}
+							accept=".json"
+							className="hidden"
+							onChange={handleFileChange}
+						/>
+						<button className="btn btn-sm btn-success" onClick={handleImportConfig}>
+							Import Config
+						</button>
+						<button className="btn btn-sm btn-success" onClick={handleExportConfig}>
+							Export Config
+						</button>
+						<button
+							className="btn btn-sm btn-warning hover:textFreak"
+							onClick={handlePublish}
+						>
+							📤 Publish
+						</button>
+					</>
+				)}
 				<button className="btn" onClick={() => UserStore().toggleDarkMode()}>
 					{dark_mode ? "☀️" : "🌑"}
 				</button>

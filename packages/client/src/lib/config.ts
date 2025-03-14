@@ -12,6 +12,7 @@ const getOrFail = <T>(value: T | undefined, name?: string): T => {
 };
 
 const slotEnv = import.meta.env.MODE === "slot" ? { VITE_SLOT: str() } : {};
+const isLocalhost = window.location.hostname === "localhost";
 
 const env = cleanEnv(import.meta.env, {
 	VITE_CONTROLLER_CHAINID: str(),
@@ -26,7 +27,7 @@ const env = cleanEnv(import.meta.env, {
 });
 
 const endpoints = {
-	katana: "/katana", // FIXME: endpoint cors proxy workaround-- endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
+	katana: isLocalhost ? "/katana" : env.VITE_KATANA_HTTP_RPC,
 	torii: {
 		http: env.VITE_TORII_HTTP_RPC,
 		ws: env.VITE_TORII_WS_RPC,
@@ -34,7 +35,7 @@ const endpoints = {
 };
 
 const katanaProvider = new RpcProvider({
-	nodeUrl: "/katana", // FIXME: this is probably correct as cors escape, however endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
+	nodeUrl: isLocalhost ? "/katana" : env.VITE_KATANA_HTTP_RPC,
 	headers: {
 		//nocors
 		"Access-Control-Allow-Origin": "*",

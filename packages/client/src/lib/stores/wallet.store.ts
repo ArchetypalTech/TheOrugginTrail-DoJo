@@ -22,7 +22,12 @@ interface WalletStore {
 	isLoading: boolean;
 }
 
-const { get, set, createFactory } = StoreBuilder<WalletStore>({
+const {
+	get,
+	set,
+	createFactory,
+	useStore: useWalletStore,
+} = StoreBuilder<WalletStore>({
 	account: undefined,
 	username: undefined,
 	walletAddress: undefined,
@@ -38,6 +43,26 @@ const { get, set, createFactory } = StoreBuilder<WalletStore>({
  */
 const setupController = async () => {
 	const worldName = ZORG_CONFIG.manifest.default.world.name;
+	const isEditor = window.location.pathname.startsWith("/editor");
+	const editorPolicies = [
+		{
+			entrypoint: "create_objects",
+			description: `The terminal endpoint for ${worldName}`,
+		},
+		{
+			entrypoint: "create_actions",
+			description: `The terminal endpoint for ${worldName}`,
+		},
+		{
+			entrypoint: "create_rooms",
+			description: `The terminal endpoint for ${worldName}`,
+		},
+		{
+			entrypoint: "create_txt",
+			description: `The terminal endpoint for ${worldName}`,
+		},
+	];
+	console.log("Editor", isEditor);
 	const controllerConfig: ControllerOptions = {
 		policies: {
 			contracts: {
@@ -49,6 +74,7 @@ const setupController = async () => {
 							entrypoint: "listen",
 							description: `The terminal endpoint for ${worldName}`,
 						},
+						...(isEditor ? editorPolicies : []),
 					],
 				},
 				[ZORG_CONFIG.token.contract_address]: {
@@ -175,3 +201,4 @@ const WalletStore = createFactory({
 });
 
 export default WalletStore;
+export { useWalletStore };
