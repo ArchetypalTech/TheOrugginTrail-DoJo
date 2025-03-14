@@ -14,11 +14,14 @@ import WalletStore from "@lib/stores/wallet.store";
  */
 export const commandHandler = async (command: string, bypassSystem = false) => {
 	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
-	addTerminalContent({
-		text: `\n> ${command}`,
-		format: "input",
-		useTypewriter: false,
-	});
+	// Hide _ commands
+	if (command[0] !== "_") {
+		addTerminalContent({
+			text: `\n> ${command}`,
+			format: "input",
+			useTypewriter: false,
+		});
+	}
 
 	const context = {
 		command: command.trim().toLowerCase(),
