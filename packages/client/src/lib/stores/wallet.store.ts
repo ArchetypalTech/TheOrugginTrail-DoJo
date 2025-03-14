@@ -2,6 +2,7 @@ import type { WalletAccount } from "starknet";
 import Controller, { type ControllerOptions } from "@cartridge/controller";
 import { ZORG_CONFIG } from "@lib/config";
 import { StoreBuilder } from "../utils/storebuilder";
+import { APP_EDITOR_DATA } from "@/data/app.data";
 
 /**
  * Interface representing the wallet state.
@@ -44,25 +45,28 @@ const {
 const setupController = async () => {
 	const worldName = ZORG_CONFIG.manifest.default.world.name;
 	const isEditor = window.location.pathname.startsWith("/editor");
-	const editorPolicies = [
-		{
-			entrypoint: "create_objects",
-			description: `The terminal endpoint for ${worldName}`,
-		},
-		{
-			entrypoint: "create_actions",
-			description: `The terminal endpoint for ${worldName}`,
-		},
-		{
-			entrypoint: "create_rooms",
-			description: `The terminal endpoint for ${worldName}`,
-		},
-		{
-			entrypoint: "create_txt",
-			description: `The terminal endpoint for ${worldName}`,
-		},
-	];
-	console.log("Editor", isEditor);
+	const editorConfig = {
+		name: APP_EDITOR_DATA.title, // Optional, can be added if you want a name
+		description: `Aprove submitting transactions to ${APP_EDITOR_DATA.title}`,
+		methods: [
+			{
+				entrypoint: "create_objects",
+				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+			},
+			{
+				entrypoint: "create_actions",
+				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+			},
+			{
+				entrypoint: "create_rooms",
+				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+			},
+			{
+				entrypoint: "create_txt",
+				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+			},
+		],
+	};
 	const controllerConfig: ControllerOptions = {
 		policies: {
 			contracts: {
@@ -74,9 +78,9 @@ const setupController = async () => {
 							entrypoint: "listen",
 							description: `The terminal endpoint for ${worldName}`,
 						},
-						...(isEditor ? editorPolicies : []),
 					],
 				},
+				[ZORG_CONFIG.manifest.designer.address]: isEditor ? editorConfig : {},
 				[ZORG_CONFIG.token.contract_address]: {
 					name: "TOT NFT", // Optional
 					description: "Mint and transfer TOT tokens",
