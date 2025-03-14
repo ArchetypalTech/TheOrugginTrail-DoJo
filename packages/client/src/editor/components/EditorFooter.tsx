@@ -5,7 +5,7 @@ import { APP_EDITOR_DATA } from "@/data/app.data";
 export const EditorFooter = () => {
 	return (
 		<footer className="gap-2 mt-4 flex items-center p-4 invert bg-gray-300 w-full justify-center">
-			<div className="lg:container flex flex-row justify-between w-full">
+			<div className="lg:container flex flex-row justify-between w-full gap-2">
 				<h1 className="text-xl font-bold font-mono textFreak">
 					{APP_EDITOR_DATA.title}
 				</h1>

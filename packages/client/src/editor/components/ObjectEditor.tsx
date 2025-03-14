@@ -187,9 +187,9 @@ export const ObjectEditor = ({
 						onChange={handleInputChange}
 						options={DIRECTION_OPTIONS}
 					/>
-					<p className="info text-xs text-white bg-amber-600/70 p-2 rounded-sm">
+					<div className="info text-xs text-white bg-amber-600/70 p-2 rounded-sm">
 						⚠️ to move into direction, add an enabled 'open' action
-					</p>
+					</div>
 					<Select
 						id="destination"
 						value={editedObject.destId || ""}

@@ -87,7 +87,7 @@ export const RoomEditor = ({
 		const res = available?.map((room) => {
 			const r = { ...room };
 			if (r.roomId.trim() === EditorData().TEMP_CONSTANT_WORLD_ENTRY_ID.trim()) {
-				r.shortTxt = `🥾 ${r.shortTxt}`;
+				r.shortTxt = `📍 ${r.shortTxt}`;
 			}
 			return r;
 		});
@@ -97,6 +97,9 @@ export const RoomEditor = ({
 	if (Object.values(rooms).length === 0 || !editedRoom) {
 		return null;
 	}
+
+	const isStartingRoom =
+		editedRoom.roomId === EditorData().TEMP_CONSTANT_WORLD_ENTRY_ID;
 
 	return (
 		<div className="flex flex-row gap-2 col-span-2">
@@ -109,7 +112,7 @@ export const RoomEditor = ({
 			/>
 			<div className="editor-inspector">
 				<Header
-					title="Room"
+					title={`Room`}
 					onClickTitle={() => {
 						console.log(editedRoom);
 					}}
@@ -122,7 +125,11 @@ export const RoomEditor = ({
 						}}
 					/>
 				</Header>
-
+				{isStartingRoom && (
+					<div className="bg-blue-700/60 p-2 rounded-sm mt-2 text-white">
+						<div>📍 starting room</div>
+					</div>
+				)}
 				<Input
 					id="roomName"
 					value={editedRoom.shortTxt}
