@@ -5,6 +5,8 @@ import { decodeDojoText } from "@/lib/utils/utils";
 
 type AnyObject = T_Action | T_Room | T_Object | T_TextDefinition;
 
+const TEMP_CONSTANT_WORLD_ENTRY_ID = parseInt("0x1c0a42f26b594c").toString();
+
 const {
 	get,
 	set,
@@ -30,7 +32,14 @@ const setItem = (obj: AnyObject, id: string) => {
 const getItem = (id: string) => get().dataPool.get(id);
 
 const syncItem = (obj: unknown) => {
-	console.log("syncing obj", obj, get());
+	console.log(
+		`[Editor] Sync: ${
+			// biome-ignore lint/suspicious/noExplicitAny: <force extract type from keys>
+			Object.keys(obj as any)
+		}`,
+		obj,
+		get(),
+	);
 	if ("Room" in (obj as { Room: T_Room })) {
 		const room = { ...(obj as { Room: T_Room }) }.Room;
 		room.roomId = parseInt(room.roomId).toString();
@@ -49,6 +58,7 @@ const syncItem = (obj: unknown) => {
 		object.objectActionIds = object.objectActionIds.map((id) =>
 			parseInt(id).toString(),
 		);
+		object.destId = parseInt(object.destId).toString();
 		setItem(object, object.objectId);
 		set((prev) => {
 			prev.objects = { ...prev.objects, [object.objectId]: object };
@@ -58,6 +68,8 @@ const syncItem = (obj: unknown) => {
 		const action = { ...(obj as { Action: T_Action }) }.Action;
 		action.actionId = parseInt(action.actionId).toString();
 		action.dBitTxt = decodeDojoText(action.dBitTxt);
+		action.affectedByActionId = parseInt(action.affectedByActionId).toString();
+		action.affectsActionId = parseInt(action.affectsActionId).toString();
 		setItem(action, action.actionId);
 		set((prev) => {
 			prev.actions = { ...prev.actions, [action.actionId]: action };
@@ -78,7 +90,6 @@ const syncItem = (obj: unknown) => {
 			isDirty: Date.now(),
 		});
 	}, 1);
-	console.log(get().dataPool);
 };
 
 const deleteItem = (id: string) => {
@@ -146,7 +157,9 @@ const newObject = (room: T_Room) => {
 
 const newRoom = () => {
 	const roomId =
-		getRooms().length < 1 ? "0x1c0a42f26b594c" : generateNumericUniqueId();
+		getRooms().length < 1
+			? TEMP_CONSTANT_WORLD_ENTRY_ID
+			: generateNumericUniqueId();
 
 	const txt = newTxtDef(roomId);
 	const newRoom: T_Room = {
@@ -195,9 +208,13 @@ const logPool = () => {
 	const txtDefs = poolArray.filter(
 		(x) => (x as T_TextDefinition).id !== undefined,
 	);
+	console.info("Rooms");
 	console.table(rooms);
+	console.info("Objects");
 	console.table(objects);
+	console.info("Actions");
 	console.table(actions);
+	console.info("Text Definitions");
 	console.table(txtDefs);
 };
 
@@ -213,6 +230,7 @@ const EditorData = createFactory({
 	newAction,
 	deleteItem,
 	logPool,
+	TEMP_CONSTANT_WORLD_ENTRY_ID,
 });
 
 export default EditorData;

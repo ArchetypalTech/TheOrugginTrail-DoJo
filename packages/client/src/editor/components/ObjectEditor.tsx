@@ -4,6 +4,7 @@ import {
 	OBJECT_TYPE_OPTIONS,
 	MATERIAL_TYPE_OPTIONS,
 	DIRECTION_OPTIONS,
+	type DIRECTIONS,
 } from "../lib/schemas";
 import EditorStore from "../editor.store";
 import { EditorList } from "./EditorList";
@@ -32,10 +33,11 @@ export const ObjectEditor = ({
 	editedRoom: T_Room;
 	editedObject: T_Object;
 	currentObjectIndex: number;
-	setCurrentObjectIndex: React.Dispatch<React.SetStateAction<number>>;
+	setCurrentObjectIndex:
+		| React.Dispatch<React.SetStateAction<number>>
+		| ((idx: number) => void);
 }) => {
 	const { txtDef } = useMemo(() => {
-		console.log("currentRoomIndex", editedRoom);
 		return {
 			txtDef: EditorData().getItem(editedObject?.txtDefId) as T_TextDefinition,
 		};
@@ -103,7 +105,7 @@ export const ObjectEditor = ({
 				updatedObject.matType = value;
 				break;
 			case "direction":
-				updatedObject.dirType = value;
+				updatedObject.dirType = value as (typeof DIRECTIONS)[number];
 				break;
 			case "destination":
 				updatedObject.destId = value;
@@ -185,16 +187,22 @@ export const ObjectEditor = ({
 						onChange={handleInputChange}
 						options={DIRECTION_OPTIONS}
 					/>
+					<p className="info text-xs text-white bg-amber-600/70 p-2 rounded-sm">
+						⚠️ to move into direction, add an enabled 'open' action
+					</p>
 					<Select
 						id="destination"
 						value={editedObject.destId || ""}
 						onChange={handleInputChange}
-						options={EditorData()
-							.getRooms()
-							.map((room) => ({
-								value: room.roomId,
-								label: room.shortTxt,
-							}))}
+						options={[
+							{ value: "0", label: "None" },
+							...EditorData()
+								.getRooms()
+								.map((room) => ({
+									value: room.roomId,
+									label: room.shortTxt,
+								})),
+						]}
 					/>
 					<ItemId id={editedObject.objectId} />
 				</div>

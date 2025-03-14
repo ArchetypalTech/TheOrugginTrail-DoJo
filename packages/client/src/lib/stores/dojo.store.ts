@@ -128,7 +128,6 @@ const initializeConfig = async (
 			}
 		});
 		for (const _D of initialEntities || []) {
-			console.log(_D);
 			if (_D.models?.the_oruggin_trail) {
 				EditorData().syncItem(_D.models.the_oruggin_trail);
 			}

@@ -1,6 +1,5 @@
 import type { Config, EditorState } from "@editor/lib/schemas";
 import {
-	transformConfig,
 	validateConfig,
 	formatValidationError,
 	ensureInlineTextDefinitions,
@@ -142,12 +141,12 @@ export const actions = {
 		 * Initialize the editor with a config
 		 */
 		initialize: async () => {
-			const localConfig = await window.localStorage.getItem("editorConfig");
-			if (localConfig) {
-				const config = transformConfig(JSON.parse(localConfig));
-				actions.config.loadConfig(config);
-				return;
-			}
+			// const localConfig = await window.localStorage.getItem("editorConfig");
+			// if (localConfig) {
+			// 	const config = transformConfig(JSON.parse(localConfig));
+			// 	actions.config.loadConfig(config);
+			// 	return;
+			// }
 			// actions.config.loadConfig(test_config as Config);
 		},
 

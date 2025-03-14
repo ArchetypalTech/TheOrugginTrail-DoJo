@@ -12,6 +12,7 @@ import EditorData, { useEditorData } from "./editor.data";
 import type { T_Room } from "./lib/types";
 import { tick } from "@/lib/utils/utils";
 import { EditorFooter } from "./components/EditorFooter";
+import DojoStore from "@/lib/stores/dojo.store";
 
 export const Editor = () => {
 	const { rooms, objects, actions, isDirty } = useEditorData();
@@ -25,7 +26,6 @@ export const Editor = () => {
 		setCurrentRoomIndex(index);
 		await tick();
 		await selectObject(0);
-		console.table(EditorData().dataPool);
 	};
 
 	const selectObject = async (index: number) => {
@@ -48,6 +48,7 @@ export const Editor = () => {
 
 	// FIXME: needs proper state management
 	const { editedRoom } = useMemo(() => {
+		isDirty; // hack to force re-render
 		const editedRoom = Object.values(rooms).at(currentRoomIndex) as T_Room;
 		return {
 			editedRoom,
@@ -55,19 +56,21 @@ export const Editor = () => {
 	}, [currentRoomIndex, rooms, isDirty]);
 
 	const { editedObject } = useMemo(() => {
+		isDirty; // hack to force re-render
 		const editedObject = objects[editedRoom?.objectIds[currentObjectIndex]];
 		return {
 			editedObject,
 		};
-	}, [currentObjectIndex, objects, isDirty]);
+	}, [currentObjectIndex, objects, isDirty, editedRoom]);
 
 	const { editedAction } = useMemo(() => {
+		isDirty; // hack to force re-render
 		const editedAction =
 			actions[editedObject?.objectActionIds[currentActionIndex]];
 		return {
 			editedAction,
 		};
-	}, [currentActionIndex, actions, isDirty]);
+	}, [currentActionIndex, actions, isDirty, editedObject]);
 
 	useHead({
 		title: APP_EDITOR_SEO.title,
@@ -90,46 +93,60 @@ export const Editor = () => {
 		EditorStore().notifications.clear();
 	};
 
+	const isLoading =
+		DojoStore().status.status !== "initialized" &&
+		DojoStore().status.status !== "spawning";
+
 	return (
 		<div id="editor-root" className="relative flex flex-col h-full w-full">
 			<Notifications onDismiss={handleDismissNotification} />
-			<EditorHeader />
+			{isLoading ? (
+				<div className="relative w-full h-full flex items-center justify-center font-mono">
+					<div className="animate-spin mr-3">🥾</div>
+					No Dojo connection (you may need to refresh)
+				</div>
+			) : (
+				<>
+					<EditorHeader />
 
-			{Object.values(rooms).length < 1 && (
-				<div className="relative w-full h-full flex items-center justify-center">
-					<div className="flex flex-col">
-						<h2 className="text-center mb-10 text-2xl">Empty World</h2>
-						<button className="btn" onClick={EditorData().newRoom}>
-							Create Room
-						</button>
+					{Object.values(rooms).length < 1 && (
+						<div className="relative w-full h-full flex items-center justify-center">
+							<div className="flex flex-col">
+								<h2 className="text-center mb-10 text-2xl">Empty World</h2>
+								<button className="btn" onClick={EditorData().newRoom}>
+									Create Room
+								</button>
+							</div>
+						</div>
+					)}
+					<div className="flex grow">
+						<div className="grid grid-cols-4 gap-2">
+							<RoomEditor
+								editedRoom={editedRoom}
+								currentRoomIndex={currentRoomIndex}
+								setCurrentRoomIndex={selectRoom}
+							/>
+							{editedRoom && (
+								<ObjectEditor
+									editedRoom={editedRoom}
+									editedObject={editedObject}
+									currentObjectIndex={currentObjectIndex}
+									setCurrentObjectIndex={selectObject}
+								/>
+							)}
+							{editedObject && (
+								<ActionEditor
+									editedAction={editedAction}
+									editedObject={editedObject}
+									currentActionIndex={currentActionIndex}
+									setCurrentActionIndex={setCurrentActionIndex}
+								/>
+							)}
+						</div>
 					</div>
-				</div>
+				</>
 			)}
-			<div className="flex grow">
-				<div className="grid grid-cols-4 gap-2">
-					<RoomEditor
-						editedRoom={editedRoom}
-						currentRoomIndex={currentRoomIndex}
-						setCurrentRoomIndex={selectRoom}
-					/>
-					{editedRoom && (
-						<ObjectEditor
-							editedRoom={editedRoom}
-							editedObject={editedObject}
-							currentObjectIndex={currentObjectIndex}
-							setCurrentObjectIndex={selectObject}
-						/>
-					)}
-					{editedObject && (
-						<ActionEditor
-							editedAction={editedAction}
-							editedObject={editedObject}
-							currentActionIndex={currentActionIndex}
-							setCurrentActionIndex={setCurrentActionIndex}
-						/>
-					)}
-				</div>
-			</div>
+
 			<EditorFooter />
 		</div>
 	);

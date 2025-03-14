@@ -50,7 +50,7 @@ pub mod move {
         // fetch the room
         let curr_rm = player.location;
         let rm: Room = world.read_model(curr_rm);
-        let exits: Array<felt252> = rm.dirObjIds.clone();
+        let exits: Array<felt252> = rm.objectIds.clone();
         // check for an exit
         _direction_check(world, exits, message)
     }

@@ -143,6 +143,7 @@ const createFallbackConfig = (rooms: unknown[]): Config => {
  * Transform raw JSON data to match our expected Config format
  */
 export const transformConfig = (rawConfig: unknown): Config => {
+	console.trace(rawConfig);
 	// Ensure rawConfig has the expected structure with levels
 	let configToTransform = rawConfig;
 

@@ -37,7 +37,15 @@ function formatLabel(value: string): string {
 const manifest = schema.the_oruggin_trail.Object.objType.variant;
 
 // Define enum values as const arrays - single source of truth
-export const DIRECTIONS = ["None", "N", "E", "S", "W", "U", "D"] as const;
+export const DIRECTIONS = [
+	"None",
+	"North",
+	"East",
+	"South",
+	"West",
+	"Up",
+	"Down",
+] as const;
 export const OBJECT_TYPES: [string, ...(keyof ObjectType)[]] = [
 	"None",
 	"Ball",

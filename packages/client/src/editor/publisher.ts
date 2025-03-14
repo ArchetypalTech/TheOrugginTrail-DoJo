@@ -177,6 +177,11 @@ export const dispatchDesignerCall = async (
 				detail: { error: { message: (error as Error).message }, call, args },
 			}),
 		);
+		if ((error as Error).message.includes("too many")) {
+			console.error(
+				"Torii && Katana might need a reset when it says too many connections",
+			);
+		}
 		console.error(
 			`Error sending designer call: ${(error as Error).message}, ${call}, ${args}`,
 		);

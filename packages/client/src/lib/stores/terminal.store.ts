@@ -1,5 +1,6 @@
 import type { HTMLAttributes } from "react";
 import { StoreBuilder } from "../utils/storebuilder";
+import { decodeDojoText } from "../utils/utils";
 
 /**
  * Types of formatting that can be applied to terminal content.
@@ -32,6 +33,7 @@ const {
  * @param {TerminalContentItem} item - The terminal content item to add
  */
 export function addTerminalContent(item: TerminalContentItem) {
+	item.text = decodeDojoText(item.text);
 	set({
 		contentQueue: [...get().contentQueue, item],
 	});

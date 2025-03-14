@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import EditorStore from "../editor.store";
 import { EditorList } from "./EditorList";
 import { ROOM_TYPE_OPTIONS, BIOME_TYPE_OPTIONS } from "../lib/schemas";
@@ -29,6 +29,7 @@ export const RoomEditor = ({
 	const { rooms, isDirty } = useEditorData();
 
 	const { txtDef } = useMemo(() => {
+		isDirty; // hack to force re-render
 		return {
 			txtDef: EditorData().getItem(editedRoom?.txtDefId) as T_TextDefinition,
 		};
@@ -85,6 +86,18 @@ export const RoomEditor = ({
 		});
 	};
 
+	const roomList = useMemo(() => {
+		const available = [...Object.values(rooms)];
+		const res = available?.map((room) => {
+			const r = { ...room };
+			if (r.roomId.trim() === EditorData().TEMP_CONSTANT_WORLD_ENTRY_ID.trim()) {
+				r.shortTxt = `🥾 ${r.shortTxt}`;
+			}
+			return r;
+		});
+		return res || [];
+	}, [rooms]);
+
 	if (Object.values(rooms).length === 0 || !editedRoom) {
 		return null;
 	}
@@ -92,7 +105,7 @@ export const RoomEditor = ({
 	return (
 		<div className="flex flex-row gap-2 col-span-2">
 			<EditorList
-				list={Object.values(rooms)}
+				list={roomList}
 				selectionFn={(index: number) => setCurrentRoomIndex(index)}
 				addObjectFn={() => EditorData().newRoom()}
 				selectedIndex={currentRoomIndex}
