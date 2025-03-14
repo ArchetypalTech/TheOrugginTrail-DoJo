@@ -46,26 +46,28 @@ const setupController = async () => {
 	const worldName = ZORG_CONFIG.manifest.default.world.name;
 	const isEditor = window.location.pathname.startsWith("/editor");
 	const editorConfig = {
-		name: APP_EDITOR_DATA.title, // Optional, can be added if you want a name
-		description: `Aprove submitting transactions to ${APP_EDITOR_DATA.title}`,
-		methods: [
-			{
-				entrypoint: "create_objects",
-				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
-			},
-			{
-				entrypoint: "create_actions",
-				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
-			},
-			{
-				entrypoint: "create_rooms",
-				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
-			},
-			{
-				entrypoint: "create_txt",
-				description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
-			},
-		],
+		[ZORG_CONFIG.manifest.designer.address]: {
+			name: APP_EDITOR_DATA.title, // Optional, can be added if you want a name
+			description: `Aprove submitting transactions to ${APP_EDITOR_DATA.title}`,
+			methods: [
+				{
+					entrypoint: "create_objects",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "create_actions",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "create_rooms",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "create_txt",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+			],
+		},
 	};
 	const controllerConfig: ControllerOptions = {
 		policies: {
@@ -80,7 +82,7 @@ const setupController = async () => {
 						},
 					],
 				},
-				[ZORG_CONFIG.manifest.designer.address]: isEditor ? editorConfig : {},
+				...(isEditor ? editorConfig : {}),
 				[ZORG_CONFIG.token.contract_address]: {
 					name: "TOT NFT", // Optional
 					description: "Mint and transfer TOT tokens",
