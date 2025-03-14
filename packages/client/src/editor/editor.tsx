@@ -11,12 +11,10 @@ import { APP_EDITOR_SEO } from "@/data/app.data";
 import EditorData, { useEditorData } from "./editor.data";
 import type { T_Room } from "./lib/types";
 import { tick } from "@/lib/utils/utils";
+import { EditorFooter } from "./components/EditorFooter";
 
 export const Editor = () => {
-	const { rooms, objects, actions, textDefs, isDirty } = useEditorData();
-	// const [editedRoom, setEditedRoom] = useState<T_Room>();
-	// const [editedObject, setEditedObject] = useState<T_Object>();
-	// const [editedAction, setEditedAction] = useState<T_Action>();
+	const { rooms, objects, actions, isDirty } = useEditorData();
 	const [currentRoomIndex, setCurrentRoomIndex] = useState(0);
 	const [currentObjectIndex, setCurrentObjectIndex] = useState(0);
 	const [currentActionIndex, setCurrentActionIndex] = useState(0);
@@ -26,16 +24,22 @@ export const Editor = () => {
 		setCurrentActionIndex(-1);
 		setCurrentRoomIndex(index);
 		await tick();
+		await selectObject(0);
+		console.table(EditorData().dataPool);
+	};
+
+	const selectObject = async (index: number) => {
+		setCurrentActionIndex(-1);
+		setCurrentObjectIndex(index);
 		const room = EditorData().getRooms()[index];
-		if (room.objectIds.length > 0) {
-			setCurrentObjectIndex(0);
+		if (room && room.objectIds.length > 0) {
 			await tick();
 			const object = EditorData()
 				.getObjects()
 				.find((x) => x.objectId === room.objectIds[0]);
 			if (object && object.objectActionIds.length > 0) {
 				setCurrentActionIndex(0);
-				const action = EditorData()
+				EditorData()
 					.getActions()
 					.find((x) => x.actionId === object.objectActionIds[0]);
 			}
@@ -87,7 +91,7 @@ export const Editor = () => {
 	};
 
 	return (
-		<div id="editor-root" className="relative m-4 h-full w-full">
+		<div id="editor-root" className="relative flex flex-col h-full w-full">
 			<Notifications onDismiss={handleDismissNotification} />
 			<EditorHeader />
 
@@ -101,29 +105,32 @@ export const Editor = () => {
 					</div>
 				</div>
 			)}
-			<div className="grid grid-cols-4 gap-2">
-				<RoomEditor
-					editedRoom={editedRoom}
-					currentRoomIndex={currentRoomIndex}
-					setCurrentRoomIndex={selectRoom}
-				/>
-				{editedRoom && (
-					<ObjectEditor
+			<div className="flex grow">
+				<div className="grid grid-cols-4 gap-2">
+					<RoomEditor
 						editedRoom={editedRoom}
-						editedObject={editedObject}
-						currentObjectIndex={currentObjectIndex}
-						setCurrentObjectIndex={setCurrentObjectIndex}
+						currentRoomIndex={currentRoomIndex}
+						setCurrentRoomIndex={selectRoom}
 					/>
-				)}
-				{editedObject && (
-					<ActionEditor
-						editedAction={editedAction}
-						editedObject={editedObject}
-						currentActionIndex={currentActionIndex}
-						setCurrentActionIndex={setCurrentActionIndex}
-					/>
-				)}
+					{editedRoom && (
+						<ObjectEditor
+							editedRoom={editedRoom}
+							editedObject={editedObject}
+							currentObjectIndex={currentObjectIndex}
+							setCurrentObjectIndex={selectObject}
+						/>
+					)}
+					{editedObject && (
+						<ActionEditor
+							editedAction={editedAction}
+							editedObject={editedObject}
+							currentActionIndex={currentActionIndex}
+							setCurrentActionIndex={setCurrentActionIndex}
+						/>
+					)}
+				</div>
 			</div>
+			<EditorFooter />
 		</div>
 	);
 };

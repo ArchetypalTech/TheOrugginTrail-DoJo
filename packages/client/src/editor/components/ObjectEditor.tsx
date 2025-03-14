@@ -136,9 +136,7 @@ export const ObjectEditor = ({
 			/>
 
 			{!editedObject ? (
-				<div className="flex flex-col space-y-4">
-					<p>No objects.</p>
-				</div>
+				<div className="flex flex-col space-y-4" />
 			) : (
 				<div className="editor-inspector">
 					<Header title="Object">

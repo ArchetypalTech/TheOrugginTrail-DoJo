@@ -4,6 +4,10 @@
   @apply text-sm;
 }
 
+#editor-root > div {
+  @apply p-4;
+}
+
 html.dark {
   @apply bg-black text-[var(--terminal-system)] transition-all duration-150;
 }

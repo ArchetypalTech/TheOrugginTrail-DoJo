@@ -38,17 +38,12 @@ export const EditorHeader = () => {
 	};
 
 	return (
-		<header className="flex flex-row justify-between gap-2 my-4 items-center">
-			<div className="flex flex-col">
-				<h1 className="text-xl font-bold font-mono textFreak">ZORGTOR</h1>
-				<a
-					href={`${ZORG_CONFIG.endpoints.torii.http}/sql`}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="hover:underline text-xs textFreak"
-				>
-					SQL ({process.env.NODE_ENV ? process.env.NODE_ENV.toUpperCase() : "DEV"})
-				</a>
+		<header className="flex flex-row justify-between gap-2 items-center p-4">
+			<div className="flex flex-col font-mono textFreak">
+				<h1 className="text-xl font-bold">ZORGTOR</h1>
+				<div>
+					({import.meta.env.MODE ? import.meta.env.MODE.toUpperCase() : "DEV"})
+				</div>
 			</div>
 			<div className="flex grow" />
 			<div className="flex gap-2">

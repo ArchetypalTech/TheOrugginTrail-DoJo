@@ -11,6 +11,8 @@ import { initialNotificationState } from "@editor/notifications";
 import { publishConfigToContract } from "@editor/publisher";
 import { saveConfigToFile, loadConfigFromFile } from "@/editor/editor.utils";
 import { StoreBuilder } from "@/lib/utils/storebuilder";
+import EditorData from "./editor.data";
+import { tick } from "@/lib/utils/utils";
 
 const {
 	get,
@@ -304,6 +306,8 @@ export const actions = {
 				actions.notifications.showSuccess(
 					"World published to contract successfully",
 				);
+				await tick();
+				console.log(EditorData().dataPool);
 				return true;
 			} catch (error) {
 				const errorMsg = error instanceof Error ? error.message : String(error);

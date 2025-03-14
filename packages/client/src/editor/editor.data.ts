@@ -32,39 +32,45 @@ const getItem = (id: string) => get().dataPool.get(id);
 const syncItem = (obj: unknown) => {
 	console.log("syncing obj", obj, get());
 	if ("Room" in (obj as { Room: T_Room })) {
-		const r = { ...(obj as { Room: T_Room }) };
-		r.Room.roomId = parseInt(r.Room.roomId).toString();
-		setItem(r.Room, r.Room.roomId);
+		const room = { ...(obj as { Room: T_Room }) }.Room;
+		room.roomId = parseInt(room.roomId).toString();
+		room.txtDefId = parseInt(room.txtDefId).toString();
+		room.objectIds = room.objectIds.map((id) => parseInt(id).toString());
+		room.dirObjIds = room.dirObjIds.map((id) => parseInt(id).toString());
+		setItem(room, room.roomId);
 		set((prev) => {
-			prev.rooms = { ...prev.rooms, [r.Room.roomId]: r.Room };
+			prev.rooms = { ...prev.rooms, [room.roomId]: room };
 		});
 	}
 	if ("Object" in (obj as { Object: T_Object })) {
-		const o = { ...(obj as { Object: T_Object }) };
-		o.Object.objectId = parseInt(o.Object.objectId).toString();
-		console.log(o.Object);
-		setItem(o.Object, o.Object.objectId);
+		const object = { ...(obj as { Object: T_Object }) }.Object;
+		object.objectId = parseInt(object.objectId).toString();
+		object.txtDefId = parseInt(object.txtDefId).toString();
+		object.objectActionIds = object.objectActionIds.map((id) =>
+			parseInt(id).toString(),
+		);
+		setItem(object, object.objectId);
 		set((prev) => {
-			prev.objects = { ...prev.objects, [o.Object.objectId]: o.Object };
+			prev.objects = { ...prev.objects, [object.objectId]: object };
 		});
 	}
 	if ("Action" in (obj as { Action: T_Action })) {
-		const a = { ...(obj as { Action: T_Action }) };
-		a.Action.actionId = parseInt(a.Action.actionId).toString();
-		a.Action.dBitTxt = decodeDojoText(a.Action.dBitTxt);
-		setItem(a.Action, a.Action.actionId);
+		const action = { ...(obj as { Action: T_Action }) }.Action;
+		action.actionId = parseInt(action.actionId).toString();
+		action.dBitTxt = decodeDojoText(action.dBitTxt);
+		setItem(action, action.actionId);
 		set((prev) => {
-			prev.actions = { ...prev.actions, [a.Action.actionId]: a.Action };
+			prev.actions = { ...prev.actions, [action.actionId]: action };
 		});
 	}
 	if ("Txtdef" in (obj as { Txtdef: T_TextDefinition })) {
-		const t = { ...(obj as { Txtdef: T_TextDefinition }) };
-		console.log("TXTDEF", t.Txtdef);
-		// t.Txtdef.id = parseInt(t.Txtdef.id).toString();
-		t.Txtdef.text = decodeDojoText(t.Txtdef.text);
-		setItem(t.Txtdef, t.Txtdef.id);
+		const txtDef = { ...(obj as { Txtdef: T_TextDefinition }) }.Txtdef;
+		txtDef.id = parseInt(txtDef.id).toString();
+		txtDef.owner = parseInt(txtDef.owner).toString();
+		txtDef.text = decodeDojoText(txtDef.text);
+		setItem(txtDef, txtDef.id);
 		set((prev) => {
-			prev.txtDefs = { ...prev.txtDefs, [t.Txtdef.id]: t.Txtdef };
+			prev.txtDefs = { ...prev.txtDefs, [txtDef.id]: txtDef };
 		});
 	}
 	setTimeout(() => {
@@ -72,6 +78,7 @@ const syncItem = (obj: unknown) => {
 			isDirty: Date.now(),
 		});
 	}, 1);
+	console.log(get().dataPool);
 };
 
 const deleteItem = (id: string) => {
@@ -176,6 +183,24 @@ const newAction = (object: T_Object) => {
 	return newAction;
 };
 
+const logPool = () => {
+	const poolArray = get().dataPool.values().toArray();
+	const rooms = poolArray.filter((x) => (x as T_Room).roomId !== undefined);
+	const objects = poolArray.filter(
+		(x) => (x as T_Object).objectId !== undefined,
+	);
+	const actions = poolArray.filter(
+		(x) => (x as T_Action).actionId !== undefined,
+	);
+	const txtDefs = poolArray.filter(
+		(x) => (x as T_TextDefinition).id !== undefined,
+	);
+	console.table(rooms);
+	console.table(objects);
+	console.table(actions);
+	console.table(txtDefs);
+};
+
 const EditorData = createFactory({
 	getItem,
 	setItem,
@@ -187,6 +212,7 @@ const EditorData = createFactory({
 	newRoom,
 	newAction,
 	deleteItem,
+	logPool,
 });
 
 export default EditorData;
