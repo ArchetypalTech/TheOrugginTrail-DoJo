@@ -116,7 +116,7 @@ async function sendDesignerCall(props: DesignerCallProps) {
 			console.log("[CONTROLLER DESIGNERCALL]", call, args);
 			response = await WalletStore().controller?.account?.execute([
 				{
-					contractAddress: ZORG_CONFIG.contracts.entity.address,
+					contractAddress: ZORG_CONFIG.contracts.designer.address,
 					entrypoint: call,
 					calldata,
 				},
