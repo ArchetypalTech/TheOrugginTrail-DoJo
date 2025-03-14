@@ -24,7 +24,7 @@ export const EditorFooter = () => {
 						EditorData().logPool();
 					}}
 				>
-					Console Log Pool
+					Console Log DataPool
 				</button>
 			</div>
 		</header>

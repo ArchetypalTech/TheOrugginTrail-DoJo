@@ -79,3 +79,16 @@ export const T_RoomSchema = z.object({
 	shortTxt: z.string().transform((val) => val || "0"),
 });
 export type T_Room = z.infer<typeof T_RoomSchema>;
+
+// Define the Config schema
+export const ConfigSchema = z.object({
+	dataPool: z.array(
+		z.union([
+			T_RoomSchema,
+			T_ObjectSchema,
+			T_ActionSchema,
+			T_TextDefinitionSchema,
+		]),
+	),
+});
+export type Config = z.infer<typeof ConfigSchema>;

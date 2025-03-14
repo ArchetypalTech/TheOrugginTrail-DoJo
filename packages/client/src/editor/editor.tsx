@@ -12,9 +12,12 @@ import EditorData, { useEditorData } from "./editor.data";
 import type { T_Room } from "./lib/types";
 import { tick } from "@/lib/utils/utils";
 import { EditorFooter } from "./components/EditorFooter";
-import DojoStore from "@/lib/stores/dojo.store";
+import DojoStore, { useDojoStore } from "@/lib/stores/dojo.store";
 
 export const Editor = () => {
+	const {
+		status: { status },
+	} = useDojoStore();
 	const { rooms, objects, actions, isDirty } = useEditorData();
 	const [currentRoomIndex, setCurrentRoomIndex] = useState(0);
 	const [currentObjectIndex, setCurrentObjectIndex] = useState(0);
@@ -93,9 +96,7 @@ export const Editor = () => {
 		EditorStore().notifications.clear();
 	};
 
-	const isLoading =
-		DojoStore().status.status !== "initialized" &&
-		DojoStore().status.status !== "spawning";
+	const isLoading = status === "loading" || status === "error";
 
 	return (
 		<div id="editor-root" className="relative flex flex-col h-full w-full">

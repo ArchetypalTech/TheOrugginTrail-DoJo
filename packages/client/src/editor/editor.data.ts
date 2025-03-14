@@ -31,6 +31,22 @@ const setItem = (obj: AnyObject, id: string) => {
 
 const getItem = (id: string) => get().dataPool.get(id);
 
+const tagItem = (obj: AnyObject) => {
+	if ("roomId" in obj) {
+		return { Room: obj };
+	}
+	if ("objectId" in obj) {
+		return { Object: obj };
+	}
+	if ("actionId" in obj) {
+		return { Action: obj };
+	}
+	if ("id" in obj) {
+		return { Txtdef: obj };
+	}
+	return null;
+};
+
 const syncItem = (obj: unknown) => {
 	console.log(
 		`[Editor] Sync: ${
@@ -229,6 +245,7 @@ const EditorData = createFactory({
 	newRoom,
 	newAction,
 	deleteItem,
+	tagItem,
 	logPool,
 	TEMP_CONSTANT_WORLD_ENTRY_ID,
 });

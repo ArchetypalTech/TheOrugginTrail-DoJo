@@ -1,4 +1,3 @@
-import type { Config } from "./lib/schemas";
 import {
 	roomTypeToIndex,
 	biomeTypeToIndex,
@@ -100,7 +99,9 @@ export const publishObject = async (obj: T_Object) => {
 		// Use text definition ID from the objDescription object if available
 		parseInt(obj.txtDefId),
 		obj.name.length > 0 ? obj.name : 0,
-		obj.altNames.length > 0 ? obj.altNames.map((name) => name) : 0,
+		obj.altNames.length > 0
+			? obj.altNames.filter((x) => x.length > 0).map((name) => name)
+			: 0,
 	];
 	const txtDef = EditorData().getItem(obj.txtDefId) as T_TextDefinition;
 	await processTxtDef(txtDef);
@@ -115,25 +116,6 @@ export const publishObject = async (obj: T_Object) => {
 export const processObjectActions = async (obj: T_Object): Promise<void> => {
 	for (const action of obj.objectActionIds) {
 		const _action = EditorData().getItem(action) as T_Action;
-		// const actionsInterface:
-		// 	| {
-		// 			actionId: TempInt;
-		// 			actionType: number;
-		// 			dBitTxt: ByteArray;
-		// 			affectsActionId: TempInt;
-		// 			affectedByActionId: TempInt;
-		// 	  }
-		// 	| Action = {
-		// 	actionId: new TempInt(action.actionID),
-		// 	actionType: actionTypeToIndex(action.type || "None"),
-		// 	dBitTxt: action.dBitText,
-		// 	enabled: action.enabled,
-		// 	revertable: action.revertable,
-		// 	dBit: action.dBit,
-		// 	affectsActionId: new TempInt(action.affectsAction || ""),
-		// 	affectedByActionId: "",
-		// };
-		// Create action
 		await publishAction(_action);
 	}
 };

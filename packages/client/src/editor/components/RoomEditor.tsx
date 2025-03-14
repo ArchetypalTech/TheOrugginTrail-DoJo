@@ -77,13 +77,9 @@ export const RoomEditor = ({
 		const r = EditorData().getRooms();
 		// Adjust the current room index if needed
 		if (currentRoomIndex >= r.length - 1) {
-			EditorStore().set({
-				currentRoomIndex: Math.max(0, r.length - 2),
-			});
+			setCurrentRoomIndex(Math.max(0, r.length - 2));
 		}
-		EditorStore().set({
-			currentRoomIndex: Math.max(0, r.length - 2),
-		});
+		setCurrentRoomIndex(Math.max(0, r.length - 2));
 	};
 
 	const roomList = useMemo(() => {
