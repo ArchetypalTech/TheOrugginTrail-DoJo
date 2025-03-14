@@ -41,7 +41,7 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 		// check if player is allowed to interact (tokengating) {}
 		if (!WalletStore().isConnected) {
 			addTerminalContent({
-				text: "Connect",
+				text: "type [wallet] to connect.",
 				format: "hash",
 				useTypewriter: true,
 			});
