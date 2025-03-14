@@ -104,7 +104,7 @@ export const Editor = () => {
 			{isLoading ? (
 				<div className="relative w-full h-full flex items-center justify-center font-mono">
 					<div className="animate-spin mr-3">🥾</div>
-					No Dojo connection (you may need to refresh)
+					No Dojo connection
 				</div>
 			) : (
 				<>

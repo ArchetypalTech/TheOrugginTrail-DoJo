@@ -87,11 +87,12 @@ export const processObjects = async (obj: T_Object) => {
 export const publishObject = async (obj: T_Object) => {
 	actions.notifications.startPublishing();
 	console.log("Publishing object", obj);
+	const destId = parseInt(obj.destId || "0");
 	const objData = [
 		parseInt(obj.objectId),
 		objectTypeToIndex(obj.objType || "None"), // Map to index with fallback
 		directionToIndex(obj.dirType), // Map to index (already handles null)
-		parseInt(obj.destId || "0"),
+		Number.isNaN(destId) ? 0 : destId,
 		materialTypeToIndex(obj.matType || "None"), // Map to index with fallback
 		obj.objectActionIds.length > 0
 			? obj.objectActionIds.map((x) => parseInt(x))

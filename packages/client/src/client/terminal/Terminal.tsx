@@ -48,35 +48,13 @@ export default function Terminal() {
 	useEffect(() => {
 		if (status === "spawning") return;
 		if (status === "initialized") {
-			addTerminalContent({
-				text: [
-					"\n",
-					"The O'Ruggin Trail, no:23",
-					"from the good folk at",
-					"\n",
-					"Archetypal Tech ✯",
-					"\n\n\n\n\n\n\n\n\n\n",
-				].join("\n"),
-				format: "system",
-				useTypewriter: true,
-				speed: 4,
-				style: { textAlign: "center" },
-			});
+			commandHandler("_intro");
 			if (ZORG_CONFIG.useSlot) {
 				if (!WalletStore().isConnected) {
-					addTerminalContent({
-						text: "type [wallet] to connect.",
-						format: "hash",
-						useTypewriter: true,
-					});
+					commandHandler("_connectWallet");
 				}
 			}
-
-			addTerminalContent({
-				text: 'type [command] [target], or type "help"',
-				format: "input",
-				useTypewriter: true,
-			});
+			commandHandler("_hint");
 
 			DojoStore().setStatus({
 				status: "spawning",
