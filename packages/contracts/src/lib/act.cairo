@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -6,35 +5,21 @@
 
 pub mod pullstrings {
     use dojo::model::ModelStorage;
-use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
-    use the_oruggin_trail::systems::tokeniser::{tokeniser as lexer, confessor, confessor::Garble};
+    use the_oruggin_trail::systems::tokeniser::{confessor, confessor::Garble};
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use the_oruggin_trail::models::{
-        player::Player, 
-        room::Room, 
-        zrk_enums::{
-            RoomType, room_type_to_str, 
-            ActionType,  
-            BiomeType, biome_type_to_str, 
-            MaterialType, material_type_to_str, 
-            ObjectType, object_type_to_str, 
-            DirectionType, direction_type_to_str
-        }, 
-        txtdef::Txtdef, 
-        object::Object,
-        action::Action,
-        inventory::Inventory
+        player::Player, room::Room,
+        zrk_enums::{ActionType, MaterialType, ObjectType, DirectionType}, object::Object,
+        action::Action, inventory::Inventory,
     };
 
     pub fn on(world: IWorldDispatcher, pid: felt252, msg: Garble) -> ByteArray {
-        let mut wrld: WorldStorage =  WorldStorageTrait::new(world, @"the_oruggin_trail");
+        let mut wrld: WorldStorage = WorldStorageTrait::new(world, @"the_oruggin_trail");
 
         let mut out: ByteArray = "shoggoth has got you";
         let pl: Player = wrld.read_model(pid);
         let rm: Room = wrld.read_model(pl.location.clone());
-        let obj_tree: Array<felt252> = rm.objectIds.clone();
         let exit_tree: Array<felt252> = rm.dirObjIds.clone();
-
 
         if msg.iobj == ObjectType::None {
             // just run through the inventory stuff we will handle room defaults later
@@ -51,28 +36,29 @@ use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
         out
     }
 
-    fn pick_up(world: IWorldDispatcher, pid: felt252, msg: Garble) {
-
-    }
+    fn pick_up(world: IWorldDispatcher, pid: felt252, msg: Garble) {}
 
     /// handle general actions
-    /// 
+    ///
     /// right now this is a hack and we only care about kicking the ball
     /// through a window
     fn handle_action(mut world: WorldStorage, objs: Span<felt252>, msg: Garble) -> ByteArray {
         println!("objs: {:?}", objs.len());
-        let mut out: ByteArray = "well that didnt go quite as planned. literally nothing happens. pfft";
+        let mut out: ByteArray =
+            "well that didnt go quite as planned. literally nothing happens. pfft";
         let map: ActionType = confessor::vrb_to_response(msg.vrb.clone());
 
-        let mut foundObj: Object = Object{
-            objectId: 0, 
-            objType: ObjectType::None, 
-            dirType: DirectionType::None, 
-            destId: 0, 
-            matType: MaterialType::None, 
-            objectActionIds: array![], 
-            txtDefId: 0 
-        };  
+        let mut foundObj: Object = Object {
+            objectId: 0,
+            objType: ObjectType::None,
+            dirType: DirectionType::None,
+            destId: 0,
+            matType: MaterialType::None,
+            objectActionIds: array![],
+            txtDefId: 0,
+            name: "",
+            altNames: array![],
+        };
 
         println!("looking for {:?}", map);
 
@@ -96,28 +82,30 @@ use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
                     println!("break--->");
                     if act.enabled {
                         act.enabled = false;
-                        let desc: ByteArray = "the window smashes, pieces of glass fly everywhere\nthe window falls open";
+                        let desc: ByteArray =
+                            "the window smashes, pieces of glass fly everywhere\nthe window falls open";
                         out = desc;
                         world.write_model(@act.clone());
                     } else {
-                        let desc: ByteArray = "the ball bounces off the broken frame and then, predictably rolls into dog shit";
-                    } 
-                }else if act.actionType == ActionType::Open {
+                        let desc: ByteArray =
+                            "the ball bounces off the broken frame and then, predictably rolls into dog shit";
+                        out = desc;
+                    }
+                } else if act.actionType == ActionType::Open {
                     println!("open------>");
                     act.enabled = true;
                     world.write_model(@act.clone());
                 }
             };
-            
-        } 
+        }
         out
     }
 
     /// handle default actions
-    /// 
+    ///
     /// we store an action on an object and if there is no indirect object
     /// then we use that as there is no object chain to use
-    /// 
+    ///
     /// this gets called on INVENTORY objects first
     /// then on room objects BUT probably the only specials that need a ROOM to make sense
     /// are things like OPEN ? not sure really
@@ -129,7 +117,7 @@ use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
         let mut idx: u32 = 0;
         let mut inr: u32 = 0;
         let vrb = msg.vrb.clone();
-        let responds_to = confessor::vrb_to_response(vrb);
+        // let responds_to = confessor::vrb_to_response(vrb);
         while idx < objs.len() {
             let obj_id = objs.at(idx).clone();
             let obj: Object = world.read_model(obj_id);
@@ -147,7 +135,7 @@ use the_oruggin_trail::constants::zrk_constants::{ErrCode as ec};
                     }
                     inr += 1;
                 }
-            } 
+            }
             idx += 1;
         };
         out

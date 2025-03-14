@@ -1312,8 +1312,787 @@
   },
   "contracts": [
     {
-      "address": "0x2a5f3e10724a2208a85e81dd377ed61d2b547a136c98487d5de38a147fb2f3c",
-      "class_hash": "0x429b010da950f7eff1af1c64f5aae5c9ee1a94a65cb081ea6c774ee12e78607",
+      "address": "0x2c2d137f9b93e783dd6bf8241ead57a25754930622b618c3234bcf4de0e5e1d",
+      "class_hash": "0x2e08460b8593392bea0347b896c1a124548306f73c1b21badae76b9624d4184",
+      "abi": [
+        {
+          "type": "impl",
+          "name": "designer__ContractImpl",
+          "interface_name": "dojo::contract::interface::IContract"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::interface::IContract",
+          "items": []
+        },
+        {
+          "type": "impl",
+          "name": "designer__DeployedContractImpl",
+          "interface_name": "dojo::meta::interface::IDeployedResource"
+        },
+        {
+          "type": "struct",
+          "name": "core::byte_array::ByteArray",
+          "members": [
+            {
+              "name": "data",
+              "type": "core::array::Array::<core::bytes_31::bytes31>"
+            },
+            {
+              "name": "pending_word",
+              "type": "core::felt252"
+            },
+            {
+              "name": "pending_word_len",
+              "type": "core::integer::u32"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::meta::interface::IDeployedResource",
+          "items": [
+            {
+              "type": "function",
+              "name": "dojo_name",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::byte_array::ByteArray"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "DesignerImpl",
+          "interface_name": "the_oruggin_trail::systems::designer::IDesigner"
+        },
+        {
+          "type": "enum",
+          "name": "the_oruggin_trail::models::zrk_enums::ObjectType",
+          "variants": [
+            {
+              "name": "None",
+              "type": "()"
+            },
+            {
+              "name": "Ball",
+              "type": "()"
+            },
+            {
+              "name": "Window",
+              "type": "()"
+            },
+            {
+              "name": "Door",
+              "type": "()"
+            },
+            {
+              "name": "Stairs",
+              "type": "()"
+            },
+            {
+              "name": "Place",
+              "type": "()"
+            },
+            {
+              "name": "Troll",
+              "type": "()"
+            },
+            {
+              "name": "Path",
+              "type": "()"
+            },
+            {
+              "name": "Chest",
+              "type": "()"
+            },
+            {
+              "name": "Box",
+              "type": "()"
+            },
+            {
+              "name": "Matches",
+              "type": "()"
+            },
+            {
+              "name": "Petrol",
+              "type": "()"
+            },
+            {
+              "name": "Can",
+              "type": "()"
+            },
+            {
+              "name": "Dynamite",
+              "type": "()"
+            },
+            {
+              "name": "Boulder",
+              "type": "()"
+            },
+            {
+              "name": "Bale",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "the_oruggin_trail::models::zrk_enums::DirectionType",
+          "variants": [
+            {
+              "name": "None",
+              "type": "()"
+            },
+            {
+              "name": "North",
+              "type": "()"
+            },
+            {
+              "name": "East",
+              "type": "()"
+            },
+            {
+              "name": "South",
+              "type": "()"
+            },
+            {
+              "name": "West",
+              "type": "()"
+            },
+            {
+              "name": "Up",
+              "type": "()"
+            },
+            {
+              "name": "Down",
+              "type": "()"
+            },
+            {
+              "name": "Left",
+              "type": "()"
+            },
+            {
+              "name": "Right",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "the_oruggin_trail::models::zrk_enums::MaterialType",
+          "variants": [
+            {
+              "name": "None",
+              "type": "()"
+            },
+            {
+              "name": "Wood",
+              "type": "()"
+            },
+            {
+              "name": "Dirt",
+              "type": "()"
+            },
+            {
+              "name": "Stone",
+              "type": "()"
+            },
+            {
+              "name": "Flesh",
+              "type": "()"
+            },
+            {
+              "name": "Glass",
+              "type": "()"
+            },
+            {
+              "name": "IKEA",
+              "type": "()"
+            },
+            {
+              "name": "Iron",
+              "type": "()"
+            },
+            {
+              "name": "Shit",
+              "type": "()"
+            },
+            {
+              "name": "Mud",
+              "type": "()"
+            },
+            {
+              "name": "Leather",
+              "type": "()"
+            },
+            {
+              "name": "Metal",
+              "type": "()"
+            },
+            {
+              "name": "TNT",
+              "type": "()"
+            },
+            {
+              "name": "Hay",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "the_oruggin_trail::models::object::Object",
+          "members": [
+            {
+              "name": "objectId",
+              "type": "core::felt252"
+            },
+            {
+              "name": "objType",
+              "type": "the_oruggin_trail::models::zrk_enums::ObjectType"
+            },
+            {
+              "name": "dirType",
+              "type": "the_oruggin_trail::models::zrk_enums::DirectionType"
+            },
+            {
+              "name": "destId",
+              "type": "core::felt252"
+            },
+            {
+              "name": "matType",
+              "type": "the_oruggin_trail::models::zrk_enums::MaterialType"
+            },
+            {
+              "name": "objectActionIds",
+              "type": "core::array::Array::<core::felt252>"
+            },
+            {
+              "name": "txtDefId",
+              "type": "core::felt252"
+            },
+            {
+              "name": "name",
+              "type": "core::byte_array::ByteArray"
+            },
+            {
+              "name": "altNames",
+              "type": "core::array::Array::<core::byte_array::ByteArray>"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "the_oruggin_trail::models::zrk_enums::ActionType",
+          "variants": [
+            {
+              "name": "None",
+              "type": "()"
+            },
+            {
+              "name": "Move",
+              "type": "()"
+            },
+            {
+              "name": "Look",
+              "type": "()"
+            },
+            {
+              "name": "Kick",
+              "type": "()"
+            },
+            {
+              "name": "Hit",
+              "type": "()"
+            },
+            {
+              "name": "Drink",
+              "type": "()"
+            },
+            {
+              "name": "Fight",
+              "type": "()"
+            },
+            {
+              "name": "Sleep",
+              "type": "()"
+            },
+            {
+              "name": "Smash",
+              "type": "()"
+            },
+            {
+              "name": "Pray",
+              "type": "()"
+            },
+            {
+              "name": "Open",
+              "type": "()"
+            },
+            {
+              "name": "Break",
+              "type": "()"
+            },
+            {
+              "name": "Burn",
+              "type": "()"
+            },
+            {
+              "name": "Light",
+              "type": "()"
+            },
+            {
+              "name": "Ignite",
+              "type": "()"
+            },
+            {
+              "name": "Spawn",
+              "type": "()"
+            },
+            {
+              "name": "Take",
+              "type": "()"
+            },
+            {
+              "name": "Inventory",
+              "type": "()"
+            },
+            {
+              "name": "Pour",
+              "type": "()"
+            },
+            {
+              "name": "Follow",
+              "type": "()"
+            },
+            {
+              "name": "Jump",
+              "type": "()"
+            },
+            {
+              "name": "Block",
+              "type": "()"
+            },
+            {
+              "name": "Soak",
+              "type": "()"
+            },
+            {
+              "name": "Empty",
+              "type": "()"
+            },
+            {
+              "name": "Explode",
+              "type": "()"
+            },
+            {
+              "name": "Disintegrate",
+              "type": "()"
+            },
+            {
+              "name": "Close",
+              "type": "()"
+            },
+            {
+              "name": "Drop",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "core::bool",
+          "variants": [
+            {
+              "name": "False",
+              "type": "()"
+            },
+            {
+              "name": "True",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "the_oruggin_trail::models::action::Action",
+          "members": [
+            {
+              "name": "actionId",
+              "type": "core::felt252"
+            },
+            {
+              "name": "actionType",
+              "type": "the_oruggin_trail::models::zrk_enums::ActionType"
+            },
+            {
+              "name": "dBitTxt",
+              "type": "core::byte_array::ByteArray"
+            },
+            {
+              "name": "enabled",
+              "type": "core::bool"
+            },
+            {
+              "name": "revertable",
+              "type": "core::bool"
+            },
+            {
+              "name": "dBit",
+              "type": "core::bool"
+            },
+            {
+              "name": "affectsActionId",
+              "type": "core::felt252"
+            },
+            {
+              "name": "affectedByActionId",
+              "type": "core::felt252"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "the_oruggin_trail::models::zrk_enums::RoomType",
+          "variants": [
+            {
+              "name": "None",
+              "type": "()"
+            },
+            {
+              "name": "WoodCabin",
+              "type": "()"
+            },
+            {
+              "name": "Store",
+              "type": "()"
+            },
+            {
+              "name": "Cavern",
+              "type": "()"
+            },
+            {
+              "name": "Basement",
+              "type": "()"
+            },
+            {
+              "name": "StoneCabin",
+              "type": "()"
+            },
+            {
+              "name": "Fort",
+              "type": "()"
+            },
+            {
+              "name": "Room",
+              "type": "()"
+            },
+            {
+              "name": "Plain",
+              "type": "()"
+            },
+            {
+              "name": "Mountains",
+              "type": "()"
+            },
+            {
+              "name": "Barn",
+              "type": "()"
+            },
+            {
+              "name": "Forge",
+              "type": "()"
+            },
+            {
+              "name": "Pass",
+              "type": "()"
+            },
+            {
+              "name": "Alley",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "the_oruggin_trail::models::zrk_enums::BiomeType",
+          "variants": [
+            {
+              "name": "None",
+              "type": "()"
+            },
+            {
+              "name": "Forest",
+              "type": "()"
+            },
+            {
+              "name": "Tundra",
+              "type": "()"
+            },
+            {
+              "name": "Arctic",
+              "type": "()"
+            },
+            {
+              "name": "Desert",
+              "type": "()"
+            },
+            {
+              "name": "Temporate",
+              "type": "()"
+            },
+            {
+              "name": "Faery",
+              "type": "()"
+            },
+            {
+              "name": "Demon",
+              "type": "()"
+            },
+            {
+              "name": "Mountains",
+              "type": "()"
+            },
+            {
+              "name": "Prarie",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "the_oruggin_trail::models::room::Room",
+          "members": [
+            {
+              "name": "roomId",
+              "type": "core::felt252"
+            },
+            {
+              "name": "roomType",
+              "type": "the_oruggin_trail::models::zrk_enums::RoomType"
+            },
+            {
+              "name": "biomeType",
+              "type": "the_oruggin_trail::models::zrk_enums::BiomeType"
+            },
+            {
+              "name": "txtDefId",
+              "type": "core::felt252"
+            },
+            {
+              "name": "shortTxt",
+              "type": "core::byte_array::ByteArray"
+            },
+            {
+              "name": "objectIds",
+              "type": "core::array::Array::<core::felt252>"
+            },
+            {
+              "name": "dirObjIds",
+              "type": "core::array::Array::<core::felt252>"
+            },
+            {
+              "name": "players",
+              "type": "core::array::Array::<core::felt252>"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "the_oruggin_trail::systems::designer::IDesigner",
+          "items": [
+            {
+              "type": "function",
+              "name": "create_objects",
+              "inputs": [
+                {
+                  "name": "t",
+                  "type": "core::array::Array::<the_oruggin_trail::models::object::Object>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "create_actions",
+              "inputs": [
+                {
+                  "name": "t",
+                  "type": "core::array::Array::<the_oruggin_trail::models::action::Action>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "create_rooms",
+              "inputs": [
+                {
+                  "name": "t",
+                  "type": "core::array::Array::<the_oruggin_trail::models::room::Room>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "create_txt",
+              "inputs": [
+                {
+                  "name": "id",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "ownedBy",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "val",
+                  "type": "core::byte_array::ByteArray"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "dojo_init",
+          "inputs": [],
+          "outputs": [],
+          "state_mutability": "view"
+        },
+        {
+          "type": "impl",
+          "name": "WorldProviderImpl",
+          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
+        },
+        {
+          "type": "struct",
+          "name": "dojo::world::iworld::IWorldDispatcher",
+          "members": [
+            {
+              "name": "contract_address",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::world_provider::IWorldProvider",
+          "items": [
+            {
+              "type": "function",
+              "name": "world_dispatcher",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "dojo::world::iworld::IWorldDispatcher"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "UpgradeableImpl",
+          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::contract::components::upgradeable::IUpgradeable",
+          "items": [
+            {
+              "type": "function",
+              "name": "upgrade",
+              "inputs": [
+                {
+                  "name": "new_class_hash",
+                  "type": "core::starknet::class_hash::ClassHash"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "constructor",
+          "name": "constructor",
+          "inputs": []
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "class_hash",
+              "type": "core::starknet::class_hash::ClassHash",
+              "kind": "data"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Upgraded",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
+              "kind": "nested"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+          "kind": "enum",
+          "variants": []
+        },
+        {
+          "type": "event",
+          "name": "the_oruggin_trail::systems::designer::designer::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "UpgradeableEvent",
+              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+              "kind": "nested"
+            },
+            {
+              "name": "WorldProviderEvent",
+              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+              "kind": "nested"
+            }
+          ]
+        }
+      ],
+      "init_calldata": [],
+      "tag": "the_oruggin_trail-designer",
+      "selector": "0x5c5435fe69b57d9f47bd9c136c50e8cfa80258236cebecc4daceb4a9edd7027",
+      "systems": [
+        "create_objects",
+        "create_actions",
+        "create_rooms",
+        "create_txt",
+        "upgrade"
+      ]
+    },
+    {
+      "address": "0x7a0563afc0f01e47d2982b23435d7d8552f2bb48a2a8da2c9046dff72e6b3ff",
+      "class_hash": "0x2846d32b4124139944a3afaf9576d48303385c8c050df703087ac2f60dd96f5",
       "abi": [
         {
           "type": "impl",
@@ -1383,31 +2162,11 @@
                   "type": "core::array::Array::<core::byte_array::ByteArray>"
                 },
                 {
-                  "name": "p_id",
+                  "name": "_add",
                   "type": "core::felt252"
                 }
               ],
               "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "command_shoggoth",
-              "inputs": [
-                {
-                  "name": "victim",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "wish",
-                  "type": "core::array::Array::<core::byte_array::ByteArray>"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
               "state_mutability": "external"
             }
           ]
@@ -1532,427 +2291,6 @@
       "selector": "0x37b6ac738d1012bd12f2855e2233f4c16df6c884dfa6649e8e188f0cfb67fbf",
       "systems": [
         "listen",
-        "command_shoggoth",
-        "upgrade"
-      ]
-    },
-    {
-      "address": "0x56dbd725ce3aff977d0e0e57934328f51d11a3bc0fd716b650e6c9860b673cc",
-      "class_hash": "0x4e86d0268c7658cd5ed48a48afe147cfc6141d349f4cf7c104348b295dcef75",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "outputter__ContractImpl",
-          "interface_name": "dojo::contract::interface::IContract"
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::interface::IContract",
-          "items": []
-        },
-        {
-          "type": "impl",
-          "name": "outputter__DeployedContractImpl",
-          "interface_name": "dojo::meta::interface::IDeployedResource"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::meta::interface::IDeployedResource",
-          "items": [
-            {
-              "type": "function",
-              "name": "dojo_name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "OutputterImpl",
-          "interface_name": "the_oruggin_trail::systems::outputter::IOutputter"
-        },
-        {
-          "type": "interface",
-          "name": "the_oruggin_trail::systems::outputter::IOutputter",
-          "items": [
-            {
-              "type": "function",
-              "name": "spawn",
-              "inputs": [],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "updateOutput",
-              "inputs": [
-                {
-                  "name": "txt",
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "function",
-          "name": "dojo_init",
-          "inputs": [],
-          "outputs": [],
-          "state_mutability": "view"
-        },
-        {
-          "type": "impl",
-          "name": "WorldProviderImpl",
-          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
-        },
-        {
-          "type": "struct",
-          "name": "dojo::world::iworld::IWorldDispatcher",
-          "members": [
-            {
-              "name": "contract_address",
-              "type": "core::starknet::contract_address::ContractAddress"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::world_provider::IWorldProvider",
-          "items": [
-            {
-              "type": "function",
-              "name": "world_dispatcher",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::world::iworld::IWorldDispatcher"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "UpgradeableImpl",
-          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::upgradeable::IUpgradeable",
-          "items": [
-            {
-              "type": "function",
-              "name": "upgrade",
-              "inputs": [
-                {
-                  "name": "new_class_hash",
-                  "type": "core::starknet::class_hash::ClassHash"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "constructor",
-          "name": "constructor",
-          "inputs": []
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-          "kind": "struct",
-          "members": [
-            {
-              "name": "class_hash",
-              "type": "core::starknet::class_hash::ClassHash",
-              "kind": "data"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Upgraded",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-              "kind": "nested"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-          "kind": "enum",
-          "variants": []
-        },
-        {
-          "type": "event",
-          "name": "the_oruggin_trail::systems::outputter::outputter::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "UpgradeableEvent",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-              "kind": "nested"
-            },
-            {
-              "name": "WorldProviderEvent",
-              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-              "kind": "nested"
-            }
-          ]
-        }
-      ],
-      "init_calldata": [],
-      "tag": "the_oruggin_trail-outputter",
-      "selector": "0x1a960edfcfc7c69c16b4f633c71c8d1613b50ec63682bd0cab36451a38f464",
-      "systems": [
-        "spawn",
-        "updateOutput",
-        "upgrade"
-      ]
-    },
-    {
-      "address": "0x65bd082550dd4723820db9d96448adc7d369ea2430f0fe4fd3603dbcd2cecfb",
-      "class_hash": "0x5fd340f96a1a1771248cb617a52b11afc346876014a8eec8922fa149c52511b",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "spawner__ContractImpl",
-          "interface_name": "dojo::contract::interface::IContract"
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::interface::IContract",
-          "items": []
-        },
-        {
-          "type": "impl",
-          "name": "spawner__DeployedContractImpl",
-          "interface_name": "dojo::meta::interface::IDeployedResource"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::meta::interface::IDeployedResource",
-          "items": [
-            {
-              "type": "function",
-              "name": "dojo_name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "SpawnerImpl",
-          "interface_name": "the_oruggin_trail::systems::spawner::ISpawner"
-        },
-        {
-          "type": "interface",
-          "name": "the_oruggin_trail::systems::spawner::ISpawner",
-          "items": [
-            {
-              "type": "function",
-              "name": "setup",
-              "inputs": [],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "spawn_player",
-              "inputs": [
-                {
-                  "name": "pid",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "start_room",
-                  "type": "core::felt252"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "function",
-          "name": "dojo_init",
-          "inputs": [],
-          "outputs": [],
-          "state_mutability": "view"
-        },
-        {
-          "type": "impl",
-          "name": "WorldProviderImpl",
-          "interface_name": "dojo::contract::components::world_provider::IWorldProvider"
-        },
-        {
-          "type": "struct",
-          "name": "dojo::world::iworld::IWorldDispatcher",
-          "members": [
-            {
-              "name": "contract_address",
-              "type": "core::starknet::contract_address::ContractAddress"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::world_provider::IWorldProvider",
-          "items": [
-            {
-              "type": "function",
-              "name": "world_dispatcher",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::world::iworld::IWorldDispatcher"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "UpgradeableImpl",
-          "interface_name": "dojo::contract::components::upgradeable::IUpgradeable"
-        },
-        {
-          "type": "interface",
-          "name": "dojo::contract::components::upgradeable::IUpgradeable",
-          "items": [
-            {
-              "type": "function",
-              "name": "upgrade",
-              "inputs": [
-                {
-                  "name": "new_class_hash",
-                  "type": "core::starknet::class_hash::ClassHash"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "constructor",
-          "name": "constructor",
-          "inputs": []
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-          "kind": "struct",
-          "members": [
-            {
-              "name": "class_hash",
-              "type": "core::starknet::class_hash::ClassHash",
-              "kind": "data"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Upgraded",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Upgraded",
-              "kind": "nested"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-          "kind": "enum",
-          "variants": []
-        },
-        {
-          "type": "event",
-          "name": "the_oruggin_trail::systems::spawner::spawner::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "UpgradeableEvent",
-              "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
-              "kind": "nested"
-            },
-            {
-              "name": "WorldProviderEvent",
-              "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
-              "kind": "nested"
-            }
-          ]
-        }
-      ],
-      "init_calldata": [],
-      "tag": "the_oruggin_trail-spawner",
-      "selector": "0x25ff96bcdaf8f97ebe459eca9f48defec40dc6664e26dca7793cce0eb948a86",
-      "systems": [
-        "setup",
-        "spawn_player",
         "upgrade"
       ]
     }
@@ -1961,7 +2299,7 @@
   "models": [
     {
       "members": [],
-      "class_hash": "0x771722cf9544aaabafc63bd138d01b747531b07fcd9b9a844068af1ea364693",
+      "class_hash": "0x50c913e19234915e2ab12273d5383763eb01f95e36bdfd89d08ad255943e45e",
       "tag": "the_oruggin_trail-Action",
       "selector": "0x73074e1ebd038077e439048a0ca7acc7adefe262afd21042e10f61a8c383456"
     },
@@ -1973,7 +2311,7 @@
     },
     {
       "members": [],
-      "class_hash": "0x2c829792b4900814b5edcafdc74bfd44c2777fc5653efa636a5af31d554d3c8",
+      "class_hash": "0x223d70f457925a6aa12e8029b8ec21b8f864066b2cf62f47e26d135f57ec02d",
       "tag": "the_oruggin_trail-Object",
       "selector": "0x4fb4d030de6a33ed1299b70767b5efbf47af7f21535b4f094f4622e0dafd44"
     },
@@ -1994,12 +2332,6 @@
       "class_hash": "0x26fc48aa6e520934a66a866c519b5ee0c05c65446bbb568cdfef20f5fa82278",
       "tag": "the_oruggin_trail-Room",
       "selector": "0x29e011fc5da96859d49e5a6f65a5d7c57803d049b59a3e78c4f247a6013e13a"
-    },
-    {
-      "members": [],
-      "class_hash": "0x494b4f2af89a57ac9e52bc2f25b3c34f61718556c271fb60d087e25b6f501c",
-      "tag": "the_oruggin_trail-Spawnroom",
-      "selector": "0x11d8a3920e47b3b4587ef69133eb3f594e40e80e0a956607e5de6bc9026679c"
     },
     {
       "members": [],

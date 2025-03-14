@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+#editor-root {
+  @apply text-sm;
+}
+
+#editor-root > div {
+  @apply p-4;
+}
+
+html.dark {
+  @apply bg-black text-[var(--terminal-system)] transition-all duration-150;
+}
+
+html.modal {
+  @apply overflow-clip;
+}
+
+#editor-root {
+  button,
+  input,
+  select,
+  input[type="checkbox"] {
+    @apply p-2 bg-white/60;
+  }
+
+  label.btn {
+    @apply p-2;
+  }
+
+  label {
+    @apply pb-0.5;
+  }
+
+  label:not(.btn) {
+    @apply text-xs;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply border border-gray-300 rounded-md border-dashed;
+  }
+
+  textarea {
+    @apply bg-white min-h-[200px] p-2;
+  }
+
+  .btn {
+    @apply py-2 px-4 rounded bg-gray-100 border border-black/4 border-t-black/1 border-b-black/20 hover:scale-102 active:scale-98 active:bg-white active:text-black select-none disabled:opacity-50 hover:bg-blue-300 hover:text-white;
+  }
+
+  .btn-active {
+    @apply bg-blue-500 text-white;
+  }
+
+  .btn-primary {
+    @apply hover:bg-[var(--terminal-out)] hover:text-white;
+  }
+
+  .btn-danger {
+    @apply hover:bg-[var(--terminal-error)]/30 hover:text-white;
+  }
+
+  input {
+    @apply disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply py-2 px-4 rounded bg-gray-700 text-white hover:bg-gray-500;
+  }
+
+  .btn-sm {
+    @apply py-1.5 px-2.5 text-sm;
+  }
+
+  .btn-active {
+    @apply bg-blue-500 text-white;
+  }
+
+  h2 {
+    @apply font-semibold text-black/30;
+  }
+
+  .editor-inspector {
+    @apply p-2 rounded flex flex-col gap-2;
+  }
+
+  .tag {
+    @apply rounded-xs px-2 py-1 m-1 inline-flex bg-blue-100;
+  }
+}
+
+/* Dark Mode */
+html.dark #editor-root {
+  .tag {
+    @apply text-black bg-[var(--terminal-system)];
+  }
+
+  input:not([type="file"]),
+  select,
+  textarea {
+    @apply bg-black border-[var(--terminal-system)] border-dashed border;
+  }
+
+  label:not(.btn),
+  p {
+    @apply text-[var(--terminal-system)]/50 text-xs;
+  }
+
+  button,
+  label.btn {
+    @apply border-[var(--terminal-system)] border bg-[var(--terminal-system)]/10;
+  }
+
+  body {
+    @apply bg-black text-[var(--terminal-system)];
+  }
+
+  .btn {
+    @apply border border-[var(--terminal-system)] hover:bg-[var(--terminal-system)]/20;
+  }
+
+  .btn-active {
+    @apply bg-black/90 border-[var(--terminal-hash)] text-[var(--terminal-hash)] hover:bg-gray-900 focus:ring-orange-500;
+  }
+
+  .btn-primary {
+    @apply bg-[var(--terminal-system)]/50 text-white hover:bg-gray-900 hover:text-[var(--terminal-system)] focus:ring-orange-500;
+  }
+
+  .btn-danger {
+    @apply bg-red-500/20 text-red-500 hover:bg-red-500/40 focus:ring-red-500 border-red-500/60;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply text-[var(--terminal-system)];
+  }
+
+  .editor-inspector {
+    @apply text-[var(--terminal-system)] border-[var(--terminal-system)]/50 border bg-[var(--terminal-system)]/12;
+  }
+}

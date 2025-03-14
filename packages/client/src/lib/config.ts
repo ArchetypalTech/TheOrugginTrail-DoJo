@@ -1,5 +1,7 @@
-import manifestJson from "@zorg/contracts/manifest_dev.json";
-import { url, cleanEnv, host, str } from "envalid";
+import type manifestJsonType from "@zorg/contracts/manifest_dev.json";
+import manifestJson from "@zorg/contracts/manifest";
+import { schema } from "@lib/dojo_bindings/typescript/models.gen";
+import { url, cleanEnv, str } from "envalid";
 import { Account, Contract, RpcProvider } from "starknet";
 
 const getOrFail = <T>(value: T | undefined, name?: string): T => {
@@ -9,19 +11,22 @@ const getOrFail = <T>(value: T | undefined, name?: string): T => {
 	return value;
 };
 
+const slotEnv = import.meta.env.MODE === "slot" ? { VITE_SLOT: str() } : {};
+
 const env = cleanEnv(import.meta.env, {
 	VITE_CONTROLLER_CHAINID: str(),
 	VITE_TOKEN_HTTP_RPC: url(),
 	VITE_TOKEN_CONTRACT_ADDRESS: str(),
-	VITE_KATANA_HTTP_RPC: url(),
+	VITE_KATANA_HTTP_RPC: str(),
 	VITE_TORII_HTTP_RPC: url(),
 	VITE_TORII_WS_RPC: str(),
 	VITE_BURNER_ADDRESS: str(),
 	VITE_BURNER_PRIVATE_KEY: str(),
+	...slotEnv,
 });
 
 const endpoints = {
-	katana: env.VITE_KATANA_HTTP_RPC,
+	katana: "/katana", // FIXME: endpoint cors proxy workaround-- endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
 	torii: {
 		http: env.VITE_TORII_HTTP_RPC,
 		ws: env.VITE_TORII_WS_RPC,
@@ -29,21 +34,26 @@ const endpoints = {
 };
 
 const katanaProvider = new RpcProvider({
-	nodeUrl: env.VITE_KATANA_HTTP_RPC,
+	nodeUrl: "/katana", // FIXME: this is probably correct as cors escape, however endpoint should probably not be "/katana" but the correct VITE_KATANA_HTTP_RPC from the env
+	headers: {
+		//nocors
+		"Access-Control-Allow-Origin": "*",
+		mode: "no-cors",
+	},
 });
 
 // @dev: for future ref we can dynamically import manifest as well
 // const mf = await import("@zorg/contracts/manifest_dev.json");
 // console.log(mf.default);
 const manifest = {
-	default: manifestJson,
+	default: manifestJson as typeof manifestJsonType,
 	entity: getOrFail(
 		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-meatpuppet"),
 		"the_oruggin_trail-meatpuppet",
 	),
-	outputter: getOrFail(
-		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-outputter"),
-		"the_oruggin_trail-outputter",
+	designer: getOrFail(
+		manifestJson.contracts.find((c) => c.tag === "the_oruggin_trail-designer"),
+		"the_oruggin_trail-designer",
 	),
 	world: manifestJson.world,
 };
@@ -59,20 +69,32 @@ const wallet = (() => {
 	};
 })();
 
-const theOutputter = new Contract(
+const entity = new Contract(
 	manifest.entity.abi,
 	manifest.entity.address,
 	katanaProvider,
 );
 
-theOutputter.connect(wallet.account);
+entity.connect(wallet.account);
 
-export const ORUG_CONFIG = {
+const designer = new Contract(
+	manifest.designer.abi,
+	manifest.designer.address,
+	katanaProvider,
+);
+
+designer.connect(wallet.account);
+
+export const ZORG_CONFIG = {
 	endpoints,
 	katanaProvider,
-	theOutputter,
+	contracts: {
+		entity,
+		designer,
+	},
 	wallet,
 	manifest,
+	schema,
 	token: {
 		provider: env.VITE_TOKEN_HTTP_RPC,
 		// starkli chain-id --rpc https://api.cartridge.gg/x/theoruggintrail/katana
@@ -81,5 +103,6 @@ export const ORUG_CONFIG = {
 		contract_address: env.VITE_TOKEN_CONTRACT_ADDRESS,
 		erc20: ["0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"],
 	},
+	useSlot: import.meta.env.MODE === "slot",
 	env: env,
 };

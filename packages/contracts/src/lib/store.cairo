@@ -1,17 +1,14 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
+use dojo::world::{IWorldDispatcher, WorldStorage};
 use dojo::model::{ModelStorage};
 use the_oruggin_trail::lib::system::{WorldSystemsTrait};
 
 // we can add models here to make custom getters and setters etc
-use the_oruggin_trail::models::{
-    output::{ Output},
-};
+use the_oruggin_trail::models::{output::{Output}};
 
 #[derive(Copy, Drop)]
 pub struct Store {
@@ -22,10 +19,7 @@ pub struct Store {
 #[generate_trait]
 pub impl StoreImpl of StoreTrait {
     fn new(world: IWorldDispatcher, namespace: @ByteArray) -> Store {
-        (Store { 
-            world: world, 
-            world_store: WorldSystemsTrait::storage(world, namespace) 
-        })
+        (Store { world: world, world_store: WorldSystemsTrait::storage(world, namespace) })
     }
 
     //
@@ -36,14 +30,13 @@ pub impl StoreImpl of StoreTrait {
     fn get_output(self: Store, p_id: felt252) -> Output {
         self.world_store.read_model(23)
     }
-    
+
     //
     // Setters
     //
     #[inline(always)]
     fn set_output(mut self: Store, pid: felt252, msg: ByteArray) {
-        let output: Output = Output{ playerId: pid, text_o_vision: msg };
+        let output: Output = Output { playerId: pid, text_o_vision: msg };
         self.world_store.write_model(@output);
     }
-
 }

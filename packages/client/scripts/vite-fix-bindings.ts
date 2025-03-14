@@ -43,14 +43,14 @@ export function patchBindings(): Plugin {
 		configureServer(server) {
 			const modelsPath = path.resolve(
 				__dirname,
-				"../src/lib/dojo/typescript/models.gen.ts",
+				"../src/lib/dojo_bindings/typescript/models.gen.ts",
 			);
 			checkAndFixFile(modelsPath, server);
 		},
 		handleHotUpdate({ file, server }) {
 			const modelsPath = path.resolve(
 				__dirname,
-				"../src/lib/dojo/typescript/models.gen.ts",
+				"../src/lib/dojo_bindings/typescript/models.gen.ts",
 			);
 
 			if (path.normalize(file) === path.normalize(modelsPath)) {

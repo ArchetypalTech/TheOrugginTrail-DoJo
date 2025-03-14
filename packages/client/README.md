@@ -1,64 +1,83 @@
-<!-- /*
- * Created on Wed Sep 04 2024
- *
- * Copyright (c) 2024 Archetypal Tech
- * MeaCulpa (mc) 2024 lbdl | itrainspiders
- */ -->
+# The Oruggin Trail - Client
 
-# TeamPain Client
+This package contains the client for ZORG - a Dojo based Zork / MUD inspired fully onchain text adventure engine.
 
-This a minimal front end client for the [O'Ruggin Trail](https://github.com/ArchetypalTech/TheOrugginTrail-DoJo) implemenation of the ZORG engine.
+## Overview
 
-It is a Svelekit and GraphQL based app wrapping [Starknet.js](https://github.com/starknet-io/starknet.js).
+The client is built with React and connects to the Dojo contracts to provide an interactive text adventure experience.
 
-It also aims to present a simple tutorial for setting up the above mentioned stack for general interaction with :shinto_shrine: [Dojo](https://github.com/dojoengine/dojo) based worlds and contains some shell utilities for copying over the manifest and abi files from a dojo project, deploying itself and also deploying the cotract stack for local development.
-
-For a simple tutorial/template for a Sveltekit/GraphQL app check out branch `pain_lessons/101`.
-
-For a more complex version of the above (more features, etc) check out `pain_lessons/102`.
-
-## Contents
-* `scripts/` - utility scripts
-* `src/` - sveltekit app
-
-## Setup and usage
-:warning: **Note** :warning:
-the application needs an endpoint, if you have already built and deployed "`contracts`" you 
-can ignore the following section that explains how to do this.
-
-### Building and deploying the contracts locally
-* Clone the [best game ever made](https://github.com/ArchetypalTech/TheOrugginTrail-DoJo)
-* ```cd <where_did_i_clone_that_repo_to>```
-* ```sozo build```
-* ```katana --disable-fee --allowed-origins "*" | grep -v -e starknet_call -e starknet_blockHashAndNumber -e starknet_getBlockWithTxs```
-* ```sozo migrate apply``` 
-    - you need to note the world address from the output of this command
-* ```torii --world <world_address> --allowed-origins "*"```
-
-### Running the client locally
-assuming that there is an instance of both `katana` and `torii` running.
-* check you have endpoints running
-    ```lsof -i -P -n | grep LISTEN | grep katana```
-    ```lsof -i -P -n | grep LISTEN | grep torii```
-* `pnpm dev` 
-* `localhost:5173` & Open dev console in browser
-
----
 ## Development
-when the world gets updated and assuming that the structure of the contracts the client wishes to interactwith changes then the `abi` and `manifest` files need to be updated.
 
-* copy over manifest and abi files using `pnpm`:
-    ```pnpm deploy:copy_abi_manifest``` 
+### Prerequisites
 
-* copy using the shell script:
-     ```bash
-    ./scripts/copy_abi_manifest.sh ../tot
-    ```
-    The script takes a path to the root of the dojo project as an argument. i.e. wherever you cloned out the project to.
+Make sure you have [Bun](https://bun.sh) installed for package management.
 
-## Utility scripts
+### Installation
 
-`pnpm deploy:cp_system_abis` copies the abi json files from a dojo project, this is assumed to be at ../tot but can ofc be overidden, see `scripts/copy_abi_manifest.sh` for details as well as `package.json` where the commands are defined.
+From the project root:
 
-there are also a set of scripts for further code gen in the actual dojo project see [the best game in the entire universe](https://github.com/ArchetypalTech/TheOrugginTrail-DoJo).
+```bash
+bun install
+```
 
+### Development Mode
+
+To run the client in local development mode:
+
+```bash
+bun run dev
+```
+
+For slot development:
+
+```bash
+bun run dev:slot
+```
+
+### Building
+
+To build the client:
+
+```bash
+bun run build
+```
+
+For slot build:
+
+```bash
+bun run build:slot
+```
+
+### Preview
+
+To preview the built client:
+
+```bash
+bun run preview
+```
+
+### World Editor
+
+Once the development server is running, you can access the world editor at:
+
+```
+http://localhost:5173/editor
+```
+
+Use this to create and publish your own text adventure world.
+
+## Dependencies
+
+The client relies on:
+
+- React
+- Dojo Engine SDK
+- Tailwind CSS
+- Three.js (for any visual elements)
+- Several utility libraries (zustand, immer, wouter, etc.)
+
+## Additional Information
+
+For full project information, including how to set up the contracts and more details about the project, refer to the [root README](../../README.md).
+
+![The Oruggin Trail](https://github.com/ArchetypalTech/TheOrugginTrail/assets/983878/b90bcc55-2ba1-4564-94e1-d08184c1e49c)

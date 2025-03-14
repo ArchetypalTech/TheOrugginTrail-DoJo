@@ -1,4 +1,3 @@
-
 //*
 //*
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
@@ -65,7 +64,7 @@ pub fn biome_type_to_str(biome_type: BiomeType) -> ByteArray {
 }
 
 
-/// Room Types 
+/// Room Types
 /// used by the description libs to autogen
 /// description strings by composition rather
 /// than being hardcoded
@@ -163,8 +162,8 @@ pub enum MaterialType {
 }
 
 /// MaterialType -> short_string or felt252
-/// 
-/// implements the Into trait and gives a <= 32 char i.e 32 * 8 bits  
+///
+/// implements the Into trait and gives a <= 32 char i.e 32 * 8 bits
 impl MT_to_Felt252 of Into<MaterialType, felt252> {
     fn into(self: MaterialType) -> felt252 {
         match self {
@@ -298,7 +297,7 @@ pub enum ActionType {
     Ignite,
     Spawn,
     Take,
-    Help,
+    Inventory,
     Pour,
     Follow,
     Jump,
@@ -330,7 +329,7 @@ impl AT_to_Felt252 of Into<ActionType, felt252> {
             ActionType::Ignite => 'ignite',
             ActionType::Spawn => 'spawn',
             ActionType::Take => 'take',
-            ActionType::Help => 'help',
+            ActionType::Inventory => 'inventory',
             ActionType::Pour => 'pour',
             ActionType::Follow => 'follow',
             ActionType::Jump => 'jump',
@@ -341,7 +340,7 @@ impl AT_to_Felt252 of Into<ActionType, felt252> {
             ActionType::Soak => 'soak',
             ActionType::Empty => 'empty',
             ActionType::Drop => 'drop',
-            ActionType::None => 'none'
+            ActionType::None => 'none',
         }
     }
 }
@@ -432,6 +431,8 @@ pub fn object_type_to_str(object_type: ObjectType) -> ByteArray {
         "path"
     } else if object_type == ObjectType::Chest {
         "chest"
+    } else if object_type == ObjectType::Box {
+        "box"
     } else if object_type == ObjectType::Matches {
         "matches"
     } else if object_type == ObjectType::Petrol {
