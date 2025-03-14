@@ -45,3 +45,8 @@ export const decodeDojoText = (text: string) => {
 	const decodedText = decodeURI(text.trimStart()).replaceAll("%2C", ",");
 	return decodedText;
 };
+
+// svelte like tick
+export const tick = async () => {
+	await new Promise((resolve) => setTimeout(resolve, 1));
+};

@@ -72,22 +72,23 @@ export const RoomEditor = ({
 	const handleDeleteRoom = () => {
 		if (!editedRoom) return;
 
-		EditorStore().rooms.delete(currentRoomIndex);
+		EditorData().deleteItem(editedRoom.roomId);
+		const r = EditorData().getRooms();
 		// Adjust the current room index if needed
-		if (currentRoomIndex >= currentLevel.rooms.length - 1) {
+		if (currentRoomIndex >= r.length - 1) {
 			EditorStore().set({
-				currentRoomIndex: Math.max(0, currentLevel.rooms.length - 2),
+				currentRoomIndex: Math.max(0, r.length - 2),
 			});
 		}
 		EditorStore().set({
-			currentRoomIndex: Math.max(0, currentLevel.rooms.length - 2),
+			currentRoomIndex: Math.max(0, r.length - 2),
 		});
 	};
 
 	if (Object.values(rooms).length === 0 || !editedRoom) {
 		return null;
 	}
-	// console.log(editedRoom);
+
 	return (
 		<div className="flex flex-row gap-2 col-span-2">
 			<EditorList

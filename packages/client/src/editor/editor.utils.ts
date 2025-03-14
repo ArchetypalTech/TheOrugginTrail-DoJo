@@ -143,8 +143,6 @@ const createFallbackConfig = (rooms: unknown[]): Config => {
  * Transform raw JSON data to match our expected Config format
  */
 export const transformConfig = (rawConfig: unknown): Config => {
-	console.log("Raw config before transformation:", rawConfig);
-
 	// Ensure rawConfig has the expected structure with levels
 	let configToTransform = rawConfig;
 
@@ -155,13 +153,11 @@ export const transformConfig = (rawConfig: unknown): Config => {
 		configToTransform !== null &&
 		!("levels" in (configToTransform as Record<string, unknown>))
 	) {
-		console.log("Converting single level to config with levels array");
 		configToTransform = { levels: [configToTransform] };
 	}
 
 	// If it's just an array of rooms, create a proper level and config structure
 	if (Array.isArray(configToTransform)) {
-		console.log("Converting array to config with levels and rooms");
 		configToTransform = {
 			levels: [
 				{
@@ -175,11 +171,9 @@ export const transformConfig = (rawConfig: unknown): Config => {
 	// Try standard transformation first
 	try {
 		let transformedConfig = transformWithSchema(ConfigSchema, configToTransform);
-		console.log("After schema transformation:", transformedConfig);
 
 		// Convert string text values to inline text definitions
 		transformedConfig = ensureInlineTextDefinitions(transformedConfig);
-		console.log("After ensuring inline text definitions:", transformedConfig);
 
 		// Validate and normalize all IDs in the config
 		const { config: normalizedConfig, errors: idErrors } =
@@ -212,7 +206,6 @@ export const transformConfig = (rawConfig: unknown): Config => {
 				if (rooms.length > 0) {
 					// Create a fallback config from the rooms
 					const minimalConfig = createFallbackConfig(rooms);
-					console.log("Created fallback config:", minimalConfig);
 
 					// Validate and normalize all IDs in the fallback config
 					const { config: finalConfig } = validateAndNormalizeConfig(minimalConfig);

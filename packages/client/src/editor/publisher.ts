@@ -72,8 +72,11 @@ export const publishRoom = async (room: T_Room) => {
  */
 export const processRoomObjects = async (room: T_Room): Promise<void> => {
 	for (const obj of room.objectIds) {
+		console.log("Processing object", obj);
 		const _obj = EditorData().getItem(obj) as T_Object;
-		await processObjects(_obj);
+		if (_obj) {
+			await processObjects(_obj);
+		}
 	}
 };
 
@@ -84,11 +87,12 @@ export const processObjects = async (obj: T_Object) => {
 
 export const publishObject = async (obj: T_Object) => {
 	actions.notifications.startPublishing();
+	console.log("Publishing object", obj);
 	const objData = [
 		parseInt(obj.objectId),
 		objectTypeToIndex(obj.objType || "None"), // Map to index with fallback
 		directionToIndex(obj.dirType), // Map to index (already handles null)
-		parseInt(obj.destId || ""),
+		parseInt(obj.destId || "0"),
 		materialTypeToIndex(obj.matType || "None"), // Map to index with fallback
 		obj.objectActionIds.length > 0
 			? obj.objectActionIds.map((x) => parseInt(x))

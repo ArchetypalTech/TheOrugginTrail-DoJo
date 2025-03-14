@@ -32,14 +32,16 @@ const getItem = (id: string) => get().dataPool.get(id);
 const syncItem = (obj: unknown) => {
 	console.log("syncing obj", obj, get());
 	if ("Room" in (obj as { Room: T_Room })) {
-		const r = obj as { Room: T_Room };
+		const r = { ...(obj as { Room: T_Room }) };
+		r.Room.roomId = parseInt(r.Room.roomId).toString();
 		setItem(r.Room, r.Room.roomId);
 		set((prev) => {
 			prev.rooms = { ...prev.rooms, [r.Room.roomId]: r.Room };
 		});
 	}
 	if ("Object" in (obj as { Object: T_Object })) {
-		const o = obj as { Object: T_Object };
+		const o = { ...(obj as { Object: T_Object }) };
+		o.Object.objectId = parseInt(o.Object.objectId).toString();
 		console.log(o.Object);
 		setItem(o.Object, o.Object.objectId);
 		set((prev) => {
@@ -47,7 +49,8 @@ const syncItem = (obj: unknown) => {
 		});
 	}
 	if ("Action" in (obj as { Action: T_Action })) {
-		const a = obj as { Action: T_Action };
+		const a = { ...(obj as { Action: T_Action }) };
+		a.Action.actionId = parseInt(a.Action.actionId).toString();
 		a.Action.dBitTxt = decodeDojoText(a.Action.dBitTxt);
 		setItem(a.Action, a.Action.actionId);
 		set((prev) => {
@@ -55,7 +58,9 @@ const syncItem = (obj: unknown) => {
 		});
 	}
 	if ("Txtdef" in (obj as { Txtdef: T_TextDefinition })) {
-		const t = obj as { Txtdef: T_TextDefinition };
+		const t = { ...(obj as { Txtdef: T_TextDefinition }) };
+		console.log("TXTDEF", t.Txtdef);
+		// t.Txtdef.id = parseInt(t.Txtdef.id).toString();
 		t.Txtdef.text = decodeDojoText(t.Txtdef.text);
 		setItem(t.Txtdef, t.Txtdef.id);
 		set((prev) => {
@@ -67,6 +72,33 @@ const syncItem = (obj: unknown) => {
 			isDirty: Date.now(),
 		});
 	}, 1);
+};
+
+const deleteItem = (id: string) => {
+	if (get().rooms[id] !== undefined) {
+		const room = get().rooms[id] as T_Room;
+		console.log("TEST Deleting room", room);
+		deleteItem(room.txtDefId);
+		for (const objId of room.objectIds) {
+			deleteItem(objId);
+		}
+	}
+	if (get().objects[id] !== undefined) {
+		const object = get().objects[id] as T_Object;
+		console.log("TEST Deleting object", object);
+		deleteItem(object.txtDefId);
+		for (const actionId of object.objectActionIds) {
+			deleteItem(actionId);
+		}
+	}
+	if (get().actions[id] !== undefined) {
+		const action = get().actions[id] as T_Action;
+		console.log("TEST Deleting action", action);
+	}
+	if (get().txtDefs[id] !== undefined) {
+		const txtDef = get().txtDefs[id] as T_TextDefinition;
+		console.log("TEST Deleting txtDef", txtDef);
+	}
 };
 
 const getRooms = () => Object.values(get().rooms);
@@ -154,6 +186,7 @@ const EditorData = createFactory({
 	newObject,
 	newRoom,
 	newAction,
+	deleteItem,
 });
 
 export default EditorData;

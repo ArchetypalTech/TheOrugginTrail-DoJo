@@ -8,8 +8,9 @@ import { EditorHeader } from "./components/EditorHeader";
 import { useHead } from "@unhead/react";
 import EditorStore from "./editor.store";
 import { APP_EDITOR_SEO } from "@/data/app.data";
-import { useEditorData } from "./editor.data";
+import EditorData, { useEditorData } from "./editor.data";
 import type { T_Room } from "./lib/types";
+import { tick } from "@/lib/utils/utils";
 
 export const Editor = () => {
 	const { rooms, objects, actions, textDefs, isDirty } = useEditorData();
@@ -19,6 +20,27 @@ export const Editor = () => {
 	const [currentRoomIndex, setCurrentRoomIndex] = useState(0);
 	const [currentObjectIndex, setCurrentObjectIndex] = useState(0);
 	const [currentActionIndex, setCurrentActionIndex] = useState(0);
+
+	const selectRoom = async (index: number) => {
+		setCurrentObjectIndex(-1);
+		setCurrentActionIndex(-1);
+		setCurrentRoomIndex(index);
+		await tick();
+		const room = EditorData().getRooms()[index];
+		if (room.objectIds.length > 0) {
+			setCurrentObjectIndex(0);
+			await tick();
+			const object = EditorData()
+				.getObjects()
+				.find((x) => x.objectId === room.objectIds[0]);
+			if (object && object.objectActionIds.length > 0) {
+				setCurrentActionIndex(0);
+				const action = EditorData()
+					.getActions()
+					.find((x) => x.actionId === object.objectActionIds[0]);
+			}
+		}
+	};
 
 	// FIXME: needs proper state management
 	const { editedRoom } = useMemo(() => {
@@ -65,14 +87,25 @@ export const Editor = () => {
 	};
 
 	return (
-		<div id="editor-root" className="m-4">
+		<div id="editor-root" className="relative m-4 h-full w-full">
 			<Notifications onDismiss={handleDismissNotification} />
 			<EditorHeader />
+
+			{Object.values(rooms).length < 1 && (
+				<div className="relative w-full h-full flex items-center justify-center">
+					<div className="flex flex-col">
+						<h2 className="text-center mb-10 text-2xl">Empty World</h2>
+						<button className="btn" onClick={EditorData().newRoom}>
+							Create Room
+						</button>
+					</div>
+				</div>
+			)}
 			<div className="grid grid-cols-4 gap-2">
 				<RoomEditor
 					editedRoom={editedRoom}
 					currentRoomIndex={currentRoomIndex}
-					setCurrentRoomIndex={setCurrentRoomIndex}
+					setCurrentRoomIndex={selectRoom}
 				/>
 				{editedRoom && (
 					<ObjectEditor

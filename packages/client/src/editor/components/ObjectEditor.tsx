@@ -70,7 +70,7 @@ export const ObjectEditor = ({
 	const handleDeleteObject = () => {
 		if (!editedObject) return;
 
-		EditorStore().objects.delete(currentObjectIndex);
+		EditorData().deleteItem(editedObject.objectId);
 		// Adjust the current object index if needed
 		if (currentObjectIndex >= editedRoom.objectIds.length - 1) {
 			setCurrentObjectIndex(Math.max(0, editedRoom.objectIds.length - 2));

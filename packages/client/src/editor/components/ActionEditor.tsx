@@ -59,10 +59,10 @@ export const ActionEditor = ({
 	const handleDeleteAction = () => {
 		if (!editedAction) return;
 
-		EditorStore().objects.deleteAction(editedObject.objectId, currentActionIndex);
+		EditorData().deleteItem(editedAction.actionId);
 		// Adjust the current action index if needed
-		if (currentActionIndex >= editedObject.actions.length - 1) {
-			setCurrentActionIndex(Math.max(0, editedObject.actions.length - 2));
+		if (currentActionIndex >= editedObject.objectActionIds.length - 1) {
+			setCurrentActionIndex(Math.max(0, editedObject.objectActionIds.length - 2));
 		}
 	};
 
@@ -161,12 +161,11 @@ export const ActionEditor = ({
 						id="affectsAction"
 						value={editedAction.affectsActionId || "null"}
 						onChange={handleInputChange}
-						options={EditorStore()
-							.objects.getAllActionIDs()
-							.filter((id) => id !== editedAction.actionId)
-							.map((actionId) => ({
-								value: actionId,
-								label: actionId,
+						options={EditorData()
+							.getActions()
+							.map((action) => ({
+								value: action.actionId,
+								label: action.actionType,
 							}))}
 					/>
 					<ItemId id={editedAction.actionId} />
