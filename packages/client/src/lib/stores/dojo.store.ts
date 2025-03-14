@@ -23,6 +23,8 @@ export type DojoStatus = {
 	error: string | null;
 };
 
+let connectionTimeout: Timer | undefined;
+
 const {
 	get,
 	set,
@@ -87,6 +89,13 @@ const initializeConfig = async (
 	if (config === undefined) return;
 
 	console.log("[DOJO]: CONFIG ", config);
+	connectionTimeout = setTimeout(() => {
+		setStatus({
+			status: "error",
+			error: "Connection timeout",
+		});
+		window.location.reload();
+	}, 5000);
 
 	if (existingSubscription !== undefined) return;
 
@@ -132,6 +141,8 @@ const initializeConfig = async (
 				EditorData().syncItem(_D.models.the_oruggin_trail);
 			}
 		}
+
+		clearTimeout(connectionTimeout);
 
 		setStatus({
 			status: "initialized",
