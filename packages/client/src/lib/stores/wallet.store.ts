@@ -2,6 +2,7 @@ import type { WalletAccount } from "starknet";
 import Controller, { type ControllerOptions } from "@cartridge/controller";
 import { ZORG_CONFIG } from "@lib/config";
 import { StoreBuilder } from "../utils/storebuilder";
+import { APP_EDITOR_DATA } from "@/data/app.data";
 
 /**
  * Interface representing the wallet state.
@@ -22,7 +23,12 @@ interface WalletStore {
 	isLoading: boolean;
 }
 
-const { get, set, createFactory } = StoreBuilder<WalletStore>({
+const {
+	get,
+	set,
+	createFactory,
+	useStore: useWalletStore,
+} = StoreBuilder<WalletStore>({
 	account: undefined,
 	username: undefined,
 	walletAddress: undefined,
@@ -38,6 +44,31 @@ const { get, set, createFactory } = StoreBuilder<WalletStore>({
  */
 const setupController = async () => {
 	const worldName = ZORG_CONFIG.manifest.default.world.name;
+	const isEditor = window.location.pathname.startsWith("/editor");
+	const editorConfig = {
+		[ZORG_CONFIG.manifest.designer.address]: {
+			name: APP_EDITOR_DATA.title, // Optional, can be added if you want a name
+			description: `Aprove submitting transactions to ${APP_EDITOR_DATA.title}`,
+			methods: [
+				{
+					entrypoint: "create_objects",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "create_actions",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "create_rooms",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "create_txt",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+			],
+		},
+	};
 	const controllerConfig: ControllerOptions = {
 		policies: {
 			contracts: {
@@ -51,6 +82,7 @@ const setupController = async () => {
 						},
 					],
 				},
+				...(isEditor ? editorConfig : {}),
 				[ZORG_CONFIG.token.contract_address]: {
 					name: "TOT NFT", // Optional
 					description: "Mint and transfer TOT tokens",
@@ -175,3 +207,4 @@ const WalletStore = createFactory({
 });
 
 export default WalletStore;
+export { useWalletStore };

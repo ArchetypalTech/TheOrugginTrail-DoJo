@@ -95,27 +95,35 @@ async function sendDesignerCall(props: DesignerCallProps) {
 	console.log(call, args);
 	try {
 		// other calls follow the same format Array<Object> see Cairo Models
+		let calldata: ReturnType<typeof CallData.compile>;
 		if (call !== "create_txt") {
 			// reformat args to cairo array
 			const data = toCairoArray(args) as RawArgsArray;
-			const calldata = CallData.compile(data);
-			const response = await ZORG_CONFIG.contracts.designer.invoke(call, calldata);
-			// we do a manual wait because the waitForTransaction is super slow
-			await new Promise((r) => setTimeout(r, 500));
-			return new Response(JSON.stringify(response), {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
+			calldata = CallData.compile(data);
+		} else {
+			const safeEncoded = encodeURI(args[2] as string);
+			const convertedString = byteArray.byteArrayFromString(safeEncoded);
+
+			const data = [args[0], args[1], convertedString] as RawArgsArray;
+			calldata = CallData.compile(data);
 		}
 
-		const safeEncoded = encodeURI(args[2] as string);
-		const convertedString = byteArray.byteArrayFromString(safeEncoded);
-
-		const data = [args[0], args[1], convertedString] as RawArgsArray;
-		const calldata = CallData.compile(data);
-
-		const response = await ZORG_CONFIG.contracts.designer.invoke(call, calldata);
+		let response: unknown;
+		if (ZORG_CONFIG.useSlot) {
+			if (!WalletStore().isConnected) {
+				throw new Error("Wallet not connected");
+			}
+			console.log("[CONTROLLER DESIGNERCALL]", call, args);
+			response = await WalletStore().controller?.account?.execute([
+				{
+					contractAddress: ZORG_CONFIG.contracts.designer.address,
+					entrypoint: call,
+					calldata,
+				},
+			]);
+		} else {
+			response = await ZORG_CONFIG.contracts.designer.invoke(call, calldata);
+		}
 		// we do a manual wait because the waitForTransaction is super slow
 		await new Promise((r) => setTimeout(r, 500));
 
