@@ -2091,8 +2091,8 @@
       ]
     },
     {
-      "address": "0x2ebe703baedd19838297d711e722276354922dfe32e11d5d8c8dbff45abf156",
-      "class_hash": "0x1cef6a7563b45bd013a36572baa62292ae562bf93e161674816690c768597e4",
+      "address": "0x3d0067f92a87ebafa8fe23de40f04a739dcc4d249a36f113416dff59525538c",
+      "class_hash": "0x2846d32b4124139944a3afaf9576d48303385c8c050df703087ac2f60dd96f5",
       "abi": [
         {
           "type": "impl",
@@ -2167,26 +2167,6 @@
                 }
               ],
               "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "command_shoggoth",
-              "inputs": [
-                {
-                  "name": "victim",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "wish",
-                  "type": "core::array::Array::<core::byte_array::ByteArray>"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
               "state_mutability": "external"
             }
           ]
@@ -2311,7 +2291,6 @@
       "selector": "0x37b6ac738d1012bd12f2855e2233f4c16df6c884dfa6649e8e188f0cfb67fbf",
       "systems": [
         "listen",
-        "command_shoggoth",
         "upgrade"
       ]
     }

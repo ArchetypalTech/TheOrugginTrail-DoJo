@@ -9,11 +9,7 @@ pub mod lookat {
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{
-        player::Player, room::Room,
-        zrk_enums::{
-            material_type_to_str, object_type_to_str, direction_type_to_str, ActionType,
-            DirectionType,
-        },
+        player::Player, room::Room, zrk_enums::{direction_type_to_str, ActionType, DirectionType},
         txtdef::Txtdef, object::Object, object,
     };
 
