@@ -106,7 +106,7 @@ export const ActionEditor = ({
 	}
 
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 justify-items-start">
 			<EditorList
 				list={
 					editedObject?.objectActionIds.map((o) => EditorData().actions[o]) || []
@@ -120,7 +120,7 @@ export const ActionEditor = ({
 			{!editedAction ? (
 				<div className="flex flex-col space-y-4" />
 			) : (
-				<div className="editor-inspector">
+				<div className="editor-inspector self-start">
 					<Header title="Action">
 						<DeleteButton onClick={handleDeleteAction} />
 						<PublishButton

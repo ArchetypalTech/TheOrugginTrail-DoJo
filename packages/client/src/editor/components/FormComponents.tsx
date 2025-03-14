@@ -4,10 +4,15 @@ import { TagInput as Tags } from "./TagInput";
 export const Header = ({
 	title,
 	children,
-}: { title: string; children?: React.ReactNode }) => {
+	onClickTitle,
+}: {
+	title: string;
+	children?: React.ReactNode;
+	onClickTitle?: () => void;
+}) => {
 	return (
 		<div className="flex justify-between flex-row gap-2">
-			<h2>{title}</h2>
+			<h2 onClick={onClickTitle}>{title}</h2>
 			<div className="grow" />
 			{children}
 		</div>

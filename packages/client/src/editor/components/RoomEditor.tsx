@@ -107,8 +107,13 @@ export const RoomEditor = ({
 				selectedIndex={currentRoomIndex}
 				emptyText="🏠 Create Room"
 			/>
-			<div className="editor-inspector shrink">
-				<Header title="Room">
+			<div className="editor-inspector">
+				<Header
+					title="Room"
+					onClickTitle={() => {
+						console.log(editedRoom);
+					}}
+				>
 					<DeleteButton onClick={handleDeleteRoom} />
 					<PublishButton
 						onClick={async () => {

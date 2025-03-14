@@ -1,32 +1,37 @@
 import { ZORG_CONFIG } from "@lib/config";
 import EditorData from "../editor.data";
+import { APP_EDITOR_DATA } from "@/data/app.data";
 
 export const EditorFooter = () => {
 	return (
-		<header className="flex flex-row justify-between gap-2 mt-4 items-center p-4 invert bg-gray-300">
-			<h1 className="text-xl font-bold font-mono textFreak">ZORGTOR</h1>
+		<footer className="gap-2 mt-4 flex items-center p-4 invert bg-gray-300 w-full justify-center">
+			<div className="lg:container flex flex-row justify-between w-full">
+				<h1 className="text-xl font-bold font-mono textFreak">
+					{APP_EDITOR_DATA.title}
+				</h1>
 
-			<div className="flex grow" />
-			<div className="flex gap-2">
-				<a
-					href={`${ZORG_CONFIG.endpoints.torii.http}/sql`}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="hover:underline text-xs textFreak"
-				>
-					<button className="btn btn-sm btn-success">Torii SQL</button>
-				</a>
+				<div className="flex grow" />
+				<div className="flex gap-2">
+					<a
+						href={`${ZORG_CONFIG.endpoints.torii.http}/sql`}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="hover:underline text-xs textFreak"
+					>
+						<button className="btn btn-sm btn-success">Torii SQL</button>
+					</a>
+				</div>
+				<div className="flex gap-2">
+					<button
+						className="btn btn-sm btn-success"
+						onClick={() => {
+							EditorData().logPool();
+						}}
+					>
+						Console Log DataPool
+					</button>
+				</div>
 			</div>
-			<div className="flex gap-2">
-				<button
-					className="btn btn-sm btn-success"
-					onClick={() => {
-						EditorData().logPool();
-					}}
-				>
-					Console Log DataPool
-				</button>
-			</div>
-		</header>
+		</footer>
 	);
 };

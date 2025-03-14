@@ -1,13 +1,11 @@
 import { useRef } from "react";
 import EditorStore from "../editor.store";
-import { ZORG_CONFIG } from "@lib/config";
 import UserStore, { useUserStore } from "@/lib/stores/user.store";
-import EditorData, { useEditorData } from "../editor.data";
+import { APP_EDITOR_DATA } from "@/data/app.data";
 
 export const EditorHeader = () => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const { dark_mode } = useUserStore();
-	const { rooms } = useEditorData();
 
 	// Handler for file upload
 	const handleImportConfig = () => {
@@ -38,9 +36,9 @@ export const EditorHeader = () => {
 	};
 
 	return (
-		<header className="flex flex-row justify-between gap-2 items-center p-4">
+		<header className="flex flex-row justify-between gap-2 items-center pb-2 w-full lg:container">
 			<div className="flex flex-col font-mono textFreak">
-				<h1 className="text-xl font-bold">ZORGTOR</h1>
+				<h1 className="text-xl font-bold">{APP_EDITOR_DATA.title}</h1>
 				<div>
 					({import.meta.env.MODE ? import.meta.env.MODE.toUpperCase() : "DEV"})
 				</div>

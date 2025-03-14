@@ -12,7 +12,7 @@ import EditorData, { useEditorData } from "./editor.data";
 import type { T_Room } from "./lib/types";
 import { tick } from "@/lib/utils/utils";
 import { EditorFooter } from "./components/EditorFooter";
-import DojoStore, { useDojoStore } from "@/lib/stores/dojo.store";
+import { useDojoStore } from "@/lib/stores/dojo.store";
 
 export const Editor = () => {
 	const {
@@ -99,55 +99,55 @@ export const Editor = () => {
 	const isLoading = status === "loading" || status === "error";
 
 	return (
-		<div id="editor-root" className="relative flex flex-col h-full w-full">
+		<div id="editor-root" className="relative h-full w-full">
 			<Notifications onDismiss={handleDismissNotification} />
-			{isLoading ? (
-				<div className="relative w-full h-full flex items-center justify-center font-mono">
-					<div className="animate-spin mr-3">🥾</div>
-					No Dojo connection
-				</div>
-			) : (
-				<>
-					<EditorHeader />
-
-					{Object.values(rooms).length < 1 && (
-						<div className="relative w-full h-full flex items-center justify-center">
-							<div className="flex flex-col">
-								<h2 className="text-center mb-10 text-2xl">Empty World</h2>
-								<button className="btn" onClick={EditorData().newRoom}>
-									Create Room
-								</button>
+			<div className="w-full lg:container flex flex-col gap-2 items-center justify-center mx-auto">
+				<EditorHeader />
+				{isLoading ? (
+					<div className="relative w-full h-full flex items-center justify-center font-mono">
+						<div className="animate-spin mr-3">🥾</div>
+						No Dojo connection
+					</div>
+				) : (
+					<>
+						{Object.values(rooms).length < 1 && (
+							<div className="relative w-auto h-full flex items-center justify-center">
+								<div className="flex flex-col">
+									<h2 className="text-center mb-10 text-2xl">Empty World</h2>
+									<button className="btn" onClick={EditorData().newRoom}>
+										Create Room
+									</button>
+								</div>
+							</div>
+						)}
+						<div className="flex grow">
+							<div className="grid grid-cols-4 gap-2">
+								<RoomEditor
+									editedRoom={editedRoom}
+									currentRoomIndex={currentRoomIndex}
+									setCurrentRoomIndex={selectRoom}
+								/>
+								{editedRoom && (
+									<ObjectEditor
+										editedRoom={editedRoom}
+										editedObject={editedObject}
+										currentObjectIndex={currentObjectIndex}
+										setCurrentObjectIndex={selectObject}
+									/>
+								)}
+								{editedObject && (
+									<ActionEditor
+										editedAction={editedAction}
+										editedObject={editedObject}
+										currentActionIndex={currentActionIndex}
+										setCurrentActionIndex={setCurrentActionIndex}
+									/>
+								)}
 							</div>
 						</div>
-					)}
-					<div className="flex grow">
-						<div className="grid grid-cols-4 gap-2">
-							<RoomEditor
-								editedRoom={editedRoom}
-								currentRoomIndex={currentRoomIndex}
-								setCurrentRoomIndex={selectRoom}
-							/>
-							{editedRoom && (
-								<ObjectEditor
-									editedRoom={editedRoom}
-									editedObject={editedObject}
-									currentObjectIndex={currentObjectIndex}
-									setCurrentObjectIndex={selectObject}
-								/>
-							)}
-							{editedObject && (
-								<ActionEditor
-									editedAction={editedAction}
-									editedObject={editedObject}
-									currentActionIndex={currentActionIndex}
-									setCurrentActionIndex={setCurrentActionIndex}
-								/>
-							)}
-						</div>
-					</div>
-				</>
-			)}
-
+					</>
+				)}
+			</div>
 			<EditorFooter />
 		</div>
 	);
