@@ -1,7 +1,7 @@
 procs:
   contracts:
     cwd: packages/contracts
-    shell: wait-port 5050 && sozo build --typescript --bindings-output ../client/src/lib/dojo_bindings/ && sozo inspect && sozo migrate && sozo inspect && bun run dev:watch
+    shell: wait-port 5050 && bun run dev:watch
   client:
     cwd: packages/client
     shell: bun run dev

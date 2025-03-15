@@ -4,7 +4,7 @@ import { deploymentComplete, runCommands } from "./common";
 import {
 	getSlotServices,
 	cmd_deploy_slot,
-	runContractDeployment,
+	runSlotDeployment,
 } from "./slot.common";
 
 export const deploySlot = async () => {
@@ -35,7 +35,7 @@ export const deploySlot = async () => {
 		}
 	}
 	await runCommands(cmd_deploy_slot);
-	await runContractDeployment();
+	await runSlotDeployment();
 
 	deploymentComplete();
 };

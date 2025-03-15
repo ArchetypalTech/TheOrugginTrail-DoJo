@@ -50,21 +50,25 @@ export type Config = ParsedConfig & {
 			slot_name?: string;
 		};
 	};
+	mode: string;
 };
 
 export type ParsedConfig = {
 	[K in keyof typeof files]?: Record<string, unknown>;
 };
 
-export const config = await Object.entries(files).reduce(
-	async (accPromise, [key, value]): Promise<Config> => {
-		const acc = await accPromise;
-		const file = await Bun.file(value).text();
-		acc[key as keyof typeof files] = parse(file);
-		return acc as Config;
-	},
-	Promise.resolve({} as Config),
-);
+export const config = {
+	...(await Object.entries(files).reduce(
+		async (accPromise, [key, value]): Promise<Config> => {
+			const acc = await accPromise;
+			const file = await Bun.file(value).text();
+			acc[key as keyof typeof files] = parse(file);
+			return acc as Config;
+		},
+		Promise.resolve({} as Config),
+	)),
+	mode: parsed.mode,
+};
 
 // spawns and runs a child process
 const runProcess = async (command: string, silent = false, pipe = true) => {
@@ -84,16 +88,6 @@ const runProcess = async (command: string, silent = false, pipe = true) => {
 	await proc.exited;
 	return output;
 };
-
-export const cmd_view_slot = [`slot deployments list`];
-
-export const cmd_sozo_build = [
-	`sozo build --profile slot --typescript --bindings-output ../client/src/lib/dojo_bindings/`,
-];
-
-export const cmd_sozo_migrate = [`sozo migrate --profile slot`];
-
-export const cmd_sozo_inspect = [`sozo inspect --profile slot`];
 
 export const runCommands = async (
 	commands: string[],
@@ -127,16 +121,14 @@ export const deploymentComplete = () => {
 	outro(`${yellow("🦨💕 Deployment Complete\n")}`);
 };
 
-export const createBuilder = async () => {
+export const createBuilder = async (command: string) => {
 	let buildProcess: Subprocess | undefined;
 	const runBuild = async () => {
 		if (buildProcess) {
 			buildProcess.kill();
 		}
-		const cmd =
-			"sozo build --profile dev --typescript --bindings-output ../client/src/lib/dojo_bindings/";
 		console.log(black(bgGreen(" Starting compilation ")));
-		buildProcess = Bun.spawn(cmd.split(" "), {
+		buildProcess = Bun.spawn(command.split(" "), {
 			stdout: "inherit",
 			stderr: "inherit",
 			env: { FORCE_COLOR: "3", ...import.meta.env },
@@ -152,9 +144,10 @@ export const createBuilder = async () => {
 };
 
 export const startWatcher = async (
+	command: string,
 	onSuccessFn: (watcher: FSWatcher) => Promise<void>,
 ) => {
-	const { runBuild, killProcess } = await createBuilder();
+	const { runBuild, killProcess } = await createBuilder(command);
 	const watcher = watch(
 		path.join(import.meta.dir, "../", "src"),
 		{ recursive: true },

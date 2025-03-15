@@ -1,13 +1,6 @@
 import { log } from "@clack/prompts";
-import { bgDarkGray, white } from "ansicolor";
-import {
-	cmd_sozo_build,
-	cmd_sozo_inspect,
-	cmd_sozo_migrate,
-	cmd_view_slot,
-	config,
-	runCommands,
-} from "./common";
+import { bgDarkGray, bgGreen, white } from "ansicolor";
+import { config, runCommands } from "./common";
 
 export const worldAddress = config.dojo_config?.env?.world_address as string;
 export const rpcUrl = config.dojo_config?.env?.rpc_url as string;
@@ -27,6 +20,7 @@ export const cmd_deploy_slot = [
 	`slot deployments create zorg-v1 torii --world ${worldAddress} --rpc ${rpcUrl}`,
 	`slot deployments list`,
 ];
+export const cmd_view_slot = [`slot deployments list`];
 
 const parseServiceEntries = (
 	input: string,
@@ -56,7 +50,7 @@ export const getSlotServices = async () => {
 	return slotServices;
 };
 
-export const runContractDeployment = async () => {
+export const runSlotDeployment = async () => {
 	const slotServices = await getSlotServices();
 
 	const hasKatana = slotServices.includes("katana");
@@ -65,10 +59,16 @@ export const runContractDeployment = async () => {
 		log.error("No existing Slot deployments found");
 		process.exit(1);
 	}
-	log.info("🪐 Deploying Contracts to slot");
-	await runCommands(cmd_sozo_build, false, false);
-	await runCommands(cmd_sozo_migrate);
-	await runCommands(cmd_sozo_inspect, false, false);
+	log.info(bgGreen(` 🪐 Deploying Contracts to slot `));
+	await runCommands(
+		[
+			`sozo build --profile ${config.mode} --typescript --bindings-output ../client/src/lib/dojo_bindings/`,
+		],
+		false,
+		false,
+	);
+	await runCommands([`sozo migrate --profile ${config.mode}`]);
+	await runCommands([`sozo inspect --profile ${config.mode}`], false, false);
 	await runCommands([`starkli chain-id --rpc ${rpcUrl}`], false, false);
 	await runCommands(cmd_view_slot);
 };

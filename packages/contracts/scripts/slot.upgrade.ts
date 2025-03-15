@@ -1,5 +1,5 @@
 import { deploymentComplete } from "./common";
-import { runContractDeployment } from "./slot.common";
+import { runSlotDeployment } from "./slot.common";
 
-await runContractDeployment();
+await runSlotDeployment();
 deploymentComplete();
