@@ -92,7 +92,7 @@ const Notifications: FC<NotificationsProps> = ({ onDismiss }) => {
 								key={index}
 								className={`logger-item p-3 rounded mb-2 flex-col flex not-first-of-type:opacity-50 ${log.detail.error ? "log-error" : ""}`}
 							>
-								<div className="font-mono text-xs">
+								<div className="font-berkeley text-xs">
 									{JSON.stringify(log.detail, null, 2)}
 								</div>
 							</div>

@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* Berkeley Mono Regular Fonts */
+@font-face {
+  font-family: "Berkeley Mono";
+  src: url("/fonts/berkeley-mono/WEB/BerkeleyMono-Regular.woff2")
+      format("woff2"),
+    url("/fonts/berkeley-mono/WEB/BerkeleyMono-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Berkeley Mono";
+  src: url("/fonts/berkeley-mono/WEB/BerkeleyMono-Bold.woff2") format("woff2"),
+    url("/fonts/berkeley-mono/WEB/BerkeleyMono-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Berkeley Mono";
+  src: url("/fonts/berkeley-mono/WEB/BerkeleyMono-Italic.woff2") format("woff2"),
+    url("/fonts/berkeley-mono/WEB/BerkeleyMono-Italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Berkeley Mono";
+  src: url("/fonts/berkeley-mono/WEB/BerkeleyMono-BoldItalic.woff2")
+      format("woff2"),
+    url("/fonts/berkeley-mono/WEB/BerkeleyMono-BoldItalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Berkeley Mono Variable Fonts */
+@font-face {
+  font-family: "Berkeley Mono Variable";
+  src: url("/fonts/berkeley-mono-variable/WEB/BerkeleyMonoVariable-Regular.woff2")
+      format("woff2"),
+    url("/fonts/berkeley-mono-variable/WEB/BerkeleyMonoVariable-Regular.woff")
+      format("woff");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Berkeley Mono Variable";
+  src: url("/fonts/berkeley-mono-variable/WEB/BerkeleyMonoVariable-Italic.woff2")
+      format("woff2"),
+    url("/fonts/berkeley-mono-variable/WEB/BerkeleyMonoVariable-Italic.woff")
+      format("woff");
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --font-berkeley: "Berkeley Mono Variable", "Berkeley Mono", ui-monospace;
+}
+
+@theme {
+  --font-berkeley: var(--font-berkeley);
+}

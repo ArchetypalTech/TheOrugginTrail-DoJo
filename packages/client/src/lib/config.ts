@@ -13,6 +13,7 @@ const getOrFail = <T>(value: T | undefined, name?: string): T => {
 
 const slotEnv = import.meta.env.MODE === "slot" ? { VITE_SLOT: str() } : {};
 const isLocalhost = window.location.hostname === "localhost";
+const isEditor = window.location.pathname.startsWith("/editor");
 
 const env = cleanEnv(import.meta.env, {
 	VITE_CONTROLLER_CHAINID: str(),
@@ -104,6 +105,8 @@ export const ZORG_CONFIG = {
 		contract_address: env.VITE_TOKEN_CONTRACT_ADDRESS,
 		erc20: ["0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7"],
 	},
-	useSlot: import.meta.env.MODE === "slot",
+	useController: import.meta.env.MODE === "slot",
 	env: env,
+	LOCALHOST: isLocalhost,
+	EDITOR_MODE: isEditor,
 };

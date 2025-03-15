@@ -102,7 +102,7 @@ export const RoomEditor = ({
 		editedRoom.roomId === EditorData().TEMP_CONSTANT_WORLD_ENTRY_ID;
 
 	return (
-		<div className="flex flex-row gap-2 col-span-2">
+		<div className="grid grid-cols-2 gap-2 col-span-2">
 			<EditorList
 				list={roomList}
 				selectionFn={(index: number) => setCurrentRoomIndex(index)}
@@ -110,7 +110,7 @@ export const RoomEditor = ({
 				selectedIndex={currentRoomIndex}
 				emptyText="🏠 Create Room"
 			/>
-			<div className="editor-inspector">
+			<div className="flex flex-col editor-inspector">
 				<Header
 					title={`Room`}
 					onClickTitle={() => {

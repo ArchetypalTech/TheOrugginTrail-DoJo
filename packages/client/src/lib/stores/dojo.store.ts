@@ -11,15 +11,16 @@ import {
 } from "../utils/utils";
 import { StoreBuilder } from "../utils/storebuilder";
 import EditorData from "@/editor/editor.data";
+import { sendCommand } from "../terminalCommands/commandHandler";
 
 /**
  * Represents the current status of the Dojo system.
  * @typedef {Object} DojoStatus
- * @property {'loading' | 'initialized' | 'spawning' | 'error' | 'controller'} status - Current status of the Dojo system
+ * @property {'loading' | 'initialized' | 'inputEnabled' | 'error' | 'controller'} status - Current status of the Dojo system
  * @property {string | null} error - Error message if status is 'error', null otherwise
  */
 export type DojoStatus = {
-	status: "loading" | "initialized" | "spawning" | "error" | "controller";
+	status: "loading" | "initialized" | "inputEnabled" | "error" | "controller";
 	error: string | null;
 };
 
@@ -90,10 +91,12 @@ const initializeConfig = async (
 
 	console.log("[DOJO]: CONFIG ", config);
 	connectionTimeout = setTimeout(() => {
-		setStatus({
+		const status = {
 			status: "error",
 			error: "Connection timeout",
-		});
+		} as DojoStatus;
+		setStatus(status);
+		sendCommand(`_fatal_error ${status.error}`);
 		window.location.reload();
 	}, 5000);
 
@@ -117,7 +120,7 @@ const initializeConfig = async (
 				"playerId" in outputData &&
 				"text_o_vision" in outputData
 			) {
-				const address = !ZORG_CONFIG.useSlot
+				const address = !ZORG_CONFIG.useController
 					? ZORG_CONFIG.wallet.address
 					: WalletStore().controller?.account?.address;
 
@@ -149,13 +152,19 @@ const initializeConfig = async (
 			error: null,
 		});
 
+		if (!ZORG_CONFIG.EDITOR_MODE) {
+			sendCommand("_bootLoader");
+		}
+
 		console.log("[DOJO]: initialized");
 		set({ existingSubscription: subscription });
 	} catch (e) {
-		setStatus({
+		const status = {
 			status: "error",
 			error: (e as Error).message || "SYNC FAILURE",
-		});
+		} as DojoStatus;
+		setStatus(status);
+		sendCommand(`_fatal_error ${status.error}`);
 		console.error("Error setting up entity sync:", e);
 	}
 };

@@ -99,20 +99,20 @@ export const Editor = () => {
 	const isLoading = status === "loading" || status === "error";
 
 	return (
-		<div id="editor-root" className="relative h-full w-full">
+		<div id="editor-root" className="relative h-auto w-full flex flex-col">
 			<Notifications onDismiss={handleDismissNotification} />
-			<div className="w-full lg:container flex flex-col gap-2 items-center justify-center mx-auto">
+			<div className="h-full w-full lg:container flex flex-col gap-2 mx-auto">
 				<EditorHeader />
 				{isLoading ? (
-					<div className="relative w-full h-full flex items-center justify-center font-mono">
+					<div className="relative w-full h-full flex items-center justify-center">
 						<div className="animate-spin mr-3">🥾</div>
 						No Dojo connection
 					</div>
 				) : (
 					<>
 						{Object.values(rooms).length < 1 && (
-							<div className="relative w-auto h-full flex items-center justify-center">
-								<div className="flex flex-col">
+							<div className="flex w-auto items-center justify-center grow">
+								<div className="flex flex-col grow">
 									<h2 className="text-center mb-10 text-2xl">Empty World</h2>
 									<button className="btn" onClick={EditorData().newRoom}>
 										Create Room
@@ -120,7 +120,7 @@ export const Editor = () => {
 								</div>
 							</div>
 						)}
-						<div className="flex grow">
+						<div className="flex">
 							<div className="grid grid-cols-4 gap-2">
 								<RoomEditor
 									editedRoom={editedRoom}
@@ -147,8 +147,9 @@ export const Editor = () => {
 						</div>
 					</>
 				)}
+				<div className="flex grow" />
+				<EditorFooter />
 			</div>
-			<EditorFooter />
 		</div>
 	);
 };

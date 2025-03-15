@@ -6,7 +6,7 @@
 #[cfg(test)]
 mod tests {
     use the_oruggin_trail::{
-        systems::{tokeniser::{tokeniser, confessor, confessor::Garble}},
+        systems::{tokeniser::{tokeniser, lexer, lexer::Garble}},
         models::{zrk_enums::{ActionType, ObjectType, DirectionType}},
         constants::{zrk_constants::ErrCode},
     };
@@ -44,7 +44,7 @@ mod tests {
     fn test_sem_action_garbage_input() {
         let bad_str: ByteArray = "foo";
         let _in: Array<ByteArray> = array![bad_str];
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         let expected: Result<Garble, ErrCode> = Result::Err(ErrCode::BadImpl);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
@@ -65,7 +65,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -81,7 +81,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -90,7 +90,7 @@ mod tests {
         let str_d: ByteArray = "go";
         let _in: Array<ByteArray> = array![str_d];
         let expected = Result::Err(ErrCode::BadMove(ActionType::Move));
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -107,7 +107,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -124,7 +124,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -142,7 +142,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -159,7 +159,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -178,7 +178,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -200,7 +200,7 @@ mod tests {
                 iobj: ObjectType::Window,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -210,7 +210,7 @@ mod tests {
         let str_v: ByteArray = "kick";
         let _in: Array<ByteArray> = array![str_v];
         let expected = Result::Err(ErrCode::NulCmdO(ActionType::Kick));
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -230,7 +230,7 @@ mod tests {
                 iobj: ObjectType::None,
             },
         );
-        let actual: Result<Garble, ErrCode> = confessor::confess(_in);
+        let actual: Result<Garble, ErrCode> = lexer::confess(_in);
         assert_eq!(actual, expected, "Expected {:?} got {:?}", expected, actual);
     }
 
@@ -238,7 +238,7 @@ mod tests {
     fn test_sem_vrb_response_mapping() {
         let kick = ActionType::Kick;
         let expected_response: ActionType = ActionType::Break;
-        let actual_response: ActionType = confessor::vrb_to_response(kick);
+        let actual_response: ActionType = lexer::vrb_to_response(kick);
         assert_eq!(
             actual_response,
             expected_response,
