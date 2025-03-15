@@ -149,7 +149,7 @@ export const dispatchDesignerCall = async (
 	args: unknown[],
 ) => {
 	try {
-		const response = await SystemCalls.sendDesignerCall({ call, args });
+		const response = await SystemCalls.execDesignerCall({ call, args });
 		actions.notifications.addPublishingLog(
 			new CustomEvent("designerCall", { detail: { call, args } }),
 		);

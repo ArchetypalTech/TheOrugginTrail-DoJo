@@ -1,14 +1,13 @@
 @import "tailwindcss";
 @import "./colors.css";
 @import "./crt.css";
+@import "./fonts.css";
 @import "./notifications.css";
 
 html,
 body,
 #root {
   @apply relative w-screen h-screen;
-  height: 100%;
-  position: relative;
   text-rendering: optimizeLegibility;
   @apply font-sans antialiased;
 }

@@ -9,7 +9,7 @@ import DojoStore, { useDojoStore } from "@lib/stores/dojo.store";
 import Typewriter from "./Typewriter";
 import TerminalLine from "./TerminalLine";
 import "./Terminal.css";
-import { commandHandler } from "../../lib/terminalCommands/commandHandler";
+import { sendCommand } from "@lib/terminalCommands/commandHandler";
 import { ZORG_CONFIG } from "@/lib/config";
 import WalletStore from "@/lib/stores/wallet.store";
 
@@ -34,7 +34,7 @@ export default function Terminal() {
 		}
 		// Set timeout for connection status
 		const timeout = setTimeout(() => {
-			if (status !== "spawning") {
+			if (status !== "inputEnabled") {
 				DojoStore().setStatus({
 					status: "error",
 					error: "TIMEOUT",
@@ -44,37 +44,6 @@ export default function Terminal() {
 
 		return () => clearTimeout(timeout);
 	}, [status]);
-
-	useEffect(() => {
-		if (status === "spawning") return;
-		if (status === "initialized") {
-			commandHandler("_intro");
-			if (ZORG_CONFIG.useSlot) {
-				if (!WalletStore().isConnected) {
-					commandHandler("_connectWallet");
-				}
-			}
-			commandHandler("_hint");
-
-			DojoStore().setStatus({
-				status: "spawning",
-				error: null,
-			});
-
-			return;
-		}
-
-		if (status === "error") {
-			addTerminalContent({
-				text: `FATAL+ERROR: ${error}`,
-				format: "error",
-				useTypewriter: false,
-			});
-
-			// TODO: implement interval check to ping backend
-			return;
-		}
-	}, [status, error]);
 
 	// Split handleKeyDown to reduce complexity
 	const handleUpArrow = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -132,7 +101,7 @@ export default function Terminal() {
 		setInputValue("");
 		setInputHistory([...inputHistory, command]);
 
-		await commandHandler(command);
+		await sendCommand(command);
 
 		if (terminalInputRef.current) {
 			terminalInputRef.current.disabled = false;
@@ -147,7 +116,7 @@ export default function Terminal() {
 	};
 
 	return (
-		<div className="flex items-center justify-center w-full h-full crt buzzing">
+		<div className="flex items-center justify-center w-full h-full crt buzzing font-berkeley">
 			<form
 				ref={terminalFormRef}
 				onSubmit={handleSubmit}
@@ -156,7 +125,7 @@ export default function Terminal() {
 				aria-label="Terminal"
 				role=""
 				id="terminal"
-				className="buzzing font-mono overflow-y-auto h-full bg-black text-green-500 border rounded-md p-4 w-full"
+				className="buzzing overflow-y-auto h-full bg-black text-green-500 border rounded-md p-4 w-full"
 				style={{
 					borderColor:
 						status === "error" ? "var(--terminal-error)" : "var(--terminal-system)",
@@ -169,7 +138,7 @@ export default function Terminal() {
 
 					<Typewriter />
 
-					{status === "spawning" && (
+					{status === "inputEnabled" && (
 						<div id="scroller" className="w-full flex flex-row gap-2">
 							<span>&#x3e;</span>
 							<input

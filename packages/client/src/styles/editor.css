@@ -83,7 +83,7 @@ html.modal {
   }
 
   .editor-inspector {
-    @apply p-2 rounded flex flex-col gap-2;
+    @apply rounded flex flex-col gap-2;
   }
 
   .tag {
@@ -122,11 +122,11 @@ html.dark #editor-root {
   }
 
   .btn-active {
-    @apply bg-black/90 border-[var(--terminal-hash)] text-[var(--terminal-hash)] hover:bg-gray-900 focus:ring-orange-500;
+    @apply bg-[var(--terminal-system)]/50 text-white hover:bg-gray-900 hover:text-[var(--terminal-system)] focus:ring-orange-500;
   }
 
   .btn-primary {
-    @apply bg-[var(--terminal-system)]/50 text-white hover:bg-gray-900 hover:text-[var(--terminal-system)] focus:ring-orange-500;
+    @apply bg-black/90 border-[var(--terminal-hash)] text-[var(--terminal-hash)] hover:bg-gray-900 focus:ring-orange-500;
   }
 
   .btn-danger {
@@ -140,6 +140,6 @@ html.dark #editor-root {
   }
 
   .editor-inspector {
-    @apply text-[var(--terminal-system)] border-[var(--terminal-system)]/50 border bg-[var(--terminal-system)]/12;
+    @apply text-[var(--terminal-system)] border-[var(--terminal-system)]/50 border bg-[var(--terminal-system)]/12 p-2;
   }
 }

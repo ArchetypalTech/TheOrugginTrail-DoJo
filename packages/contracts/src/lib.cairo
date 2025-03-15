@@ -17,7 +17,7 @@ pub mod lib {
     pub mod hash_utils;
     pub mod store;
     pub mod err_handler;
-    pub mod verb_eater;
+    pub mod command_handler;
     pub mod act;
     pub mod system;
     pub mod world;
