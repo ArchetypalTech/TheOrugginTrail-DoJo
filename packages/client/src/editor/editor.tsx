@@ -99,7 +99,7 @@ export const Editor = () => {
 	const isLoading = status === "loading" || status === "error";
 
 	return (
-		<div id="editor-root" className="relative h-auto w-full flex flex-col">
+		<div id="editor-root" className="relative h-full w-full flex flex-col">
 			<Notifications onDismiss={handleDismissNotification} />
 			<div className="h-full w-full lg:container flex flex-col gap-2 mx-auto">
 				<EditorHeader />
@@ -111,12 +111,14 @@ export const Editor = () => {
 				) : (
 					<>
 						{Object.values(rooms).length < 1 && (
-							<div className="flex w-auto items-center justify-center grow">
-								<div className="flex flex-col grow">
-									<h2 className="text-center mb-10 text-2xl">Empty World</h2>
-									<button className="btn" onClick={EditorData().newRoom}>
-										Create Room
-									</button>
+							<div className="w-full h-full flex place-items-center place-content-center grow">
+								<div className="flex w-30 ">
+									<div className="flex flex-col grow">
+										<h2 className="text-center mb-10 text-2xl">Empty World</h2>
+										<button className="btn" onClick={EditorData().newRoom}>
+											Create Room
+										</button>
+									</div>
 								</div>
 							</div>
 						)}

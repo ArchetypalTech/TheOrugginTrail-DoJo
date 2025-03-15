@@ -1,12 +1,11 @@
 import { confirm, log, cancel, isCancel } from "@clack/prompts";
 import { yellow } from "ansicolor";
+import { deploymentComplete, runCommands } from "./common";
 import {
-	cmd_deploy_slot,
-	runCommands,
 	getSlotServices,
-	runContractDeployment,
-	deploymentComplete,
-} from "./common";
+	cmd_deploy_slot,
+	runSlotDeployment,
+} from "./slot.common";
 
 export const deploySlot = async () => {
 	const slotServices = await getSlotServices();
@@ -36,7 +35,7 @@ export const deploySlot = async () => {
 		}
 	}
 	await runCommands(cmd_deploy_slot);
-	await runContractDeployment();
+	await runSlotDeployment();
 
 	deploymentComplete();
 };
