@@ -1,12 +1,10 @@
-import { $, type Subprocess } from "bun";
+import type { Subprocess } from "bun";
 import { parse } from "smol-toml";
 import {
 	yellow,
 	red,
 	bgDefault,
 	cyan,
-	bgDarkGray,
-	white,
 	green,
 	darkGray,
 	black,
@@ -59,16 +57,16 @@ export type ParsedConfig = {
 
 export const config = {
 	...(await Object.entries(files).reduce(
-		async (accPromise, [key, value]): Promise<Config> => {
+		async (accPromise, [key, value]): Promise<ParsedConfig> => {
 			const acc = await accPromise;
 			const file = await Bun.file(value).text();
 			acc[key as keyof typeof files] = parse(file);
-			return acc as Config;
+			return acc;
 		},
-		Promise.resolve({} as Config),
+		Promise.resolve({} as ParsedConfig),
 	)),
 	mode: parsed.mode,
-};
+} as Config;
 
 // spawns and runs a child process
 const runProcess = async (command: string, silent = false, pipe = true) => {
