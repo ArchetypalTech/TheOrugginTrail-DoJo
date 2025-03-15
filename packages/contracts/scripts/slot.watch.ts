@@ -1,60 +1,22 @@
-import { watch } from "node:fs";
-import path from "node:path";
-import { runContractDeployment } from "./common";
+import type { FSWatcher } from "node:fs";
 import { cancel, confirm, isCancel, log } from "@clack/prompts";
-import type { Subprocess } from "bun";
-import { debounce } from "dettle";
-import { black, bgRed, bgGreen } from "ansicolor";
-let buildProcess: Subprocess | undefined;
+import { runContractDeployment } from "./slot.common";
+import { startWatcher } from "./common";
 
-const runBuild = async () => {
-	if (buildProcess) {
-		buildProcess.kill();
-	}
-	const cmd =
-		"sozo build --profile dev --typescript --bindings-output ../client/src/lib/dojo_bindings/";
-	console.log(black(bgGreen(" Starting compilation ")));
-	buildProcess = Bun.spawn(cmd.split(" "), {
-		stdout: "inherit",
-		stderr: "inherit",
-		env: { FORCE_COLOR: "3", ...import.meta.env },
+const onComplete = async (watcher: FSWatcher) => {
+	const should_deploy = await confirm({
+		message: "Deploy Contracts?",
 	});
-	await buildProcess.exited;
-};
-
-const startWatcher = async () => {
-	const watcher = watch(
-		path.join(import.meta.dir, "../", "src"),
-		{ recursive: true },
-		debounce(async (event, filename) => {
-			console.log(`Detected ${event} in ${filename}`);
-			await runBuild();
-			if (buildProcess?.exitCode !== 0) {
-				buildProcess?.kill();
-				buildProcess = undefined;
-				console.log(black(bgRed(" Error while compiling ")));
-				return;
-			}
-			const should_deploy = await confirm({
-				message: "Deploy Contracts?",
-			});
-			if (isCancel(should_deploy)) {
-				cancel("Operation cancelled.");
-				process.exit(0);
-			}
-			if (should_deploy) {
-				watcher.close();
-				await runContractDeployment();
-				log.info("Deployed");
-				startWatcher();
-			}
-		}, 500),
-	);
-
-	process.on("SIGINT", () => {
-		console.log("[Shutting Down]");
-		watcher.close();
+	if (isCancel(should_deploy)) {
+		cancel("Operation cancelled.");
 		process.exit(0);
-	});
+	}
+	if (should_deploy) {
+		watcher.close();
+		await runContractDeployment();
+		log.info("Deployed");
+		await startWatcher(onComplete);
+	}
 };
-startWatcher();
+
+await startWatcher(onComplete);

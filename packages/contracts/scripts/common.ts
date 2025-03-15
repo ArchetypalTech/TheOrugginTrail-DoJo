@@ -1,4 +1,4 @@
-import { $ } from "bun";
+import { $, type Subprocess } from "bun";
 import { parse } from "smol-toml";
 import {
 	yellow,
@@ -9,11 +9,22 @@ import {
 	white,
 	green,
 	darkGray,
+	black,
+	bgGreen,
+	bgRed,
 } from "ansicolor";
 import { intro, log, outro, spinner } from "@clack/prompts";
+import mri from "mri";
+import { debounce } from "dettle";
+import { type FSWatcher, watch } from "node:fs";
+import path from "node:path";
 
-console.log("\n");
-intro(`${yellow("🦨💕 ZORGKIT")}`);
+const argv = process.argv.slice(2);
+const parsed = mri(argv, {
+	string: ["mode"],
+	alias: { mode: "m" },
+	default: { mode: "dev" },
+});
 
 // @dev custom impl of spinner, did a PR to @clack/prompts but it's not merged yet
 export const zorgSpinner = spinner({
@@ -24,46 +35,36 @@ export const zorgSpinner = spinner({
 });
 
 const files = {
-	slot: "dojo_slot.toml",
 	scarb: "Scarb.toml",
+	dojo_config: `dojo_${parsed.mode}.toml`,
 };
 
-type ParsedConfig = {
-	[K in keyof typeof files]?: Record<string, unknown>;
-};
+console.log("\n");
+intro(`${yellow(`🦨💕 ZORGKIT (${parsed.mode})`)}`);
 
-type Config = ParsedConfig & {
-	slot: {
+export type Config = ParsedConfig & {
+	dojo_config: {
 		env: {
 			world_address: string;
 			rpc_url: string;
-			slot_name: string;
+			slot_name?: string;
 		};
 	};
 };
 
-export const config = (await Object.entries(files).reduce(
-	async (accPromise, [key, value]) => {
+export type ParsedConfig = {
+	[K in keyof typeof files]?: Record<string, unknown>;
+};
+
+export const config = await Object.entries(files).reduce(
+	async (accPromise, [key, value]): Promise<Config> => {
 		const acc = await accPromise;
 		const file = await Bun.file(value).text();
 		acc[key as keyof typeof files] = parse(file);
-		return acc;
+		return acc as Config;
 	},
-	Promise.resolve({} as ParsedConfig),
-)) as Config;
-
-export const worldAddress = config.slot?.env?.world_address as string;
-export const rpcUrl = config.slot?.env?.rpc_url as string;
-if (!worldAddress || !rpcUrl) {
-	log.error("World address or RPC URL not found");
-	process.exit(1);
-}
-
-export const slotName = config.slot?.env?.slot_name as string;
-if (!slotName) {
-	log.error(`${bgDarkGray(white("slot_name"))} not found in [env]`);
-	process.exit(1);
-}
+	Promise.resolve({} as Config),
+);
 
 // spawns and runs a child process
 const runProcess = async (command: string, silent = false, pipe = true) => {
@@ -86,23 +87,13 @@ const runProcess = async (command: string, silent = false, pipe = true) => {
 
 export const cmd_view_slot = [`slot deployments list`];
 
-export const cmd_deploy_slot = [
-	`slot deployments create zorg-v1 katana`,
-	`slot deployments create zorg-v1 torii --world ${worldAddress} --rpc ${rpcUrl}`,
-	`slot deployments list`,
-];
-
-// console.dir(config, { depth: null });
 export const cmd_sozo_build = [
 	`sozo build --profile slot --typescript --bindings-output ../client/src/lib/dojo_bindings/`,
 ];
 
 export const cmd_sozo_migrate = [`sozo migrate --profile slot`];
 
-export const cmd_sozo_inspect = [
-	`sozo inspect --profile slot`,
-	`starkli chain-id --rpc ${rpcUrl}`,
-];
+export const cmd_sozo_inspect = [`sozo inspect --profile slot`];
 
 export const runCommands = async (
 	commands: string[],
@@ -132,50 +123,56 @@ export const runCommands = async (
 	return output;
 };
 
-const parseServiceEntries = (
-	input: string,
-): { Project: string; Service: string }[] =>
-	input
-		.split("---")
-		.filter(Boolean)
-		.map((section) =>
-			Object.fromEntries(
-				section
-					.trim()
-					.split("\n")
-					.map((line) => line.split(":").map((part) => part.trim()))
-					.filter((pair) => pair.length === 2),
-			),
-		) as { Project: string; Service: string }[];
-
-// Check if we have existing Katana and/or Torii services for this namespace
-
-export const getSlotServices = async () => {
-	const services = parseServiceEntries(
-		await runCommands(cmd_view_slot, true, true),
-	);
-	const slotServices = services
-		.filter((service) => service.Project === slotName)
-		.map((service) => service.Service);
-	return slotServices;
-};
-
-export const runContractDeployment = async () => {
-	const slotServices = await getSlotServices();
-
-	const hasKatana = slotServices.includes("katana");
-	const hasTorii = slotServices.includes("torii");
-	if (!hasKatana || !hasTorii) {
-		log.error("No existing Slot deployments found");
-		process.exit(1);
-	}
-	log.info("🪐 Deploying Contracts to slot");
-	await runCommands(cmd_sozo_build, false, false);
-	await runCommands(cmd_sozo_migrate);
-	await runCommands(cmd_sozo_inspect, false, false);
-	await runCommands(cmd_view_slot);
-};
-
 export const deploymentComplete = () => {
 	outro(`${yellow("🦨💕 Deployment Complete\n")}`);
+};
+
+export const createBuilder = async () => {
+	let buildProcess: Subprocess | undefined;
+	const runBuild = async () => {
+		if (buildProcess) {
+			buildProcess.kill();
+		}
+		const cmd =
+			"sozo build --profile dev --typescript --bindings-output ../client/src/lib/dojo_bindings/";
+		console.log(black(bgGreen(" Starting compilation ")));
+		buildProcess = Bun.spawn(cmd.split(" "), {
+			stdout: "inherit",
+			stderr: "inherit",
+			env: { FORCE_COLOR: "3", ...import.meta.env },
+		});
+		await buildProcess.exited;
+		return buildProcess;
+	};
+	const killProcess = () => {
+		buildProcess?.kill();
+		buildProcess = undefined;
+	};
+	return { runBuild, killProcess };
+};
+
+export const startWatcher = async (
+	onSuccessFn: (watcher: FSWatcher) => Promise<void>,
+) => {
+	const { runBuild, killProcess } = await createBuilder();
+	const watcher = watch(
+		path.join(import.meta.dir, "../", "src"),
+		{ recursive: true },
+		debounce(async (event, filename) => {
+			console.log(`Detected ${event} in ${filename}`);
+			const buildProcess = await runBuild();
+			if (buildProcess?.exitCode !== 0) {
+				killProcess();
+				console.log(black(bgRed(" Error while compiling ")));
+				return;
+			}
+			onSuccessFn(watcher);
+		}, 500),
+	);
+
+	process.on("SIGINT", () => {
+		console.log("[Shutting Down]");
+		watcher.close();
+		process.exit(0);
+	});
 };
