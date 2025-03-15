@@ -123,12 +123,6 @@ const setupController = async () => {
 	}
 };
 
-// Initialize controller if using slot configuration
-if (ZORG_CONFIG.useSlot) {
-	await setupController();
-	await get().controller?.probe();
-}
-
 /**
  * Connects to the wallet using the configured controller.
  * Sets wallet state including account, username, and address on successful connection.
@@ -208,3 +202,13 @@ const WalletStore = createFactory({
 
 export default WalletStore;
 export { useWalletStore };
+
+// Initialize controller if using slot configuration
+if (ZORG_CONFIG.useController) {
+	await setupController();
+	const account = await get().controller?.probe();
+	if (account !== undefined) {
+		console.log("[Controller] connected");
+		await connectController();
+	}
+}

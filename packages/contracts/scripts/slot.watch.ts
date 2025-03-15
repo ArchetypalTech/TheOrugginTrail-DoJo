@@ -4,7 +4,7 @@ import { runContractDeployment } from "./common";
 import { cancel, confirm, isCancel, log } from "@clack/prompts";
 import type { Subprocess } from "bun";
 import { debounce } from "dettle";
-import { red } from "ansicolor";
+import { black, bgRed, bgGreen } from "ansicolor";
 let buildProcess: Subprocess | undefined;
 
 const runBuild = async () => {
@@ -13,6 +13,7 @@ const runBuild = async () => {
 	}
 	const cmd =
 		"sozo build --profile dev --typescript --bindings-output ../client/src/lib/dojo_bindings/";
+	console.log(black(bgGreen(" Starting compilation ")));
 	buildProcess = Bun.spawn(cmd.split(" "), {
 		stdout: "inherit",
 		stderr: "inherit",
@@ -31,6 +32,7 @@ const startWatcher = async () => {
 			if (buildProcess?.exitCode !== 0) {
 				buildProcess?.kill();
 				buildProcess = undefined;
+				console.log(black(bgRed(" Error while compiling ")));
 				return;
 			}
 			const should_deploy = await confirm({

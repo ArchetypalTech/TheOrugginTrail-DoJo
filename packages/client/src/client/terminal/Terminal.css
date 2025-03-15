@@ -5,6 +5,7 @@ input {
 
 #terminal {
   @apply flex-col-reverse max-h-[70%] overflow-y-scroll flex min-w-[500px] w-[500px] max-w-[500px];
+  scrollbar-width: none;
 }
 
 #scroller * {

@@ -5,7 +5,7 @@
 
 pub mod pullstrings {
     use dojo::model::ModelStorage;
-    use the_oruggin_trail::systems::tokeniser::{confessor, confessor::Garble};
+    use the_oruggin_trail::systems::tokeniser::{lexer, lexer::Garble};
     use dojo::world::{IWorldDispatcher, WorldStorage, WorldStorageTrait};
     use the_oruggin_trail::models::{
         player::Player, room::Room,
@@ -36,8 +36,6 @@ pub mod pullstrings {
         out
     }
 
-    fn pick_up(world: IWorldDispatcher, pid: felt252, msg: Garble) {}
-
     /// handle general actions
     ///
     /// right now this is a hack and we only care about kicking the ball
@@ -46,7 +44,7 @@ pub mod pullstrings {
         println!("objs: {:?}", objs.len());
         let mut out: ByteArray =
             "well that didnt go quite as planned. literally nothing happens. pfft";
-        let map: ActionType = confessor::vrb_to_response(msg.vrb.clone());
+        let map: ActionType = lexer::vrb_to_response(msg.vrb.clone());
 
         let mut foundObj: Object = Object {
             objectId: 0,
@@ -117,7 +115,7 @@ pub mod pullstrings {
         let mut idx: u32 = 0;
         let mut inr: u32 = 0;
         let vrb = msg.vrb.clone();
-        // let responds_to = confessor::vrb_to_response(vrb);
+        // let responds_to = lexer::vrb_to_response(vrb);
         while idx < objs.len() {
             let obj_id = objs.at(idx).clone();
             let obj: Object = world.read_model(obj_id);

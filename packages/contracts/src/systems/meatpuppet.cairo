@@ -24,9 +24,9 @@ pub trait IListener<T> {
 pub mod meatpuppet {
     use starknet::{get_caller_address};
     use super::{IListener};
-    use the_oruggin_trail::lib::verb_eater::verb_dispatcher;
+    use the_oruggin_trail::lib::command_handler;
     use the_oruggin_trail::models::{output::{Output}, player::{Player}, inventory::Inventory};
-    use the_oruggin_trail::systems::tokeniser::{confessor};
+    use the_oruggin_trail::systems::tokeniser::{lexer};
     use the_oruggin_trail::actions::move::move;
 
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
@@ -62,11 +62,11 @@ pub mod meatpuppet {
 
             let mut player = getPlayer(world, player_id);
 
-            match confessor::parse(l_cmd.clone(), world, player) {
+            match lexer::parse(l_cmd.clone(), world, player) {
                 Result::Ok(result) => {
                     // we have a valid command so pass it into a handler routine
                     // this should really return err and a string
-                    verb_dispatcher::handleGarble(ref wrld_dispatcher, player, result);
+                    command_handler::handle(ref wrld_dispatcher, player, result);
                 },
                 Result::Err(_r) => {
                     // this should really return err and a string

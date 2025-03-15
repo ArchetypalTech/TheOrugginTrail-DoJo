@@ -11,7 +11,7 @@ pub mod move {
         player::{Player}, zrk_enums::{ActionType}, room::{Room}, object::{Object}, action::{Action},
     };
     use the_oruggin_trail::constants::zrk_constants::{statusid};
-    use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
+    use the_oruggin_trail::systems::tokeniser::{lexer::Garble};
     use the_oruggin_trail::actions::look::lookat;
 
     /// TODO:
