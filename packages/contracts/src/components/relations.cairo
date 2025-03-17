@@ -66,7 +66,6 @@ pub fn setParent(mut world: WorldStorage, childKey: felt252, parentKey: felt252)
 }
 
 pub fn removeChildFromParent(mut world: WorldStorage, childKey: felt252, parentKey: felt252) {
-    // does parent have this child
     let mut parent: ParentToChildren = world.read_model(parentKey);
     assert(parent.is_parent, 'Parent is not a parent');
     let mut children: Array<felt252> = ArrayTrait::<felt252>::new();
@@ -82,7 +81,6 @@ pub fn removeChildFromParent(mut world: WorldStorage, childKey: felt252, parentK
 }
 
 pub fn addChildToParent(mut world: WorldStorage, childKey: felt252, parentKey: felt252) {
-    // does parentKey have this childKey
     let mut parent: ParentToChildren = world.read_model(parentKey);
     let mut children: Array<felt252> = ArrayTrait::<felt252>::new();
     assert(children.len() > 0, 'Parent has no children');

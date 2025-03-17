@@ -2,6 +2,23 @@ import type { SchemaType as ISchemaType } from "@dojoengine/sdk";
 
 import { CairoCustomEnum, type BigNumberish } from 'starknet';
 
+// Type definition for `the_oruggin_trail::components::area::Area` struct
+export interface Area {
+	inst: BigNumberish;
+	is_area: boolean;
+	name: string;
+	txtDefId: BigNumberish;
+	object_ids: Array<BigNumberish>;
+}
+
+// Type definition for `the_oruggin_trail::components::area::AreaValue` struct
+export interface AreaValue {
+	is_area: boolean;
+	name: string;
+	txtDefId: BigNumberish;
+	object_ids: Array<BigNumberish>;
+}
+
 // Type definition for `the_oruggin_trail::components::container::Container` struct
 export interface Container {
 	inst: BigNumberish;
@@ -346,6 +363,8 @@ export type RoomTypeEnum = CairoCustomEnum;
 
 export interface SchemaType extends ISchemaType {
 	the_oruggin_trail: {
+		Area: Area,
+		AreaValue: AreaValue,
 		Container: Container,
 		ContainerValue: ContainerValue,
 		Exit: Exit,
@@ -376,6 +395,19 @@ export interface SchemaType extends ISchemaType {
 }
 export const schema: SchemaType = {
 	the_oruggin_trail: {
+		Area: {
+			inst: 0,
+			is_area: false,
+		name: "",
+			txtDefId: 0,
+			object_ids: [0],
+		},
+		AreaValue: {
+			is_area: false,
+		name: "",
+			txtDefId: 0,
+			object_ids: [0],
+		},
 		Container: {
 			inst: 0,
 			is_container: false,
@@ -748,6 +780,8 @@ export const schema: SchemaType = {
 	},
 };
 export enum ModelsMapping {
+	Area = 'the_oruggin_trail-Area',
+	AreaValue = 'the_oruggin_trail-AreaValue',
 	Container = 'the_oruggin_trail-Container',
 	ContainerValue = 'the_oruggin_trail-ContainerValue',
 	Exit = 'the_oruggin_trail-Exit',

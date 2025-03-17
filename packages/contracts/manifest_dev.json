@@ -2102,7 +2102,7 @@
     },
     {
       "address": "0x157b0aec14f4234e453e6c9f1691bfe737fb7aa2584647f1b946c471e50eb83",
-      "class_hash": "0x621389bbbcd166b32ff50813de7a2d356b5ad5facc5d40f317301c4718236ec",
+      "class_hash": "0x5fbeb5cbb7f7a11763b06f96f9cee1434fd7f874ca98693c90387f95c17ae43",
       "abi": [
         {
           "type": "impl",
@@ -2312,6 +2312,12 @@
       "class_hash": "0x50c913e19234915e2ab12273d5383763eb01f95e36bdfd89d08ad255943e45e",
       "tag": "the_oruggin_trail-Action",
       "selector": "0x73074e1ebd038077e439048a0ca7acc7adefe262afd21042e10f61a8c383456"
+    },
+    {
+      "members": [],
+      "class_hash": "0x5643f6aeab3a2210cf317bac2e286e7509bf3f2ab6c75b13fd863741905b56b",
+      "tag": "the_oruggin_trail-Area",
+      "selector": "0x5e55a36a897b17cef9b75b799c2962fd66acdb56583610923f93f8698a5e8c3"
     },
     {
       "members": [],

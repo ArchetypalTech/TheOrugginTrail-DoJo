@@ -15,7 +15,7 @@ pub mod components {
     pub mod exit;
     pub mod inventoryItem;
     pub mod relations;
-    // pub mod area;
+    pub mod area;
 }
 
 pub mod constants {
