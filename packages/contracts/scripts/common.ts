@@ -1,12 +1,10 @@
-import { $, type Subprocess } from "bun";
+import type { Subprocess } from "bun";
 import { parse } from "smol-toml";
 import {
 	yellow,
 	red,
 	bgDefault,
 	cyan,
-	bgDarkGray,
-	white,
 	green,
 	darkGray,
 	black,
@@ -50,21 +48,25 @@ export type Config = ParsedConfig & {
 			slot_name?: string;
 		};
 	};
+	mode: string;
 };
 
 export type ParsedConfig = {
 	[K in keyof typeof files]?: Record<string, unknown>;
 };
 
-export const config = await Object.entries(files).reduce(
-	async (accPromise, [key, value]): Promise<Config> => {
-		const acc = await accPromise;
-		const file = await Bun.file(value).text();
-		acc[key as keyof typeof files] = parse(file);
-		return acc as Config;
-	},
-	Promise.resolve({} as Config),
-);
+export const config = {
+	...(await Object.entries(files).reduce(
+		async (accPromise, [key, value]): Promise<ParsedConfig> => {
+			const acc = await accPromise;
+			const file = await Bun.file(value).text();
+			acc[key as keyof typeof files] = parse(file);
+			return acc;
+		},
+		Promise.resolve({} as ParsedConfig),
+	)),
+	mode: parsed.mode,
+} as Config;
 
 // spawns and runs a child process
 const runProcess = async (command: string, silent = false, pipe = true) => {
@@ -84,16 +86,6 @@ const runProcess = async (command: string, silent = false, pipe = true) => {
 	await proc.exited;
 	return output;
 };
-
-export const cmd_view_slot = [`slot deployments list`];
-
-export const cmd_sozo_build = [
-	`sozo build --profile slot --typescript --bindings-output ../client/src/lib/dojo_bindings/`,
-];
-
-export const cmd_sozo_migrate = [`sozo migrate --profile slot`];
-
-export const cmd_sozo_inspect = [`sozo inspect --profile slot`];
 
 export const runCommands = async (
 	commands: string[],
@@ -127,47 +119,54 @@ export const deploymentComplete = () => {
 	outro(`${yellow("🦨💕 Deployment Complete\n")}`);
 };
 
-export const createBuilder = async () => {
+export const startWatcher = async (
+	commands: string[],
+	onStartFn: () => Promise<boolean>,
+	onSuccessFn: (watcher: FSWatcher) => Promise<void>,
+) => {
 	let buildProcess: Subprocess | undefined;
-	const runBuild = async () => {
-		if (buildProcess) {
-			buildProcess.kill();
-		}
-		const cmd =
-			"sozo build --profile dev --typescript --bindings-output ../client/src/lib/dojo_bindings/";
-		console.log(black(bgGreen(" Starting compilation ")));
-		buildProcess = Bun.spawn(cmd.split(" "), {
-			stdout: "inherit",
-			stderr: "inherit",
-			env: { FORCE_COLOR: "3", ...import.meta.env },
-		});
-		await buildProcess.exited;
-		return buildProcess;
-	};
+
 	const killProcess = () => {
 		buildProcess?.kill();
 		buildProcess = undefined;
 	};
-	return { runBuild, killProcess };
-};
 
-export const startWatcher = async (
-	onSuccessFn: (watcher: FSWatcher) => Promise<void>,
-) => {
-	const { runBuild, killProcess } = await createBuilder();
+	const trigger = debounce(async (event, filename) => {
+		try {
+			if (buildProcess) {
+				killProcess();
+				await new Promise((r) => setTimeout(r, 500));
+			}
+			if (!(await onStartFn())) {
+				log.error(`\n${bgRed(black(" Build cancelled "))}\n`);
+				return;
+			}
+			console.log(`Detected ${event}`, filename ? `in ${filename}` : "");
+			for (const cmd of commands) {
+				buildProcess = Bun.spawn(cmd.split(" "), {
+					stdout: "inherit",
+					stderr: "inherit",
+					env: { FORCE_COLOR: "3", ...import.meta.env },
+				});
+				await buildProcess.exited;
+				if (buildProcess?.exitCode !== 0) {
+					killProcess();
+					console.log(`\n${black(bgRed(" Compilation stopped "))}\n`);
+					return;
+				}
+			}
+			await onSuccessFn(watcher);
+		} catch (error) {
+			log.error((error as Error).message);
+			watcher.close();
+			startWatcher(commands, onStartFn, onSuccessFn);
+		}
+	}, 500);
+
 	const watcher = watch(
 		path.join(import.meta.dir, "../", "src"),
 		{ recursive: true },
-		debounce(async (event, filename) => {
-			console.log(`Detected ${event} in ${filename}`);
-			const buildProcess = await runBuild();
-			if (buildProcess?.exitCode !== 0) {
-				killProcess();
-				console.log(black(bgRed(" Error while compiling ")));
-				return;
-			}
-			onSuccessFn(watcher);
-		}, 500),
+		trigger,
 	);
 
 	process.on("SIGINT", () => {
@@ -175,4 +174,5 @@ export const startWatcher = async (
 		watcher.close();
 		process.exit(0);
 	});
+	return trigger;
 };
