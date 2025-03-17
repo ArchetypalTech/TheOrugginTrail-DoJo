@@ -93,7 +93,7 @@ pub mod tokeniser {
     }
 }
 
-pub mod confessor {
+pub mod lexer {
     use dojo::world::{WorldStorage};
     use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{

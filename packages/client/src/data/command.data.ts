@@ -2,11 +2,12 @@ import {
 	addTerminalContent,
 	clearTerminalContent,
 } from "@lib/stores/terminal.store";
-import { commandHandler } from "./commandHandler";
+import { sendCommand } from "@lib/terminalCommands/commandHandler";
 import { ZORG_CONFIG } from "@lib/config";
-import WalletStore from "../stores/wallet.store";
+import WalletStore from "../lib/stores/wallet.store";
 import { HELP_TEXTS } from "@/data/help.data";
 import { APP_DATA } from "@/data/app.data";
+import DojoStore from "@/lib/stores/dojo.store";
 
 /**
  * Context object passed to each terminal command handler
@@ -35,6 +36,8 @@ type commandContext = {
  * ZORG game interface. Each key represents a command name that users can type,
  * and the value is a function that handles that command.
  *
+ * @important Commands NOT case sensitive
+ * @important Commands prefixed with _ are reserved (do not show as command)
  * @example
  * // Adding a new command:
  * // 1. Add your command to this object with a handler function
@@ -52,13 +55,30 @@ type commandContext = {
  *
  *   // 4. Perform any other logic needed for your command
  *   // - Access wallet with WalletStore()
- *   // - Forward to contract commands with commandHandler(command, bypass)
+ *   // - Forward to contract commands with sendCommand(command, bypass)
  *   // - Clear terminal with clearTerminalContent()
  * };
  */
 export const TERMINAL_SYSTEM_COMMANDS: {
 	[key: string]: (command: commandContext) => void;
 } = {
+	_bootLoader: () => {
+		sendCommand("_intro");
+		if (ZORG_CONFIG.useController) {
+			if (!WalletStore().isConnected) {
+				sendCommand("_connect_wallet");
+			} else {
+				sendCommand("_welcome_back");
+			}
+		}
+
+		sendCommand("_hint");
+
+		DojoStore().setStatus({
+			status: "inputEnabled",
+			error: null,
+		});
+	},
 	_intro: () => {
 		addTerminalContent({
 			text: APP_DATA.intro,
@@ -75,21 +95,41 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 			useTypewriter: true,
 		});
 	},
-	_connectWallet: () => {
+	_connect_wallet: () => {
 		addTerminalContent({
-			text: "type [wallet] to connect.",
+			text: "type [connect] to connect",
 			format: "hash",
+			useTypewriter: true,
+		});
+	},
+	_not_yet_connected: () => {
+		addTerminalContent({
+			text: "not connected, use [connect] to connect",
+			format: "hash",
+			useTypewriter: true,
+		});
+	},
+	_welcome_back: () => {
+		addTerminalContent({
+			text: `welcome back ${WalletStore().username}`,
+			format: "hash",
+			useTypewriter: true,
+		});
+	},
+	_fatal_error: () => {
+		addTerminalContent({
+			text: `FATAL+ERROR: ${WalletStore().username}`,
+			format: "error",
 			useTypewriter: true,
 		});
 	},
 	clear: () => {
 		clearTerminalContent();
 	},
-	wallet: async () => {
+	connect: async () => {
 		if (WalletStore().isConnected) {
-			await WalletStore().disconnectController();
 			addTerminalContent({
-				text: "Disconnected",
+				text: "already connected, use [disconnect] to disconnect",
 				format: "hash",
 				useTypewriter: true,
 			});
@@ -100,20 +140,37 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 		if (WalletStore().isConnected) {
 			const { username, walletAddress } = WalletStore();
 			addTerminalContent({
-				text: JSON.stringify({ username, walletAddress }, null, 2),
+				text: `Connected:\n${JSON.stringify({ username, walletAddress }, null, 2)}`,
 				format: "hash",
 				useTypewriter: true,
 			});
 		}
 	},
-	bypass: ({ command }) => {
+	disconnect: async () => {
+		if (!WalletStore().isConnected) {
+			addTerminalContent({
+				text: "not connected, use [connect] to connect",
+				format: "hash",
+				useTypewriter: true,
+			});
+			return;
+		}
+		await WalletStore().disconnectController();
+		addTerminalContent({
+			text: "disconnected",
+			format: "hash",
+			useTypewriter: true,
+		});
+		return;
+	},
+	_bypass: ({ command }) => {
 		// DEMO for commands that need to intercept the msd stream, and then call the contract
-		commandHandler(command, true);
+		sendCommand(command, true);
 	},
 	help: () => {
 		// Handle help command
 		addTerminalContent({
-			text: `Available commands:\n\n${Object.entries(HELP_TEXTS)
+			text: `available commands:\n\n${Object.entries(HELP_TEXTS)
 				.map(([cmd, content]) => `> ${cmd.padEnd(10)}\n${content.description}`)
 				.join("\n\n")}`,
 			format: "hash",
@@ -131,4 +188,4 @@ export const TERMINAL_SYSTEM_COMMANDS: {
 			useTypewriter: true,
 		});
 	},
-};
+} as const;

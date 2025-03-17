@@ -39,15 +39,15 @@ export const EditorHeader = () => {
 	};
 
 	const requireConnect = useMemo(() => {
-		const useSlot = ZORG_CONFIG.useSlot;
-		return !isConnected && useSlot;
+		const useController = ZORG_CONFIG.useController;
+		return !isConnected && useController;
 	}, [isConnected]);
 
 	return (
 		<header className="flex flex-row justify-between gap-2 items-center pb-2 w-full lg:container">
-			<div className="flex flex-col font-mono textFreak">
-				<h1 className="text-xl font-bold">{APP_EDITOR_DATA.title}</h1>
-				<div>
+			<div className="flex flex-row font-berkeley">
+				<h1 className="text-xl font-bold font-berkeley">{APP_EDITOR_DATA.title}</h1>
+				<div className="mx-1 text-[7pt]">
 					({import.meta.env.MODE ? import.meta.env.MODE.toUpperCase() : "DEV"})
 				</div>
 			</div>

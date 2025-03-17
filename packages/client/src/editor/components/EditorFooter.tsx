@@ -4,9 +4,9 @@ import { APP_EDITOR_DATA } from "@/data/app.data";
 
 export const EditorFooter = () => {
 	return (
-		<footer className="gap-2 mt-4 flex items-center p-4 invert bg-gray-300 w-full justify-center">
-			<div className="lg:container flex flex-row justify-between w-full gap-2">
-				<h1 className="text-xl font-bold font-mono textFreak">
+		<footer className="gap-2 mt-4 mb-1 flex items-center p-4 not-dark:invert not-dark:bg-gray-300 w-full justify-center rounded-2xl">
+			<div className="lg:container flex flex-row justify-between w-full gap-2 items-center">
+				<h1 className="text-xl font-bold font-berkeley textFreak mx-2">
 					{APP_EDITOR_DATA.title}
 				</h1>
 

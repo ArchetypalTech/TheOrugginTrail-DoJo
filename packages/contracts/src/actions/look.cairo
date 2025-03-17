@@ -4,7 +4,7 @@
 //*
 
 pub mod lookat {
-    use the_oruggin_trail::systems::tokeniser::{confessor::Garble};
+    use the_oruggin_trail::systems::tokeniser::{lexer::Garble};
     use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::lib::world;

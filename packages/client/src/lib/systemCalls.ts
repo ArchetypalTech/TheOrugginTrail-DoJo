@@ -1,8 +1,8 @@
 import { CallData, byteArray, type RawArgsArray } from "starknet";
 import { ZORG_CONFIG } from "@lib/config";
 import { toCairoArray } from "../editor/utils";
-import { addTerminalContent } from "./stores/terminal.store";
 import WalletStore from "./stores/wallet.store";
+import { sendCommand } from "./terminalCommands/commandHandler";
 
 /**
  * Sends a command to the entity contract.
@@ -11,47 +11,38 @@ import WalletStore from "./stores/wallet.store";
  * @param {string} command - The command to send
  * @returns {Promise<void>}
  */
-async function sendCommand(command: string): Promise<void> {
+async function execCommand(command: string): Promise<void> {
+	// if using slot, send to controller
+	if (ZORG_CONFIG.useController) {
+		if (!WalletStore().isConnected) {
+			sendCommand("_not_yet_connected");
+			return;
+		}
+	}
+
 	try {
 		const formData = new FormData();
 		formData.append("command", command);
 		formData.append("route", "sendMessage");
-
-		console.log("[KATANA-DEV] sendControllerCommand", command);
+		console.time("calltime");
 		const { calldata } = await formatCallData(command);
-		await ZORG_CONFIG.contracts.entity.invoke("listen", [calldata]);
+		if (ZORG_CONFIG.useController) {
+			console.log("[CONTROLLER] execControllerCommand", command);
+			WalletStore().controller?.account?.execute([
+				{
+					contractAddress: ZORG_CONFIG.contracts.entity.address,
+					entrypoint: "listen",
+					calldata,
+				},
+			]);
+		} else {
+			console.log("[KATANA-DEV] execControllerCommand", command);
+			await ZORG_CONFIG.contracts.entity.invoke("listen", [calldata]);
+		}
+		console.timeEnd("calltime");
 	} catch (error) {
 		console.error("Error sending command:", error as Error);
 	}
-}
-
-/**
- * Sends a command through the controller.
- * Clientside call for controller commands.
- *
- * @param {string} command - The command to send
- * @returns {Promise<void>}
- */
-async function sendControllerCommand(command: string): Promise<void> {
-	if (!WalletStore().isConnected) {
-		addTerminalContent({
-			text: "You are not yet connected",
-			format: "hash",
-			useTypewriter: true,
-		});
-		return;
-	}
-	console.log("[CONTROLLER] sendControllerCommand", command);
-	console.time("calltime");
-	const { calldata } = await formatCallData(command);
-	WalletStore().controller?.account?.execute([
-		{
-			contractAddress: ZORG_CONFIG.contracts.entity.address,
-			entrypoint: "listen",
-			calldata,
-		},
-	]);
-	console.timeEnd("calltime");
 }
 
 /**
@@ -90,7 +81,7 @@ type DesignerCallProps = {
  * @returns {Promise<Response>} The response from the contract call
  * @throws {Error} If the contract call fails
  */
-async function sendDesignerCall(props: DesignerCallProps) {
+async function execDesignerCall(props: DesignerCallProps) {
 	const { call, args } = props;
 	console.log(call, args);
 	try {
@@ -109,7 +100,7 @@ async function sendDesignerCall(props: DesignerCallProps) {
 		}
 
 		let response: unknown;
-		if (ZORG_CONFIG.useSlot) {
+		if (ZORG_CONFIG.useController) {
 			if (!WalletStore().isConnected) {
 				throw new Error("Wallet not connected");
 			}
@@ -135,7 +126,7 @@ async function sendDesignerCall(props: DesignerCallProps) {
 		});
 	} catch (error) {
 		throw new Error(
-			`[${(error as Error).message}] @ sendDesignerCall[${call}](args): ${JSON.stringify(args)} `,
+			`[${(error as Error).message}] @ execDesignerCall[${call}](args): ${JSON.stringify(args)} `,
 		);
 	}
 }
@@ -144,12 +135,11 @@ async function sendDesignerCall(props: DesignerCallProps) {
  * SystemCalls object that exports all the functions for external use.
  *
  * @namespace
- * @property {Function} sendDesignerCall - Function to send calls to the designer contract
- * @property {Function} sendCommand - Function to send commands to the entity contract
- * @property {Function} sendControllerCommand - Function to send commands through the controller
+ * @property {Function} execDesignerCall - Function to send calls to the designer contract
+ * @property {Function} execCommand - Function to send commands to the entity contract
+ * @property {Function} execControllerCommand - Function to send commands through the controller
  */
 export const SystemCalls = {
-	sendDesignerCall,
-	sendCommand,
-	sendControllerCommand,
+	execDesignerCall,
+	execCommand,
 };

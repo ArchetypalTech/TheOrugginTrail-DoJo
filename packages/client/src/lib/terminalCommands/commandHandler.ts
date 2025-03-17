@@ -1,6 +1,5 @@
 import { addTerminalContent } from "@lib/stores/terminal.store";
-// import { getBalance2 } from "../tokens/interaction";
-import { TERMINAL_SYSTEM_COMMANDS } from "./commands";
+import { TERMINAL_SYSTEM_COMMANDS } from "../../data/command.data";
 import { SystemCalls } from "@lib/systemCalls";
 import { ZORG_CONFIG } from "@lib/config";
 import WalletStore from "@lib/stores/wallet.store";
@@ -12,10 +11,25 @@ import WalletStore from "@lib/stores/wallet.store";
  * @param {boolean} bypassSystem - When true, bypasses system commands and sends directly to contract
  * @returns {Promise<void>}
  */
-export const commandHandler = async (command: string, bypassSystem = false) => {
-	const [cmd, ...args] = command.trim().toLowerCase().split(/\s+/);
+export const sendCommand = async <
+	T extends keyof typeof TERMINAL_SYSTEM_COMMANDS,
+>(
+	_command: T,
+	bypassSystem = false,
+) => {
+	const command = _command.toString().trim().toLowerCase();
+	const [cmd, ...args] = command.split(/\s+/);
+
+	const context = {
+		command,
+		cmd: cmd.trim().toLowerCase(),
+		args: args.map((arg) => arg.trim().toLowerCase()),
+	};
+
+	console.log("[sendCommand]:", context, context.cmd[0]);
+
 	// Hide _ commands
-	if (command[0] !== "_") {
+	if (context.cmd[0] !== "_") {
 		addTerminalContent({
 			text: `\n> ${command}`,
 			format: "input",
@@ -23,16 +37,12 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 		});
 	}
 
-	const context = {
-		command: command.trim().toLowerCase(),
-		cmd: cmd.trim().toLowerCase(),
-		args: args.map((arg) => arg.trim().toLowerCase()),
-	};
-
-	// try to get a match with systemCommands
-	console.log("[commandHandler]:", context);
-	if (!bypassSystem && TERMINAL_SYSTEM_COMMANDS[cmd]) {
-		TERMINAL_SYSTEM_COMMANDS[cmd](context);
+	// try to get a lowercasematch with systemCommands
+	const systemCmd = Object.keys(TERMINAL_SYSTEM_COMMANDS).find(
+		(key) => key.toLowerCase() === cmd,
+	);
+	if (!bypassSystem && systemCmd) {
+		TERMINAL_SYSTEM_COMMANDS[systemCmd](context);
 		return;
 	}
 
@@ -40,21 +50,14 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
 	if (!import.meta.env.DEV) {
 		// check if player is allowed to interact (tokengating) {}
 		if (!WalletStore().isConnected) {
-			addTerminalContent({
-				text: "type [wallet] to connect.",
-				format: "hash",
-				useTypewriter: true,
-			});
+			sendCommand("_connect_wallet");
 			return;
 		}
 		if (!hasRequiredTokens()) return;
 	}
 
 	try {
-		if (ZORG_CONFIG.useSlot) {
-			return await SystemCalls.sendControllerCommand(command);
-		}
-		return await SystemCalls.sendCommand(command);
+		return await SystemCalls.execCommand(command);
 	} catch (error) {
 		console.error("Error sending command:", error);
 	}
@@ -67,7 +70,7 @@ export const commandHandler = async (command: string, bypassSystem = false) => {
  */
 async function hasRequiredTokens(): Promise<boolean> {
 	// we don't check if not using controller
-	if (!ZORG_CONFIG.useSlot) return true;
+	if (!ZORG_CONFIG.useController) return true;
 	if (!WalletStore().isConnected) {
 		return false;
 	}
