@@ -3,17 +3,14 @@
 //* MeaCulpa (mc) 2024 lbdl | itrainspiders
 //*
 
-use the_oruggin_trail::models::{zrk_enums, zrk_enums::{object_type_to_str}};
-/// Objects are both Objects/things and now Direction things
-/// like doors etc
-///
-/// we should think about using this as the reverse door as well
-/// maybe a flag in the setup functions that add the reverse mapping?
+use the_oruggin_trail::models::{zrk_enums};
+
 #[derive(Clone, Drop, Serde)]
 #[dojo::model]
 pub struct Object {
     #[key]
-    pub objectId: felt252,
+    pub inst: felt252,
+    pub is_object: bool,
     pub objType: zrk_enums::ObjectType,
     pub dirType: zrk_enums::DirectionType,
     pub destId: felt252,
@@ -24,25 +21,23 @@ pub struct Object {
     pub altNames: Array<ByteArray>,
 }
 
-pub fn doesObjectExist(object: Object) -> bool {
-    object.clone().objectId != 0
-}
-
-pub fn getObjectName(object: Object) -> ByteArray {
-    let mut name: ByteArray = object.name;
-    if name.len() == 0 {
-        name = object_type_to_str(object.objType);
+#[generate_trait]
+pub impl ObjectImpl of ObjectTrait {
+    fn is_object(self: Object) -> bool {
+        self.is_object
     }
-    name
-}
 
-pub fn getObjectAltRefs(object: Object) -> Array<ByteArray> {
-    // we get the name, and all altNames
-    let mut references: Array<ByteArray> = array![];
-    let altNames = object.altNames.clone();
-    references.append(getObjectName(object));
-    for altName in altNames {
-        references.append(altName);
-    };
-    references
+    fn get_object_name(self: Object) -> ByteArray {
+        self.name
+    }
+
+    fn get_object_alt_refs(self: Object) -> Array<ByteArray> {
+        let mut references: Array<ByteArray> = array![];
+        let altNames = self.altNames.clone();
+        references.append(self.get_object_name().clone());
+        for altName in altNames {
+            references.append(altName.clone());
+        };
+        references
+    }
 }

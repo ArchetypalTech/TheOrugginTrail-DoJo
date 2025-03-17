@@ -2,6 +2,106 @@ import type { SchemaType as ISchemaType } from "@dojoengine/sdk";
 
 import { CairoCustomEnum, type BigNumberish } from 'starknet';
 
+// Type definition for `the_oruggin_trail::components::container::Container` struct
+export interface Container {
+	inst: BigNumberish;
+	is_container: boolean;
+	can_be_opened: boolean;
+	can_receive_items: boolean;
+	is_open: boolean;
+	num_slots: BigNumberish;
+	item_ids: Array<BigNumberish>;
+	action_map: Array<string>;
+}
+
+// Type definition for `the_oruggin_trail::components::container::ContainerValue` struct
+export interface ContainerValue {
+	is_container: boolean;
+	can_be_opened: boolean;
+	can_receive_items: boolean;
+	is_open: boolean;
+	num_slots: BigNumberish;
+	item_ids: Array<BigNumberish>;
+	action_map: Array<string>;
+}
+
+// Type definition for `the_oruggin_trail::components::exit::Exit` struct
+export interface Exit {
+	inst: BigNumberish;
+	is_exit: boolean;
+	is_enterable: boolean;
+	leads_to: BigNumberish;
+	direction_type: DirectionTypeEnum;
+	action_map: Array<string>;
+}
+
+// Type definition for `the_oruggin_trail::components::exit::ExitValue` struct
+export interface ExitValue {
+	is_exit: boolean;
+	is_enterable: boolean;
+	leads_to: BigNumberish;
+	direction_type: DirectionTypeEnum;
+	action_map: Array<string>;
+}
+
+// Type definition for `the_oruggin_trail::components::inspectable::Inspectable` struct
+export interface Inspectable {
+	inst: BigNumberish;
+	is_inspectable: boolean;
+	is_visible: boolean;
+	text_id: BigNumberish;
+}
+
+// Type definition for `the_oruggin_trail::components::inspectable::InspectableValue` struct
+export interface InspectableValue {
+	is_inspectable: boolean;
+	is_visible: boolean;
+	text_id: BigNumberish;
+}
+
+// Type definition for `the_oruggin_trail::components::inventoryItem::InventoryItem` struct
+export interface InventoryItem {
+	inst: BigNumberish;
+	is_inventory_item: boolean;
+	owner_id: BigNumberish;
+	can_be_picked_up: boolean;
+	can_go_in_container: boolean;
+}
+
+// Type definition for `the_oruggin_trail::components::inventoryItem::InventoryItemValue` struct
+export interface InventoryItemValue {
+	is_inventory_item: boolean;
+	owner_id: BigNumberish;
+	can_be_picked_up: boolean;
+	can_go_in_container: boolean;
+}
+
+// Type definition for `the_oruggin_trail::components::relations::ChildToParent` struct
+export interface ChildToParent {
+	inst: BigNumberish;
+	is_child: boolean;
+	parent: BigNumberish;
+}
+
+// Type definition for `the_oruggin_trail::components::relations::ChildToParentValue` struct
+export interface ChildToParentValue {
+	is_child: boolean;
+	parent: BigNumberish;
+}
+
+// Type definition for `the_oruggin_trail::components::relations::ParentToChildren` struct
+export interface ParentToChildren {
+	inst: BigNumberish;
+	is_parent: boolean;
+	children: Array<BigNumberish>;
+}
+
+// Type definition for `the_oruggin_trail::components::relations::ParentToChildrenValue` struct
+export interface ParentToChildrenValue {
+	is_parent: boolean;
+	children: Array<BigNumberish>;
+}
+
 // Type definition for `the_oruggin_trail::models::action::Action` struct
 export interface Action {
 	actionId: BigNumberish;
@@ -38,7 +138,8 @@ export interface InventoryValue {
 
 // Type definition for `the_oruggin_trail::models::object::Object` struct
 export interface Object {
-	objectId: BigNumberish;
+	inst: BigNumberish;
+	is_object: boolean;
 	objType: ObjectTypeEnum;
 	dirType: DirectionTypeEnum;
 	destId: BigNumberish;
@@ -51,6 +152,7 @@ export interface Object {
 
 // Type definition for `the_oruggin_trail::models::object::ObjectValue` struct
 export interface ObjectValue {
+	is_object: boolean;
 	objType: ObjectTypeEnum;
 	dirType: DirectionTypeEnum;
 	destId: BigNumberish;
@@ -94,8 +196,7 @@ export interface Room {
 	biomeType: BiomeTypeEnum;
 	txtDefId: BigNumberish;
 	shortTxt: string;
-	objectIds: Array<BigNumberish>;
-	dirObjIds: Array<BigNumberish>;
+	object_ids: Array<BigNumberish>;
 	players: Array<BigNumberish>;
 }
 
@@ -105,8 +206,7 @@ export interface RoomValue {
 	biomeType: BiomeTypeEnum;
 	txtDefId: BigNumberish;
 	shortTxt: string;
-	objectIds: Array<BigNumberish>;
-	dirObjIds: Array<BigNumberish>;
+	object_ids: Array<BigNumberish>;
 	players: Array<BigNumberish>;
 }
 
@@ -246,6 +346,18 @@ export type RoomTypeEnum = CairoCustomEnum;
 
 export interface SchemaType extends ISchemaType {
 	the_oruggin_trail: {
+		Container: Container,
+		ContainerValue: ContainerValue,
+		Exit: Exit,
+		ExitValue: ExitValue,
+		Inspectable: Inspectable,
+		InspectableValue: InspectableValue,
+		InventoryItem: InventoryItem,
+		InventoryItemValue: InventoryItemValue,
+		ChildToParent: ChildToParent,
+		ChildToParentValue: ChildToParentValue,
+		ParentToChildren: ParentToChildren,
+		ParentToChildrenValue: ParentToChildrenValue,
 		Action: Action,
 		ActionValue: ActionValue,
 		Inventory: Inventory,
@@ -264,6 +376,100 @@ export interface SchemaType extends ISchemaType {
 }
 export const schema: SchemaType = {
 	the_oruggin_trail: {
+		Container: {
+			inst: 0,
+			is_container: false,
+			can_be_opened: false,
+			can_receive_items: false,
+			is_open: false,
+			num_slots: 0,
+			item_ids: [0],
+			action_map: [""],
+		},
+		ContainerValue: {
+			is_container: false,
+			can_be_opened: false,
+			can_receive_items: false,
+			is_open: false,
+			num_slots: 0,
+			item_ids: [0],
+			action_map: [""],
+		},
+		Exit: {
+			inst: 0,
+			is_exit: false,
+			is_enterable: false,
+			leads_to: 0,
+		direction_type: new CairoCustomEnum({ 
+					None: "",
+				North: undefined,
+				East: undefined,
+				South: undefined,
+				West: undefined,
+				Up: undefined,
+				Down: undefined,
+				Left: undefined,
+				Right: undefined, }),
+			action_map: [""],
+		},
+		ExitValue: {
+			is_exit: false,
+			is_enterable: false,
+			leads_to: 0,
+		direction_type: new CairoCustomEnum({ 
+					None: "",
+				North: undefined,
+				East: undefined,
+				South: undefined,
+				West: undefined,
+				Up: undefined,
+				Down: undefined,
+				Left: undefined,
+				Right: undefined, }),
+			action_map: [""],
+		},
+		Inspectable: {
+			inst: 0,
+			is_inspectable: false,
+			is_visible: false,
+			text_id: 0,
+		},
+		InspectableValue: {
+			is_inspectable: false,
+			is_visible: false,
+			text_id: 0,
+		},
+		InventoryItem: {
+			inst: 0,
+			is_inventory_item: false,
+			owner_id: 0,
+			can_be_picked_up: false,
+			can_go_in_container: false,
+		},
+		InventoryItemValue: {
+			is_inventory_item: false,
+			owner_id: 0,
+			can_be_picked_up: false,
+			can_go_in_container: false,
+		},
+		ChildToParent: {
+			inst: 0,
+			is_child: false,
+			parent: 0,
+		},
+		ChildToParentValue: {
+			is_child: false,
+			parent: 0,
+		},
+		ParentToChildren: {
+			inst: 0,
+			is_parent: false,
+			children: [0],
+		},
+		ParentToChildrenValue: {
+			is_parent: false,
+			children: [0],
+		},
 		Action: {
 			actionId: 0,
 		actionType: new CairoCustomEnum({ 
@@ -347,7 +553,8 @@ export const schema: SchemaType = {
 			items: [0],
 		},
 		Object: {
-			objectId: 0,
+			inst: 0,
+			is_object: false,
 		objType: new CairoCustomEnum({ 
 					None: "",
 				Ball: undefined,
@@ -397,6 +604,7 @@ export const schema: SchemaType = {
 			altNames: [""],
 		},
 		ObjectValue: {
+			is_object: false,
 		objType: new CairoCustomEnum({ 
 					None: "",
 				Ball: undefined,
@@ -493,8 +701,7 @@ export const schema: SchemaType = {
 				Prarie: undefined, }),
 			txtDefId: 0,
 		shortTxt: "",
-			objectIds: [0],
-			dirObjIds: [0],
+			object_ids: [0],
 			players: [0],
 		},
 		RoomValue: {
@@ -526,8 +733,7 @@ export const schema: SchemaType = {
 				Prarie: undefined, }),
 			txtDefId: 0,
 		shortTxt: "",
-			objectIds: [0],
-			dirObjIds: [0],
+			object_ids: [0],
 			players: [0],
 		},
 		Txtdef: {
@@ -542,6 +748,18 @@ export const schema: SchemaType = {
 	},
 };
 export enum ModelsMapping {
+	Container = 'the_oruggin_trail-Container',
+	ContainerValue = 'the_oruggin_trail-ContainerValue',
+	Exit = 'the_oruggin_trail-Exit',
+	ExitValue = 'the_oruggin_trail-ExitValue',
+	Inspectable = 'the_oruggin_trail-Inspectable',
+	InspectableValue = 'the_oruggin_trail-InspectableValue',
+	InventoryItem = 'the_oruggin_trail-InventoryItem',
+	InventoryItemValue = 'the_oruggin_trail-InventoryItemValue',
+	ChildToParent = 'the_oruggin_trail-ChildToParent',
+	ChildToParentValue = 'the_oruggin_trail-ChildToParentValue',
+	ParentToChildren = 'the_oruggin_trail-ParentToChildren',
+	ParentToChildrenValue = 'the_oruggin_trail-ParentToChildrenValue',
 	Action = 'the_oruggin_trail-Action',
 	ActionValue = 'the_oruggin_trail-ActionValue',
 	Inventory = 'the_oruggin_trail-Inventory',

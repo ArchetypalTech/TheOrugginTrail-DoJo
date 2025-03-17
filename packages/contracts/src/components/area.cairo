@@ -1,14 +1,11 @@
-//*
-//*
-//* MeaCulpa (mc) 2024 lbdl | itrainspiders
-//*
-use the_oruggin_trail::models::{zrk_enums};
-
 #[derive(Clone, Drop, Serde, Introspect, Debug)]
 #[dojo::model]
 pub struct Room {
     #[key]
-    pub roomId: felt252,
+    pub inst: felt252,
+    pub is_area: bool,
+    //properties
+    pub name: ByteArray,
     pub roomType: zrk_enums::RoomType,
     pub biomeType: zrk_enums::BiomeType,
     pub txtDefId: felt252,

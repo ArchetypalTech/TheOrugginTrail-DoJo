@@ -1312,8 +1312,8 @@
   },
   "contracts": [
     {
-      "address": "0x2c2d137f9b93e783dd6bf8241ead57a25754930622b618c3234bcf4de0e5e1d",
-      "class_hash": "0x2e08460b8593392bea0347b896c1a124548306f73c1b21badae76b9624d4184",
+      "address": "0xe330964d866293448481d74402e2ef19eeafb44c66cd3e9579caa09dedda0d",
+      "class_hash": "0x58238eab5d48fb11cb07b752756a7075a115fb7d06dd43518927e583100bb82",
       "abi": [
         {
           "type": "impl",
@@ -1369,6 +1369,20 @@
           "type": "impl",
           "name": "DesignerImpl",
           "interface_name": "the_oruggin_trail::systems::designer::IDesigner"
+        },
+        {
+          "type": "enum",
+          "name": "core::bool",
+          "variants": [
+            {
+              "name": "False",
+              "type": "()"
+            },
+            {
+              "name": "True",
+              "type": "()"
+            }
+          ]
         },
         {
           "type": "enum",
@@ -1549,8 +1563,12 @@
           "name": "the_oruggin_trail::models::object::Object",
           "members": [
             {
-              "name": "objectId",
+              "name": "inst",
               "type": "core::felt252"
+            },
+            {
+              "name": "is_object",
+              "type": "core::bool"
             },
             {
               "name": "objType",
@@ -1700,20 +1718,6 @@
             },
             {
               "name": "Drop",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "core::bool",
-          "variants": [
-            {
-              "name": "False",
-              "type": "()"
-            },
-            {
-              "name": "True",
               "type": "()"
             }
           ]
@@ -1889,16 +1893,30 @@
               "type": "core::byte_array::ByteArray"
             },
             {
-              "name": "objectIds",
-              "type": "core::array::Array::<core::felt252>"
-            },
-            {
-              "name": "dirObjIds",
+              "name": "object_ids",
               "type": "core::array::Array::<core::felt252>"
             },
             {
               "name": "players",
               "type": "core::array::Array::<core::felt252>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "the_oruggin_trail::models::txtdef::Txtdef",
+          "members": [
+            {
+              "name": "id",
+              "type": "core::felt252"
+            },
+            {
+              "name": "owner",
+              "type": "core::felt252"
+            },
+            {
+              "name": "text",
+              "type": "core::byte_array::ByteArray"
             }
           ]
         },
@@ -1944,19 +1962,11 @@
             },
             {
               "type": "function",
-              "name": "create_txt",
+              "name": "create_txts",
               "inputs": [
                 {
-                  "name": "id",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "ownedBy",
-                  "type": "core::felt252"
-                },
-                {
-                  "name": "val",
-                  "type": "core::byte_array::ByteArray"
+                  "name": "t",
+                  "type": "core::array::Array::<the_oruggin_trail::models::txtdef::Txtdef>"
                 }
               ],
               "outputs": [],
@@ -2086,13 +2096,13 @@
         "create_objects",
         "create_actions",
         "create_rooms",
-        "create_txt",
+        "create_txts",
         "upgrade"
       ]
     },
     {
-      "address": "0x6bcfa44a4d0f8c876aaaff023856f1a699ba11f8f45023eacea45bd11408c4a",
-      "class_hash": "0x9750024285ff948394cc4b77d38b8c85e76d0c125db421f4c77336365ca8bf",
+      "address": "0x157b0aec14f4234e453e6c9f1691bfe737fb7aa2584647f1b946c471e50eb83",
+      "class_hash": "0x621389bbbcd166b32ff50813de7a2d356b5ad5facc5d40f317301c4718236ec",
       "abi": [
         {
           "type": "impl",
@@ -2305,13 +2315,43 @@
     },
     {
       "members": [],
+      "class_hash": "0x13f386261bd41d207bf617b80ed2637ab7b0cd84309962381cd12ea5d67ae8f",
+      "tag": "the_oruggin_trail-ChildToParent",
+      "selector": "0x71c63aeb7c80cde0c0110ed2ce7bd5c835effe63589601c6441fbfdc0a895ea"
+    },
+    {
+      "members": [],
+      "class_hash": "0x53f51734b2b8527d6a8864215d95962009a83e513032bcf72594d55d06850b0",
+      "tag": "the_oruggin_trail-Container",
+      "selector": "0x7a0af8b935d302b943fcf993deb5963c75872c68e74118f5c03ae1520d6657f"
+    },
+    {
+      "members": [],
+      "class_hash": "0x32c724bce69fffb987856a2dd1b48e22f5837812a1576907add354211b2343e",
+      "tag": "the_oruggin_trail-Exit",
+      "selector": "0xef6f3e1533e1d8e4bb1516cf8eec3edae4ce9e504aaf142e7c3d37613f13ce"
+    },
+    {
+      "members": [],
+      "class_hash": "0x4bc393d022ba85a5d59c045aa32f9d95d678aadeceb1f93d610e331fc595f73",
+      "tag": "the_oruggin_trail-Inspectable",
+      "selector": "0x7ba4b9e287769a6ef1b47be6736d04ab30113474496c503a14710acec7afee2"
+    },
+    {
+      "members": [],
       "class_hash": "0x5c80e39b57ade06474fa2affe0a4e992ebbb33545ed6444de1d6ed50e1bdbdf",
       "tag": "the_oruggin_trail-Inventory",
       "selector": "0x39e2daf9ca66e2d67529350fbc09271a3c8bc1c8af38ca0720e901d8302b963"
     },
     {
       "members": [],
-      "class_hash": "0x223d70f457925a6aa12e8029b8ec21b8f864066b2cf62f47e26d135f57ec02d",
+      "class_hash": "0x37c97d14aa05a70d9a9c46bd4b6613759e8c8ebbb640c98b57ef88a4df4bf0c",
+      "tag": "the_oruggin_trail-InventoryItem",
+      "selector": "0x5006abc93d8929b7b394ec64eea8519646919d36e98a9095d7cb6b5c15fe33f"
+    },
+    {
+      "members": [],
+      "class_hash": "0xe7350d12c6f14c09d5bc21c7c5fe4fef94aa99ff31d611210c5f282557e57",
       "tag": "the_oruggin_trail-Object",
       "selector": "0x4fb4d030de6a33ed1299b70767b5efbf47af7f21535b4f094f4622e0dafd44"
     },
@@ -2323,13 +2363,19 @@
     },
     {
       "members": [],
+      "class_hash": "0x218d1c5be209250e3a1ed1d71da86ed14566daf2ed55480430726b81d33f32",
+      "tag": "the_oruggin_trail-ParentToChildren",
+      "selector": "0x486e21437b8404d73285273ee5501944a0e964712a2f59a4e4e131ab4528e8c"
+    },
+    {
+      "members": [],
       "class_hash": "0x6f7a03a6ef91e4c8c57b2f27428e479baab0b7df8e8a3cfe5969b4a89575d12",
       "tag": "the_oruggin_trail-Player",
       "selector": "0x320049d3f365911c63800593b9c78aaf9a1d5caa253af3980103a3424e17832"
     },
     {
       "members": [],
-      "class_hash": "0x26fc48aa6e520934a66a866c519b5ee0c05c65446bbb568cdfef20f5fa82278",
+      "class_hash": "0x3c70a015be47e341f761900dc8255e1ed0e5fa75993b78eeef7957724e9dc05",
       "tag": "the_oruggin_trail-Room",
       "selector": "0x29e011fc5da96859d49e5a6f65a5d7c57803d049b59a3e78c4f247a6013e13a"
     },

@@ -24,7 +24,7 @@ pub mod hashutils {
     /// ObjectType hashing
     ///
     /// Should/can it be a trait? Probably
-    /// We hash all the values othert than objectId as this
+    /// We hash all the values othert than inst as this
     /// is returned and we then store the object with this
     /// i.e. h => h(obj.*; if obj.* != id)
     pub fn obj_hash(obj: @Object) -> felt252 {

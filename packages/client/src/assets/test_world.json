@@ -1,45 +1,40 @@
 {
 	"dataPool": [
 		{
+			"altNames": ["bridge"],
+			"inst": "1315596764262586",
+			"is_object": true,
+			"txtDefId": "2804987862139889",
+			"objType": "Ball",
+			"destId": "2631005930322779",
 			"matType": "Glass",
 			"name": "hanging bridge",
-			"objectId": "1315596764262586",
-			"destId": "2631005930322779",
-			"altNames": ["bridge"],
 			"objectActionIds": ["1287264441317217"],
-			"objType": "Ball",
-			"dirType": "South",
-			"txtDefId": "2804987862139889"
+			"dirType": "South"
 		},
 		{
-			"affectsActionId": "0",
-			"affectedByActionId": "0",
 			"actionId": "1142159201426500",
+			"actionType": "Take",
 			"dBitTxt": "Describe what happens when this action is performed...",
 			"enabled": true,
-			"actionType": "Take",
 			"revertable": false,
-			"dBit": true
+			"dBit": true,
+			"affectsActionId": "0",
+			"affectedByActionId": "0"
 		},
 		{
-			"text": "it's%20a%20wreck,%20the%20only%20thing%20you%20could%20still%20describe%20as%20individual",
-			"id": "3201142219379725",
-			"owner": "1561420201336585"
-		},
-		{
-			"objectIds": ["1315596764262586"],
-			"roomType": "Fort",
+			"biomeType": "Demon",
+			"players": [],
+			"object_ids": ["1315596764262586"],
 			"roomId": "7892581999139148",
 			"txtDefId": "3390588217605910",
-			"dirObjIds": [],
-			"players": [],
-			"biomeType": "Demon",
+			"roomType": "Fort",
 			"shortTxt": "The Last Saloon"
 		},
 		{
-			"id": "2137107584321827",
 			"owner": "2557645108312556",
-			"text": ""
+			"text": "",
+			"id": "2137107584321827"
 		},
 		{
 			"id": "2804987862139889",
@@ -47,19 +42,18 @@
 			"text": "its%20wooden%20boards%20stretch%20out%20like%20a%20glitch"
 		},
 		{
-			"dirObjIds": [],
-			"txtDefId": "1188775278236913",
-			"biomeType": "Arctic",
-			"shortTxt": "Burning Plains",
 			"roomType": "WoodCabin",
-			"objectIds": ["2557645108312556", "1561420201336585"],
+			"biomeType": "Arctic",
+			"roomId": "2631005930322779",
+			"object_ids": ["2557645108312556", "1384467129426318"],
 			"players": [],
-			"roomId": "2631005930322779"
+			"txtDefId": "1188775278236913",
+			"shortTxt": "Burning Plains"
 		},
 		{
+			"id": "3390588217605910",
 			"owner": "7892581999139148",
-			"text": "A%20neon%20sign%20flickers%20weakly%20against%20the%20dying%20light%20of%20the%20final%20stars.%0A%0AThis%20establishment%20is%20sat%20at%20the%20very%20edge%20of%20existence,%20where%20reality%20is%20stretched%20thin%20as%20a%20piece%20of%20cosmic%20taffy.%0A%0AJust%20a%20piece.",
-			"id": "3390588217605910"
+			"text": "A%20neon%20sign%20flickers%20weakly%20against%20the%20dying%20light%20of%20the%20final%20stars.%0A%0AThis%20establishment%20is%20sat%20at%20the%20very%20edge%20of%20existence,%20where%20reality%20is%20stretched%20thin%20as%20a%20piece%20of%20cosmic%20taffy.%0A%0AJust%20a%20piece."
 		},
 		{
 			"text": "Winged%20wreckages%20are%20strewn%20across%20the%20plains.%0AEither%20they%20landed%20embracing%20another%20or%20otherwise%20tumbled%20under%20and%20over.%0A%20%20%20%20%20%20%20%20%20%20%20%20%0ASkeletons%20of%20passengers,%20their%20belongings.%0AA%20backpack%20gives%20some%20color.",
@@ -67,45 +61,73 @@
 			"owner": "2631005930322779"
 		},
 		{
-			"dBitTxt": "it has little ant sized men walking around in it, weird",
 			"actionId": "3833781349933857",
 			"actionType": "Look",
+			"dBitTxt": "it has little ant sized men walking around in it, weird",
+			"enabled": true,
+			"revertable": false,
 			"dBit": true,
 			"affectsActionId": "0",
-			"affectedByActionId": "0",
-			"revertable": false,
-			"enabled": true
+			"affectedByActionId": "0"
 		},
 		{
 			"actionId": "1287264441317217",
-			"affectsActionId": "0",
 			"actionType": "Open",
-			"revertable": false,
-			"enabled": true,
+			"affectsActionId": "0",
+			"affectedByActionId": "0",
 			"dBitTxt": "you cross the bridge",
-			"dBit": true,
-			"affectedByActionId": "0"
+			"enabled": true,
+			"revertable": false,
+			"dBit": true
 		},
 		{
 			"actionId": "1817010079372897",
-			"enabled": true,
-			"affectsActionId": "0",
-			"dBit": true,
-			"dBitTxt": "Describe what happens when this action is performed...",
 			"actionType": "Open",
+			"dBitTxt": "Describe what happens when this action is performed...",
+			"enabled": true,
 			"revertable": false,
+			"dBit": true,
+			"affectsActionId": "0",
 			"affectedByActionId": "0"
 		},
 		{
-			"objectActionIds": ["1817010079372897"],
-			"altNames": [],
-			"name": "the way back",
-			"dirType": "North",
-			"objectId": "2557645108312556",
-			"matType": "Stone",
-			"txtDefId": "2137107584321827",
 			"objType": "Ball",
-			"destId": "7892581999139148"
+			"destId": "7892581999139148",
+			"name": "the way back",
+			"txtDefId": "2137107584321827",
+			"inst": "2557645108312556",
+			"is_object": true,
+			"objectActionIds": ["1817010079372897"],
+			"dirType": "North",
+			"altNames": [],
+			"matType": "Stone"
+		},
+		{
+			"id": "1775829558148278",
+			"owner": "1384467129426318",
+			"text": "it's a wreck, the only thing you could still describe as individual"
+		},
+		{
+			"inst": "1384467129426318",
+			"is_object": true,
+			"objType": "Ball",
+			"dirType": "None",
+			"destId": "NaN",
+			"matType": "None",
+			"objectActionIds": ["9187221337083310"],
+			"txtDefId": "1775829558148278",
+			"name": "airplane",
+			"altNames": ["", "plane"]
+		},
+		{
+			"actionId": "9187221337083310",
+			"actionType": "Look",
+			"dBitTxt": "it has little ant sized men walking around in it, weird",
+			"enabled": true,
+			"revertable": false,
+			"dBit": true,
+			"affectsActionId": "NaN",
+			"affectedByActionId": "NaN"
 		}
 	]
 }

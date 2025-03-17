@@ -3,7 +3,9 @@ pub mod take {
     use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::lib::world;
-    use the_oruggin_trail::models::{player::Player, room::Room, zrk_enums::{ObjectType}, object};
+    use the_oruggin_trail::models::{
+        player::Player, room::Room, zrk_enums::{ObjectType}, object::{ObjectTrait},
+    };
 
     pub fn action_take(mut world: WorldStorage, message: Garble, player: Player) -> ByteArray {
         println!("take------->{:?}", message);
@@ -18,17 +20,17 @@ pub mod take {
             let mut inventory = world::getPlayerInventory(world, player);
             for obj in objects {
                 println!("{:?}", obj.objType);
-                if obj.objType == message.dobj || obj.objectId == message.matchedObject {
+                if obj.objType == message.dobj || obj.inst == message.matchedObject {
                     println!("found thing");
-                    inventory.items.append(obj.objectId);
-                    let item_desc: ByteArray = object::getObjectName(obj);
+                    inventory.items.append(obj.inst);
+                    let item_desc: ByteArray = obj.get_object_name().clone();
                     out = format!("{} is now in your trusty plastic adventurers bag", item_desc);
                 } else {
-                    new_obj_ids.append(obj.objectId);
+                    new_obj_ids.append(obj.inst);
                 }
             };
 
-            room.objectIds = new_obj_ids;
+            room.object_ids = new_obj_ids;
             world.write_model(@room);
             world.write_model(@inventory);
         }

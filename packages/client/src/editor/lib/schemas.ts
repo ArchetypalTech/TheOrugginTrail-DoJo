@@ -148,7 +148,7 @@ export const BiomeTypeEnum = z.enum(BIOME_TYPES);
 
 // Define the validation error schema
 export const ValidationErrorSchema = z.object({
-	type: z.enum(["RoomID", "ObjectID", "ActionID", "TxtDefID"]),
+	type: z.enum(["RoomID", "Object", "ActionID", "TxtDefID"]),
 	message: z.string(),
 	details: z.object({
 		id: z.string().optional(),
@@ -216,10 +216,10 @@ export function transformWithSchema<T>(
 	console.error(result.error);
 	const errors: ValidationError[] = result.error.errors.map((err) => {
 		const path = err.path.join(".");
-		let type: "RoomID" | "ObjectID" | "ActionID" | "TxtDefID" = "RoomID";
+		let type: "RoomID" | "Object" | "ActionID" | "TxtDefID" = "RoomID";
 
-		if (path.includes("objectId")) {
-			type = "ObjectID";
+		if (path.includes("is_object")) {
+			type = "Object";
 		}
 		if (path.includes("actionId")) {
 			type = "ActionID";

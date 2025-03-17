@@ -35,7 +35,7 @@ const tagItem = (obj: AnyObject) => {
 	if ("roomId" in obj) {
 		return { Room: obj };
 	}
-	if ("objectId" in obj) {
+	if ("is_object" in obj) {
 		return { Object: obj };
 	}
 	if ("actionId" in obj) {
@@ -60,8 +60,7 @@ const syncItem = (obj: unknown) => {
 		const room = { ...(obj as { Room: T_Room }) }.Room;
 		room.roomId = parseInt(room.roomId).toString();
 		room.txtDefId = parseInt(room.txtDefId).toString();
-		room.objectIds = room.objectIds.map((id) => parseInt(id).toString());
-		room.dirObjIds = room.dirObjIds.map((id) => parseInt(id).toString());
+		room.object_ids = room.object_ids.map((id) => parseInt(id).toString());
 		setItem(room, room.roomId);
 		set((prev) => {
 			prev.rooms = { ...prev.rooms, [room.roomId]: room };
@@ -69,15 +68,16 @@ const syncItem = (obj: unknown) => {
 	}
 	if ("Object" in (obj as { Object: T_Object })) {
 		const object = { ...(obj as { Object: T_Object }) }.Object;
-		object.objectId = parseInt(object.objectId).toString();
+		object.inst = parseInt(object.inst).toString();
+		object.is_object = true;
 		object.txtDefId = parseInt(object.txtDefId).toString();
 		object.objectActionIds = object.objectActionIds.map((id) =>
 			parseInt(id).toString(),
 		);
 		object.destId = parseInt(object.destId).toString();
-		setItem(object, object.objectId);
+		setItem(object, object.inst);
 		set((prev) => {
-			prev.objects = { ...prev.objects, [object.objectId]: object };
+			prev.objects = { ...prev.objects, [object.inst]: object };
 		});
 	}
 	if ("Action" in (obj as { Action: T_Action })) {
@@ -113,7 +113,7 @@ const deleteItem = (id: string) => {
 		const room = get().rooms[id] as T_Room;
 		console.log("TEST Deleting room", room);
 		deleteItem(room.txtDefId);
-		for (const objId of room.objectIds) {
+		for (const objId of room.object_ids) {
 			deleteItem(objId);
 		}
 	}
@@ -151,11 +151,11 @@ const newTxtDef = (ownerId: string) => {
 };
 
 const newObject = (room: T_Room) => {
-	const objectId = generateNumericUniqueId();
+	const inst = generateNumericUniqueId();
 
-	const txt: T_TextDefinition = newTxtDef(objectId);
+	const txt: T_TextDefinition = newTxtDef(inst);
 	const newObject: T_Object = {
-		objectId,
+		inst,
 		objType: "Ball",
 		dirType: "None",
 		destId: "",
@@ -165,7 +165,7 @@ const newObject = (room: T_Room) => {
 		name: `${createRandomName()}`,
 		altNames: [],
 	};
-	const _room = { ...room, objectIds: [...room.objectIds, objectId] };
+	const _room = { ...room, object_ids: [...room.object_ids, inst] };
 	syncItem({ Room: _room });
 	syncItem({ Object: newObject });
 	return newObject;
@@ -184,8 +184,7 @@ const newRoom = () => {
 		txtDefId: txt.id,
 		roomType: "None",
 		biomeType: "None",
-		objectIds: [],
-		dirObjIds: [],
+		object_ids: [],
 	};
 	syncItem({ Room: newRoom });
 	return newRoom;
@@ -215,9 +214,7 @@ const newAction = (object: T_Object) => {
 const logPool = () => {
 	const poolArray = get().dataPool.values().toArray();
 	const rooms = poolArray.filter((x) => (x as T_Room).roomId !== undefined);
-	const objects = poolArray.filter(
-		(x) => (x as T_Object).objectId !== undefined,
-	);
+	const objects = poolArray.filter((x) => (x as T_Object).inst !== undefined);
 	const actions = poolArray.filter(
 		(x) => (x as T_Action).actionId !== undefined,
 	);

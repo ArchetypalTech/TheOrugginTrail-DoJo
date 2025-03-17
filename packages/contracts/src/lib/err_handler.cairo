@@ -22,6 +22,7 @@ pub mod err_dispatcher {
                 "Whoa, slow down pilgrim. Enunciate... less noise... more signal"
             },
             ErrCode::BadFood => { "Nope ..., errm .... just no, it makes no sense at all" },
+            ErrCode::BadImpl => { "Not implemented" },
             _ => { "I don't know what that means" },
         }
     }

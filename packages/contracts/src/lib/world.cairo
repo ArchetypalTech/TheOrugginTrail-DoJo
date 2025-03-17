@@ -1,15 +1,15 @@
 use dojo::world::{WorldStorage};
 use dojo::model::{ModelStorage};
 use the_oruggin_trail::models::{
-    player::Player, room::Room, object, object::Object, inventory::Inventory, txtdef::Txtdef,
+    player::Player, room::Room, object::{Object, ObjectTrait}, inventory::Inventory, txtdef::Txtdef,
     action::Action, zrk_enums::{ActionType},
 };
 
 pub fn getRoomObjects(world: WorldStorage, room: Room) -> Array<Object> {
     let mut objects: Array<Object> = array![];
-    for objectId in room.objectIds {
-        let object: Object = world.read_model(objectId);
-        assert(object::doesObjectExist(object.clone()), 'Invalid roomObj');
+    for inst in room.object_ids {
+        let object: Object = world.read_model(inst);
+        assert(object.clone().is_object(), 'Invalid roomObj');
         objects.append(object);
     };
     objects
@@ -18,9 +18,9 @@ pub fn getRoomObjects(world: WorldStorage, room: Room) -> Array<Object> {
 pub fn getPlayerInventoryObjects(world: WorldStorage, player: Player) -> Array<Object> {
     let mut objects: Array<Object> = array![];
     let mut inventory: Inventory = world.read_model(player.inventory.clone());
-    for objectId in inventory.items {
-        let object: Object = world.read_model(objectId);
-        assert(object::doesObjectExist(object.clone()), 'Invalid invObj');
+    for inst in inventory.items {
+        let object: Object = world.read_model(inst);
+        assert(object.clone().is_object(), 'Invalid invObj');
         objects.append(object);
     };
     objects

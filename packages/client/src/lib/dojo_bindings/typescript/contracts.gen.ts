@@ -67,19 +67,19 @@ export function setupWorld(provider: DojoProvider) {
 		}
 	};
 
-	const build_designer_createTxt_calldata = (id: BigNumberish, ownedBy: BigNumberish, val: ByteArray): DojoCall => {
+	const build_designer_createTxts_calldata = (t: Array<Txtdef>): DojoCall => {
 		return {
 			contractName: "designer",
-			entrypoint: "create_txt",
-			calldata: [id, ownedBy, val],
+			entrypoint: "create_txts",
+			calldata: [t],
 		};
 	};
 
-	const designer_createTxt = async (snAccount: Account | AccountInterface, id: BigNumberish, ownedBy: BigNumberish, val: ByteArray) => {
+	const designer_createTxts = async (snAccount: Account | AccountInterface, t: Array<Txtdef>) => {
 		try {
 			return await provider.execute(
 				snAccount,
-				build_designer_createTxt_calldata(id, ownedBy, val),
+				build_designer_createTxts_calldata(t),
 				"the_oruggin_trail",
 			);
 		} catch (error) {
@@ -119,8 +119,8 @@ export function setupWorld(provider: DojoProvider) {
 			buildCreateObjectsCalldata: build_designer_createObjects_calldata,
 			createRooms: designer_createRooms,
 			buildCreateRoomsCalldata: build_designer_createRooms_calldata,
-			createTxt: designer_createTxt,
-			buildCreateTxtCalldata: build_designer_createTxt_calldata,
+			createTxts: designer_createTxts,
+			buildCreateTxtsCalldata: build_designer_createTxts_calldata,
 		},
 		meatpuppet: {
 			listen: meatpuppet_listen,

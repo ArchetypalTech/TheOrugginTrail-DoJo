@@ -8,7 +8,8 @@ pub mod move {
     WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
-        player::{Player}, zrk_enums::{ActionType}, room::{Room}, object::{Object}, action::{Action},
+        player::{Player, PlayerTrait}, zrk_enums::{ActionType}, room::{Room}, object::{Object},
+        action::{Action},
     };
     use the_oruggin_trail::constants::zrk_constants::{statusid};
     use the_oruggin_trail::systems::tokeniser::{lexer::Garble};
@@ -26,17 +27,10 @@ pub mod move {
             out = "Can't go there"
         } else {
             let desc: ByteArray = lookat::describe_room_short(world, nxt_rm_id);
-            set_player_location(world, player, nxt_rm_id);
+            player.move_to_room(world, nxt_rm_id);
             out = desc;
         }
         return out;
-    }
-
-    pub fn set_player_location(mut world: WorldStorage, mut player: Player, room_id: felt252) {
-        //TODO: check if room exists
-        player.location = room_id;
-        println!("ENTER_RM:-----> {:?}", room_id);
-        world.write_model(@player);
     }
 
     /// get the next room
@@ -50,7 +44,7 @@ pub mod move {
         // fetch the room
         let curr_rm = player.location;
         let rm: Room = world.read_model(curr_rm);
-        let exits: Array<felt252> = rm.objectIds.clone();
+        let exits: Array<felt252> = rm.object_ids.clone();
         // check for an exit
         _direction_check(world, exits, message)
     }

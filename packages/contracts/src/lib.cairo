@@ -9,13 +9,21 @@ pub mod systems {
     pub mod designer;
 }
 
+pub mod components {
+    pub mod inspectable;
+    pub mod container;
+    pub mod exit;
+    pub mod inventoryItem;
+    pub mod relations;
+    // pub mod area;
+}
+
 pub mod constants {
     pub mod zrk_constants;
 }
 
 pub mod lib {
     pub mod hash_utils;
-    pub mod store;
     pub mod err_handler;
     pub mod command_handler;
     pub mod act;
@@ -47,6 +55,6 @@ pub mod utils {
 }
 
 pub mod tests {
+    pub mod test_world;
     // pub mod test_tokeniser;
-    pub mod test_rig;
 }

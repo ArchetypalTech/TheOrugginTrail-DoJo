@@ -214,7 +214,7 @@ export const TextDef = ({
 export const ItemId = ({ id }: { id: string }) => {
 	return (
 		<div className="form-group">
-			<label className="block text-sm font-medium text-gray-700">Room ID</label>
+			<label className="block text-sm font-medium text-gray-700">inst</label>
 			<p className="mt-1 text-xs text-gray-500">
 				This ID is generated automatically and should not be changed.
 			</p>

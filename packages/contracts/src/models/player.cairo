@@ -1,13 +1,9 @@
-//*
-//*
-//* MeaCulpa (mc) 2024 lbdl | itrainspiders
-//*
+use dojo::world::{WorldStorage};
+use dojo::model::{ModelStorage};
 
 use starknet::ContractAddress;
 
 /// Player model
-///
-/// the player id should really be a felt252
 #[derive(Copy, Drop, Serde, Debug, Introspect)]
 #[dojo::model]
 pub struct Player {
@@ -16,4 +12,12 @@ pub struct Player {
     pub player_adr: ContractAddress,
     pub location: felt252,
     pub inventory: felt252,
+}
+
+#[generate_trait]
+pub impl PlayerImpl of PlayerTrait {
+    fn move_to_room(mut self: Player, mut world: WorldStorage, room_id: felt252) {
+        self.location = room_id;
+        world.write_model(@self);
+    }
 }

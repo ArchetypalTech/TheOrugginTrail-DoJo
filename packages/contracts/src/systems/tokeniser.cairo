@@ -97,7 +97,7 @@ pub mod lexer {
     use dojo::world::{WorldStorage};
     use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{
-        zrk_enums::{ActionType, ObjectType, DirectionType}, player::Player, object,
+        zrk_enums::{ActionType, ObjectType, DirectionType}, player::Player, object::{ObjectTrait},
     };
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use super::tokeniser;
@@ -161,10 +161,6 @@ pub mod lexer {
         }
     }
 
-    fn bullshit() -> Result<Garble, ErrCode> {
-        Result::Err(ErrCode::BadFood)
-    }
-
     /// General VERBS
     ///
     /// non movement and non looking verbs, i.e the general case
@@ -197,13 +193,13 @@ pub mod lexer {
                     if matchedId != 0 {
                         break;
                     }
-                    let objectId = object.objectId.clone();
-                    let refs: Array<ByteArray> = object::getObjectAltRefs(object);
+                    let inst = object.inst.clone();
+                    let refs: Array<ByteArray> = object.get_object_alt_refs();
                     println!("refs: {:?}", refs);
                     for handle in refs {
                         // @dev check if word matches the handle
                         if handle == word {
-                            matchedId = objectId;
+                            matchedId = inst;
                             break;
                         }
                     }

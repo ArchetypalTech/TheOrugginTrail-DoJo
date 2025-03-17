@@ -46,8 +46,8 @@ export const ObjectEditor = ({
 	// Handle out-of-bounds index when objects change
 	useEffect(() => {
 		if (
-			editedRoom?.objectIds?.length > 0 &&
-			currentObjectIndex >= editedRoom.objectIds.length
+			editedRoom?.object_ids?.length > 0 &&
+			currentObjectIndex >= editedRoom.object_ids.length
 		) {
 			setCurrentObjectIndex(0);
 		}
@@ -63,7 +63,7 @@ export const ObjectEditor = ({
 		EditorData().newObject(editedRoom);
 		// Select the new object on next render
 		setTimeout(() => {
-			const newIndex = editedRoom.objectIds.length;
+			const newIndex = editedRoom.object_ids.length;
 			setCurrentObjectIndex(newIndex);
 		}, 0);
 	};
@@ -72,10 +72,10 @@ export const ObjectEditor = ({
 	const handleDeleteObject = () => {
 		if (!editedObject) return;
 
-		EditorData().deleteItem(editedObject.objectId);
+		EditorData().deleteItem(editedObject.inst);
 		// Adjust the current object index if needed
-		if (currentObjectIndex >= editedRoom.objectIds.length - 1) {
-			setCurrentObjectIndex(Math.max(0, editedRoom.objectIds.length - 2));
+		if (currentObjectIndex >= editedRoom.object_ids.length - 1) {
+			setCurrentObjectIndex(Math.max(0, editedRoom.object_ids.length - 2));
 		}
 	};
 
@@ -128,9 +128,9 @@ export const ObjectEditor = ({
 	};
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col gap-4 justify-items-start">
 			<EditorList
-				list={editedRoom?.objectIds.map((o) => EditorData().objects[o]) || []}
+				list={editedRoom?.object_ids.map((o) => EditorData().objects[o]) || []}
 				selectionFn={selectObjectIndex}
 				selectedIndex={currentObjectIndex}
 				addObjectFn={handleAddObject}
@@ -204,7 +204,7 @@ export const ObjectEditor = ({
 								})),
 						]}
 					/>
-					<ItemId id={editedObject.objectId} />
+					<ItemId id={editedObject.inst} />
 				</div>
 			)}
 		</div>

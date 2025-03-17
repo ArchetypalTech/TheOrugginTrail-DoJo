@@ -66,7 +66,8 @@ export type DesignerCall =
 	| "create_objects"
 	| "create_actions"
 	| "create_rooms"
-	| "create_txt";
+	| "create_txt"
+	| "create_txts";
 
 type DesignerCallProps = {
 	call: DesignerCall;
@@ -86,18 +87,9 @@ async function execDesignerCall(props: DesignerCallProps) {
 	console.log(call, args);
 	try {
 		// other calls follow the same format Array<Object> see Cairo Models
-		let calldata: ReturnType<typeof CallData.compile>;
-		if (call !== "create_txt") {
-			// reformat args to cairo array
-			const data = toCairoArray(args) as RawArgsArray;
-			calldata = CallData.compile(data);
-		} else {
-			const safeEncoded = encodeURI(args[2] as string);
-			const convertedString = byteArray.byteArrayFromString(safeEncoded);
 
-			const data = [args[0], args[1], convertedString] as RawArgsArray;
-			calldata = CallData.compile(data);
-		}
+		const data = toCairoArray(args) as RawArgsArray;
+		const calldata = CallData.compile(data);
 
 		let response: unknown;
 		if (ZORG_CONFIG.useController) {

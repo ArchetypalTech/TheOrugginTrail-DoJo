@@ -25,9 +25,10 @@ pub mod meatpuppet {
     use starknet::{get_caller_address};
     use super::{IListener};
     use the_oruggin_trail::lib::command_handler;
-    use the_oruggin_trail::models::{output::{Output}, player::{Player}, inventory::Inventory};
+    use the_oruggin_trail::models::{
+        output::{Output}, player::{Player, PlayerTrait}, inventory::Inventory,
+    };
     use the_oruggin_trail::systems::tokeniser::{lexer};
-    use the_oruggin_trail::actions::move::move;
 
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use the_oruggin_trail::lib::err_handler::err_dispatcher;
@@ -36,22 +37,10 @@ pub mod meatpuppet {
     use dojo::world::{WorldStorage};
 
     #[abi(embed_v0)]
-    /// ListenImpl
-    ///
-    /// this needs a means of interogating the world to see
-    /// if the player exists already and if not then we should
-    /// spawn the player in the some defualt start location
     pub impl ListenImpl of IListener<ContractState> {
         fn listen(ref self: ContractState, cmd: Array<ByteArray>, _add: felt252) {
             let player_id: felt252 = get_caller_address().into();
-            //! we use this as an error flag to kick us into error
-            //! catching routines later as we run the parses over
-            //! the command string
-
             let mut world: WorldStorage = self.world(@"the_oruggin_trail");
-
-            // world.write_model(@Output{playerId: 23, text_o_vision: "..."});
-
             let mut isErr: ErrCode = ErrCode::None;
             let l_cmd = @cmd;
             let mut wrld_dispatcher = world.dispatcher;
@@ -103,7 +92,7 @@ pub mod meatpuppet {
         let inv = Inventory { owner_id: player_id, items: array![] };
         world_store.write_model(@inv);
         world_store.write_model(@new_player);
-        move::set_player_location(world_store, new_player, start_room);
+        new_player.move_to_room(world_store, start_room);
         let mut out: ByteArray = "You feel light in the head";
         world_store.write_model(@Output { playerId: player_id, text_o_vision: out });
         return new_player;

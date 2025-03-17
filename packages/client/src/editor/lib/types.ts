@@ -23,7 +23,7 @@ export interface EditorState {
 }
 
 export interface ValidationError {
-	type: "RoomID" | "ObjectID" | "ActionID" | "AffectsActionID";
+	type: "RoomID" | "Object" | "ActionID" | "AffectsActionID";
 	message: string;
 	details: {
 		id?: string;
@@ -56,7 +56,8 @@ export type T_Action = z.infer<typeof T_ActionSchema>;
 
 // Define the Object schema
 export const T_ObjectSchema = z.object({
-	objectId: z.string(),
+	inst: z.string(),
+	is_object: z.boolean(),
 	objType: ObjectTypeEnum,
 	dirType: DirectionEnum,
 	destId: z.string().transform((val) => val || "0"),
@@ -73,8 +74,7 @@ export const T_RoomSchema = z.object({
 	roomId: z.string(),
 	roomType: RoomTypeEnum,
 	biomeType: BiomeTypeEnum,
-	objectIds: z.array(z.string()).transform((val) => val || "0"),
-	dirObjIds: z.array(z.string()).transform((val) => val || "0"),
+	object_ids: z.array(z.string()).transform((val) => val || "0"),
 	txtDefId: z.string().transform((val) => val || "0"),
 	shortTxt: z.string().transform((val) => val || "0"),
 });
