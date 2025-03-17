@@ -119,46 +119,54 @@ export const deploymentComplete = () => {
 	outro(`${yellow("🦨💕 Deployment Complete\n")}`);
 };
 
-export const createBuilder = async (command: string) => {
+export const startWatcher = async (
+	commands: string[],
+	onStartFn: () => Promise<boolean>,
+	onSuccessFn: (watcher: FSWatcher) => Promise<void>,
+) => {
 	let buildProcess: Subprocess | undefined;
-	const runBuild = async () => {
-		if (buildProcess) {
-			buildProcess.kill();
-		}
-		console.log(black(bgGreen(" Starting compilation ")));
-		buildProcess = Bun.spawn(command.split(" "), {
-			stdout: "inherit",
-			stderr: "inherit",
-			env: { FORCE_COLOR: "3", ...import.meta.env },
-		});
-		await buildProcess.exited;
-		return buildProcess;
-	};
+
 	const killProcess = () => {
 		buildProcess?.kill();
 		buildProcess = undefined;
 	};
-	return { runBuild, killProcess };
-};
 
-export const startWatcher = async (
-	command: string,
-	onSuccessFn: (watcher: FSWatcher) => Promise<void>,
-) => {
-	const { runBuild, killProcess } = await createBuilder(command);
+	const trigger = debounce(async (event, filename) => {
+		try {
+			if (buildProcess) {
+				killProcess();
+				await new Promise((r) => setTimeout(r, 500));
+			}
+			if (!(await onStartFn())) {
+				log.error(`\n${bgRed(black(" Build cancelled "))}\n`);
+				return;
+			}
+			console.log(`Detected ${event}`, filename ? `in ${filename}` : "");
+			for (const cmd of commands) {
+				buildProcess = Bun.spawn(cmd.split(" "), {
+					stdout: "inherit",
+					stderr: "inherit",
+					env: { FORCE_COLOR: "3", ...import.meta.env },
+				});
+				await buildProcess.exited;
+				if (buildProcess?.exitCode !== 0) {
+					killProcess();
+					console.log(`\n${black(bgRed(" Compilation stopped "))}\n`);
+					return;
+				}
+			}
+			await onSuccessFn(watcher);
+		} catch (error) {
+			log.error((error as Error).message);
+			watcher.close();
+			startWatcher(commands, onStartFn, onSuccessFn);
+		}
+	}, 500);
+
 	const watcher = watch(
 		path.join(import.meta.dir, "../", "src"),
 		{ recursive: true },
-		debounce(async (event, filename) => {
-			console.log(`Detected ${event} in ${filename}`);
-			const buildProcess = await runBuild();
-			if (buildProcess?.exitCode !== 0) {
-				killProcess();
-				console.log(black(bgRed(" Error while compiling ")));
-				return;
-			}
-			onSuccessFn(watcher);
-		}, 500),
+		trigger,
 	);
 
 	process.on("SIGINT", () => {
@@ -166,4 +174,5 @@ export const startWatcher = async (
 		watcher.close();
 		process.exit(0);
 	});
+	return trigger;
 };

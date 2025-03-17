@@ -5,6 +5,7 @@ import {
 	getSlotServices,
 	cmd_deploy_slot,
 	runSlotDeployment,
+	slotName,
 } from "./slot.common";
 
 export const deploySlot = async () => {
@@ -26,10 +27,10 @@ export const deploySlot = async () => {
 		}
 		if (should_reset_slot) {
 			if (hasKatana) {
-				await runCommands([`slot deployments delete zorg-v1 katana -f`]);
+				await runCommands([`slot deployments delete ${slotName} katana -f`]);
 			}
 			if (hasTorii) {
-				await runCommands([`slot deployments delete zorg-v1 torii -f`]);
+				await runCommands([`slot deployments delete ${slotName} torii -f`]);
 			}
 			await runCommands([`slot deployments list`]);
 		}
