@@ -42,6 +42,7 @@ pub impl ExitImpl of ExitTrait {
 
 #[cfg(test)]
 mod tests {
+    use dojo::model::{ModelStorageTest};
     use super::{Exit, ExitTrait};
     use the_oruggin_trail::models::zrk_enums::DirectionType;
     use the_oruggin_trail::tests::test_world::test_world;
@@ -61,7 +62,8 @@ mod tests {
 
     #[test]
     fn test_do_player_exit() {
-        let (mut _world, player, room, _, _, _, _) = test_world::create_rig();
+        let mut world = test_world::create_test_environment();
+        let (player, room, _, _, _, _) = test_world::setup_test_data(world);
         let mut exit = Exit {
             inst: room.roomId,
             is_exit: true,
@@ -70,13 +72,9 @@ mod tests {
             action_map: array!["enter", "go", "open"],
             direction_type: DirectionType::None,
         };
-        // world.write_model_test(@exit);
-        println!("{}, {}, {}", player.location, room.roomId, exit.leads_to);
-        // TODO: @dev below causes test to panic -> I think this is having a conflict between
-    // ModelStorageTest and ModelStorage in the trait implementations.
-    //
-
-        // exit.do_player_exit(world, player);
-    // assert(player.location == room.roomId, 'player should be in room 2');
+        world.write_model_test(@exit);
+        exit.do_player_exit(world, player);
+        world.write_model_test(@player);
+        assert(player.location == room.roomId, 'player should be in room 2');
     }
 }

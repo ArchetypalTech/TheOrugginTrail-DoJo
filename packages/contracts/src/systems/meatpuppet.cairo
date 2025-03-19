@@ -22,34 +22,24 @@ pub trait IListener<T> {
 /// logical block/system
 #[dojo::contract]
 pub mod meatpuppet {
-    use starknet::{get_caller_address};
     use super::{IListener};
     use the_oruggin_trail::lib::command_handler;
-    use the_oruggin_trail::models::{
-        output::{Output}, player::{Player, PlayerTrait}, inventory::Inventory,
-    };
+    use the_oruggin_trail::lib::world;
     use the_oruggin_trail::systems::tokeniser::{lexer};
 
     use the_oruggin_trail::constants::zrk_constants::ErrCode;
     use the_oruggin_trail::lib::err_handler::err_dispatcher;
 
-    use dojo::model::{ModelStorage};
     use dojo::world::{WorldStorage};
 
     #[abi(embed_v0)]
     pub impl ListenImpl of IListener<ContractState> {
         fn listen(ref self: ContractState, cmd: Array<ByteArray>, _add: felt252) {
-            let player_id: felt252 = get_caller_address().into();
             let mut world: WorldStorage = self.world(@"the_oruggin_trail");
             let mut isErr: ErrCode = ErrCode::None;
             let l_cmd = @cmd;
             let mut wrld_dispatcher = world.dispatcher;
-
-            if (doesPlayerExist(world, player_id) == false) {
-                createPlayer(world, player_id);
-            }
-
-            let mut player = getPlayer(world, player_id);
+            let player = world::initialize_caller(world);
 
             match lexer::parse(l_cmd.clone(), world, player) {
                 Result::Ok(result) => {
@@ -59,43 +49,10 @@ pub mod meatpuppet {
                 },
                 Result::Err(_r) => {
                     // this should really return err and a string
-                    err_dispatcher::error_handle(ref wrld_dispatcher, player_id, isErr);
+                    err_dispatcher::error_handle(ref wrld_dispatcher, player.player_id, isErr);
                 },
             }
         }
-    }
-
-    pub fn getPlayer(mut world_store: WorldStorage, player_id: felt252) -> Player {
-        let address_player = get_caller_address();
-        let player_id: felt252 = address_player.into();
-        let mut player: Player = world_store.read_model(player_id);
-        player
-    }
-
-    pub fn doesPlayerExist(mut world_store: WorldStorage, player_id: felt252) -> bool {
-        let mut player: Player = getPlayer(world_store, player_id);
-        if (player.location == 0) {
-            return false;
-        }
-        true
-    }
-
-    pub fn createPlayer(mut world_store: WorldStorage, player_id: felt252) -> Player {
-        let address_player = get_caller_address();
-        let start_room = 7892581999139148;
-        let mut new_player = Player {
-            player_id: player_id,
-            player_adr: address_player,
-            location: start_room,
-            inventory: player_id,
-        };
-        let inv = Inventory { owner_id: player_id, items: array![] };
-        world_store.write_model(@inv);
-        world_store.write_model(@new_player);
-        new_player.move_to_room(world_store, start_room);
-        let mut out: ByteArray = "You feel light in the head";
-        world_store.write_model(@Output { playerId: player_id, text_o_vision: out });
-        return new_player;
     }
 }
 

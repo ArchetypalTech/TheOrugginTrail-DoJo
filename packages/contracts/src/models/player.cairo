@@ -1,5 +1,4 @@
 use dojo::world::{WorldStorage};
-use dojo::model::{ModelStorage};
 
 use starknet::ContractAddress;
 
@@ -18,6 +17,5 @@ pub struct Player {
 pub impl PlayerImpl of PlayerTrait {
     fn move_to_room(mut self: Player, mut world: WorldStorage, room_id: felt252) {
         self.location = room_id;
-        world.write_model(@self);
     }
 }

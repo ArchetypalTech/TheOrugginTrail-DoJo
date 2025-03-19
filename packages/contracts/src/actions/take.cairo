@@ -11,7 +11,6 @@ pub mod take {
         println!("take------->{:?}", message);
         let mut out: ByteArray = "";
         if message.dobj == ObjectType::None && message.matchedObject == 0 {
-            // let item_desc: ByteArray = object_type_to_str(message.dobj);
             out = "I can't take that";
         } else {
             let mut new_obj_ids: Array<felt252> = array![];

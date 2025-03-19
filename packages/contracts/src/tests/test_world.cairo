@@ -1,31 +1,35 @@
 #[cfg(test)]
 pub mod test_world {
-    // use dojo_cairo_test::WorldStorageTestTrait;
-    use dojo::model::{ // ModelStorage,
-    ModelStorageTest};
-    use dojo::world::{ // WorldStorageTrait,
-    WorldStorage};
-    use dojo_cairo_test::{
-        spawn_test_world, NamespaceDef // TestResource, ContractDefTrait, ContractDef,
-    };
+    use dojo::model::{ModelStorageTest};
+    use dojo::world::{WorldStorage};
+    use dojo_cairo_test::{spawn_test_world, NamespaceDef, TestResource};
     // use starknet::ContractAddress;
 
     use the_oruggin_trail::models::{
-        player::Player, room::{Room // doesRoomExist
-        }, object::{Object}, inventory::Inventory,
-        txtdef::Txtdef, action::Action,
+        player::Player, room::{Room, m_Room}, object::{Object, m_Object},
+        inventory::{Inventory, m_Inventory}, txtdef::{Txtdef, m_Txtdef}, action::{Action, m_Action},
         zrk_enums::{ActionType, ObjectType, DirectionType, MaterialType, RoomType, BiomeType},
     };
     use the_oruggin_trail::lib::world;
 
     pub fn namespace_def() -> NamespaceDef {
-        let ndef = NamespaceDef { namespace: "the_oruggin_trail", resources: array![].span() };
+        let ndef = NamespaceDef {
+            namespace: "the_oruggin_trail",
+            resources: [
+                TestResource::Model(m_Room::TEST_CLASS_HASH),
+                TestResource::Model(m_Object::TEST_CLASS_HASH),
+                TestResource::Model(m_Inventory::TEST_CLASS_HASH),
+                TestResource::Model(m_Txtdef::TEST_CLASS_HASH),
+                TestResource::Model(m_Action::TEST_CLASS_HASH),
+            ]
+                .span(),
+        };
         ndef
     }
 
     pub fn create_test_environment() -> WorldStorage {
         let ndef = namespace_def();
-        let world = spawn_test_world(array![ndef].span());
+        let world = spawn_test_world([ndef].span());
         world
     }
 
@@ -50,7 +54,7 @@ pub mod test_world {
             object_ids: array![object_id],
             players: array![player_id],
         };
-        world.write_model_test(@room);
+        world.write_model_test((@room));
 
         // Create test object
         let object = Object {

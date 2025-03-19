@@ -1,5 +1,3 @@
-use the_oruggin_trail::models::{zrk_enums};
-
 #[derive(Clone, Drop, Serde, Introspect, Debug)]
 #[dojo::model]
 pub struct Area {
