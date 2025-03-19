@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useEffect } from "react";
 import type { ChangeEvent } from "react";
 import { ACTION_TYPE_OPTIONS } from "../lib/schemas";
 import EditorStore from "../editor.store";
@@ -32,13 +32,14 @@ export const ActionEditor = ({
 
 	// Handle out-of-bounds index when actions change
 	useEffect(() => {
+		isDirty;
 		if (
 			editedObject?.objectActionIds?.length > 0 &&
 			currentActionIndex >= editedObject.objectActionIds.length
 		) {
 			setCurrentActionIndex(0);
 		}
-	}, [editedObject, currentActionIndex, isDirty]);
+	}, [editedObject, currentActionIndex, isDirty, setCurrentActionIndex]);
 
 	// Select a different action
 	const selectActionIndex = (index: number) => {
@@ -106,7 +107,7 @@ export const ActionEditor = ({
 	}
 
 	return (
-		<div className="flex flex-col gap-2 justify-items-start">
+		<div className="flex flex-col gap-4 justify-items-start">
 			<EditorList
 				list={
 					editedObject?.objectActionIds.map((o) => EditorData().actions[o]) || []

@@ -12,6 +12,28 @@ import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
 import EditorData from "./editor.data";
 import { decodeDojoText } from "@/lib/utils/utils";
 
+const publishQueue = {
+	txts: [] as T_TextDefinition[],
+	objects: [],
+	actions: [],
+	rooms: [],
+};
+
+const clearQueue = () => {
+	publishQueue.txts = [];
+	publishQueue.objects = [];
+	publishQueue.actions = [];
+	publishQueue.rooms = [];
+};
+
+const publishQueued = async () => {
+	// await dispatchDesignerCall("create_txts", [publishQueue.txts]);
+	// await dispatchDesignerCall("create_objects", [publishQueue.objects]);
+	// await dispatchDesignerCall("create_actions", [publishQueue.actions]);
+	// await dispatchDesignerCall("create_rooms", [publishQueue.rooms]);
+	clearQueue();
+};
+
 /**
  * Publishes a game configuration to the contract
  * @param config The game configuration to publish
@@ -31,6 +53,7 @@ export const publishConfigToContract = async (): Promise<void> => {
 			);
 		}
 	}
+	await publishQueued();
 };
 
 export const processTxtDef = async (txtDef: T_TextDefinition) => {
@@ -39,11 +62,12 @@ export const processTxtDef = async (txtDef: T_TextDefinition) => {
 	}
 	const t = txtDef.text;
 	actions.notifications.startPublishing();
-	await dispatchDesignerCall("create_txt", [
+	const txtData = [
 		parseInt(txtDef.id), // ID for the text
 		parseInt(txtDef.owner), // Owner ID
-		encodeURI(decodeDojoText(t)), // The actual text content
-	]);
+		t.length > 0 ? encodeURI(decodeDojoText(t)) : " ", // The actual text content
+	];
+	await dispatchDesignerCall("create_txts", [txtData]);
 };
 
 export const publishRoom = async (room: T_Room) => {
@@ -57,8 +81,7 @@ export const publishRoom = async (room: T_Room) => {
 		// Use text definition ID from the roomDescription object if available
 		parseInt(room.txtDefId),
 		room.shortTxt,
-		room.objectIds.map((id: string) => parseInt(id)) || 0,
-		room.dirObjIds.map((id: string) => parseInt(id)) || 0,
+		room.object_ids.map((id: string) => parseInt(id)) || 0,
 		0,
 	];
 	await dispatchDesignerCall("create_rooms", [roomData]);
@@ -70,7 +93,7 @@ export const publishRoom = async (room: T_Room) => {
  * @param room The room containing objects to process
  */
 export const processRoomObjects = async (room: T_Room): Promise<void> => {
-	for (const obj of room.objectIds) {
+	for (const obj of room.object_ids) {
 		console.log("Processing object", obj);
 		const _obj = EditorData().getItem(obj) as T_Object;
 		if (_obj) {
@@ -89,7 +112,8 @@ export const publishObject = async (obj: T_Object) => {
 	console.log("Publishing object", obj);
 	const destId = parseInt(obj.destId || "0");
 	const objData = [
-		parseInt(obj.objectId),
+		parseInt(obj.inst),
+		true, // is_object
 		objectTypeToIndex(obj.objType || "None"), // Map to index with fallback
 		directionToIndex(obj.dirType), // Map to index (already handles null)
 		Number.isNaN(destId) ? 0 : destId,

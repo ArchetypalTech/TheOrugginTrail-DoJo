@@ -10,7 +10,7 @@ pub mod lookat {
     use the_oruggin_trail::lib::world;
     use the_oruggin_trail::models::{
         player::Player, room::Room, zrk_enums::{direction_type_to_str, ActionType, DirectionType},
-        txtdef::Txtdef, object::Object, object,
+        txtdef::Txtdef, object::{Object, ObjectTrait},
     };
 
     /// look at stuff
@@ -31,7 +31,7 @@ pub mod lookat {
     }
 
     fn describe_object(world: WorldStorage, object: Object) -> ByteArray {
-        let look_action = world::getObjectActionOfType(world, object.objectId, ActionType::Look);
+        let look_action = world::getObjectActionOfType(world, object.inst, ActionType::Look);
         if look_action.enabled {
             let output: ByteArray = look_action.dBitTxt;
             return output;
@@ -108,7 +108,7 @@ pub mod lookat {
             if exit.len() > 0 {
                 t = format!("{}, {}", t, exit);
             }
-            let objName = object::getObjectName(object.clone());
+            let objName = object.get_object_name();
             let desc: ByteArray = format!("{} {}{}\n", base.clone(), objName, t);
             out.append(@desc);
         };

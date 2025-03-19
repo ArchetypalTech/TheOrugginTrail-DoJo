@@ -13,8 +13,7 @@ pub struct Room {
     pub biomeType: zrk_enums::BiomeType,
     pub txtDefId: felt252,
     pub shortTxt: ByteArray,
-    pub objectIds: Array<felt252>,
-    pub dirObjIds: Array<felt252>,
+    pub object_ids: Array<felt252>,
     pub players: Array<felt252>,
 }
 

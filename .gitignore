@@ -17,6 +17,7 @@ pnpm-lock.*
 local.*
 mprocs.log
 .cursor
+CLAUDE.md
 
 # dojo
 target
@@ -26,3 +27,4 @@ torii_local_db
 
 # asdf
 .tool-versions
+

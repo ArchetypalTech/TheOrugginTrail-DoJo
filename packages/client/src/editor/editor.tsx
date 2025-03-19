@@ -35,11 +35,11 @@ export const Editor = () => {
 		setCurrentActionIndex(-1);
 		setCurrentObjectIndex(index);
 		const room = EditorData().getRooms()[index];
-		if (room && room.objectIds.length > 0) {
+		if (room && room.object_ids.length > 0) {
 			await tick();
 			const object = EditorData()
 				.getObjects()
-				.find((x) => x.objectId === room.objectIds[0]);
+				.find((x) => x.inst === room.object_ids[0]);
 			if (object && object.objectActionIds.length > 0) {
 				setCurrentActionIndex(0);
 				EditorData()
@@ -60,7 +60,7 @@ export const Editor = () => {
 
 	const { editedObject } = useMemo(() => {
 		isDirty; // hack to force re-render
-		const editedObject = objects[editedRoom?.objectIds[currentObjectIndex]];
+		const editedObject = objects[editedRoom?.object_ids[currentObjectIndex]];
 		return {
 			editedObject,
 		};

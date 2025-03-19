@@ -19,9 +19,7 @@ export const EditorList = <T extends T_Room | T_Object | T_Action>({
 			{list.map((r, idx) => {
 				if (r === undefined) return;
 				const id =
-					(r as T_Room).roomId ||
-					(r as T_Object).objectId ||
-					(r as T_Action).actionId;
+					(r as T_Room).roomId || (r as T_Object).inst || (r as T_Action).actionId;
 				const name =
 					(r as T_Room).shortTxt ||
 					(r as T_Object).name ||

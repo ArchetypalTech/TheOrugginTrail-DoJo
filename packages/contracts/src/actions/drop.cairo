@@ -3,7 +3,7 @@ pub mod drop {
     use dojo::world::{WorldStorage};
     use dojo::model::{ModelStorage};
     use the_oruggin_trail::models::{
-        player::Player, room::Room, zrk_enums::{ObjectType}, object, object::Object,
+        player::Player, room::Room, zrk_enums::{ObjectType}, object::{Object, ObjectTrait},
         inventory::Inventory,
     };
 
@@ -24,11 +24,11 @@ pub mod drop {
                 let foundObject: Object = world.read_model(element);
                 println!("{:?}", foundObject.objType);
                 if (foundObject.objType == message.dobj
-                    || foundObject.objectId == message.matchedObject)
+                    || foundObject.inst == message.matchedObject)
                     && !found {
                     println!("dropping thing");
-                    room.objectIds.append(foundObject.objectId);
-                    let item_desc: ByteArray = object::getObjectName(foundObject);
+                    room.object_ids.append(foundObject.inst);
+                    let item_desc: ByteArray = foundObject.get_object_name().clone();
                     out =
                         format!(
                             "{} is dropped from your trusty plastic adventurers bag", item_desc,
