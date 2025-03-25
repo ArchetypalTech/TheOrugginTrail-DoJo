@@ -29,7 +29,6 @@ export default defineConfig(async ({ mode }) => {
 	return {
 		plugins: [
 			isSlot &&
-				isDev &&
 				mkcert({
 					hosts: ["localhost"],
 					autoUpgrade: true,
