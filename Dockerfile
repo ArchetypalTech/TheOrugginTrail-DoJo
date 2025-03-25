@@ -41,7 +41,7 @@ RUN npm install -g pnpm@$PNPM_VERSION --force
 WORKDIR /app/packages/client
 RUN pnpm install
 # Install the missing @dojoengine/core dependency
-RUN pnpm add @dojoengine/core
+RUN pnpm add @dojoengine/core@1.2.5
 RUN pnpx vite build --mode slot
 
 # Runtime Stage
