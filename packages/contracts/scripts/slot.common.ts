@@ -15,9 +15,11 @@ if (!slotName) {
 	process.exit(1);
 }
 
+const version = config.scarb.dependencies.dojo.tag;
+
 export const cmd_deploy_slot = [
-	`slot deployments create ${slotName} katana --version v1.3.1`,
-	`slot deployments create ${slotName} torii --version v1.3.1 --world ${worldAddress} --rpc ${rpcUrl}`,
+	`slot deployments create ${slotName} katana --version ${version}`,
+	`slot deployments create ${slotName} torii --version ${version} --world ${worldAddress} --rpc ${rpcUrl}`,
 	`slot deployments list`,
 ];
 export const cmd_view_slot = [`slot deployments list`];

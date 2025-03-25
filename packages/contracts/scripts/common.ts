@@ -48,6 +48,13 @@ export type Config = ParsedConfig & {
 			slot_name?: string;
 		};
 	};
+	scarb: {
+		dependencies: {
+			dojo: {
+				tag: string;
+			};
+		};
+	};
 	mode: string;
 };
 
