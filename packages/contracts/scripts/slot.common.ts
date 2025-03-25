@@ -16,8 +16,8 @@ if (!slotName) {
 }
 
 export const cmd_deploy_slot = [
-	`slot deployments create ${slotName} katana`,
-	`slot deployments create ${slotName} torii --world ${worldAddress} --rpc ${rpcUrl}`,
+	`slot deployments create ${slotName} katana --version v1.3.1`,
+	`slot deployments create ${slotName} torii --version v1.3.1 --world ${worldAddress} --rpc ${rpcUrl}`,
 	`slot deployments list`,
 ];
 export const cmd_view_slot = [`slot deployments list`];

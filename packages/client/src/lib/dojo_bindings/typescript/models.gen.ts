@@ -124,124 +124,130 @@ export interface TxtdefValue {
 }
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::ActionType` enum
-export type ActionType = {
-	None: string;
-	Move: string;
-	Look: string;
-	Kick: string;
-	Hit: string;
-	Drink: string;
-	Fight: string;
-	Sleep: string;
-	Smash: string;
-	Pray: string;
-	Open: string;
-	Break: string;
-	Burn: string;
-	Light: string;
-	Ignite: string;
-	Spawn: string;
-	Take: string;
-	Inventory: string;
-	Pour: string;
-	Follow: string;
-	Jump: string;
-	Block: string;
-	Soak: string;
-	Empty: string;
-	Explode: string;
-	Disintegrate: string;
-	Close: string;
-	Drop: string;
-}
+export const actionType = [
+	'None',
+	'Move',
+	'Look',
+	'Kick',
+	'Hit',
+	'Drink',
+	'Fight',
+	'Sleep',
+	'Smash',
+	'Pray',
+	'Open',
+	'Break',
+	'Burn',
+	'Light',
+	'Ignite',
+	'Spawn',
+	'Take',
+	'Inventory',
+	'Pour',
+	'Follow',
+	'Jump',
+	'Block',
+	'Soak',
+	'Empty',
+	'Explode',
+	'Disintegrate',
+	'Close',
+	'Drop',
+] as const;
+export type ActionType = { [key in typeof actionType[number]]: string };
 export type ActionTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::BiomeType` enum
-export type BiomeType = {
-	None: string;
-	Forest: string;
-	Tundra: string;
-	Arctic: string;
-	Desert: string;
-	Temporate: string;
-	Faery: string;
-	Demon: string;
-	Mountains: string;
-	Prarie: string;
-}
+export const biomeType = [
+	'None',
+	'Forest',
+	'Tundra',
+	'Arctic',
+	'Desert',
+	'Temporate',
+	'Faery',
+	'Demon',
+	'Mountains',
+	'Prarie',
+] as const;
+export type BiomeType = { [key in typeof biomeType[number]]: string };
 export type BiomeTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::DirectionType` enum
-export type DirectionType = {
-	None: string;
-	North: string;
-	East: string;
-	South: string;
-	West: string;
-	Up: string;
-	Down: string;
-	Left: string;
-	Right: string;
-}
+export const directionType = [
+	'None',
+	'North',
+	'East',
+	'South',
+	'West',
+	'Up',
+	'Down',
+	'Left',
+	'Right',
+] as const;
+export type DirectionType = { [key in typeof directionType[number]]: string };
 export type DirectionTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::MaterialType` enum
-export type MaterialType = {
-	None: string;
-	Wood: string;
-	Dirt: string;
-	Stone: string;
-	Flesh: string;
-	Glass: string;
-	IKEA: string;
-	Iron: string;
-	Shit: string;
-	Mud: string;
-	Leather: string;
-	Metal: string;
-	TNT: string;
-	Hay: string;
-}
+export const materialType = [
+	'None',
+	'Wood',
+	'Dirt',
+	'Stone',
+	'Flesh',
+	'Glass',
+	'IKEA',
+	'Iron',
+	'Shit',
+	'Mud',
+	'Leather',
+	'Metal',
+	'TNT',
+	'Hay',
+] as const;
+export type MaterialType = { [key in typeof materialType[number]]: string };
 export type MaterialTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::ObjectType` enum
-export type ObjectType = {
-	None: string;
-	Ball: string;
-	Window: string;
-	Door: string;
-	Stairs: string;
-	Place: string;
-	Troll: string;
-	Path: string;
-	Chest: string;
-	Box: string;
-	Matches: string;
-	Petrol: string;
-	Can: string;
-	Dynamite: string;
-	Boulder: string;
-	Bale: string;
-}
+export const objectType = [
+	'None',
+	'Ball',
+	'Window',
+	'Door',
+	'Stairs',
+	'Place',
+	'Troll',
+	'Path',
+	'Chest',
+	'Box',
+	'Matches',
+	'Petrol',
+	'Can',
+	'Dynamite',
+	'Boulder',
+	'Bale',
+] as const;
+export type ObjectType = { [key in typeof objectType[number]]: string };
 export type ObjectTypeEnum = CairoCustomEnum;
 
 // Type definition for `the_oruggin_trail::models::zrk_enums::RoomType` enum
-export type RoomType = {
-	None: string;
-	WoodCabin: string;
-	Store: string;
-	Cavern: string;
-	Basement: string;
-	StoneCabin: string;
-	Fort: string;
-	Room: string;
-	Plain: string;
-	Mountains: string;
-	Barn: string;
-	Forge: string;
-	Pass: string;
-	Alley: string;
-}
+export const roomType = [
+	'None',
+	'WoodCabin',
+	'Store',
+	'Cavern',
+	'Basement',
+	'StoneCabin',
+	'Fort',
+	'Room',
+	'Plain',
+	'Mountains',
+	'Barn',
+	'Forge',
+	'Pass',
+	'Alley',
+] as const;
+export type RoomType = { [key in typeof roomType[number]]: string };
 export type RoomTypeEnum = CairoCustomEnum;
 
 export interface SchemaType extends ISchemaType {

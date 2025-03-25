@@ -13,14 +13,14 @@ spawn = "./scripts/spawn.sh"
 move = "./scripts/move.sh"
 
 [dependencies]
-dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.2.1" }
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.3.1" }
 # not used right now but initialised in dojo_init when used for deli interop
 # planetary_interface = { path = "/Users/tims/DATA/BB/dojo/planetary/dojo/planetary_interface" }
 # starknet = "2.8.4"
 
 [dev-dependencies]
 cairo_test = "=2.9.2"
-dojo_cairo_test = { git = "https://github.com/dojoengine/dojo", tag = "v1.2.1" }
+dojo_cairo_test = { git = "https://github.com/dojoengine/dojo", tag = "v1.3.1" }
 
 [[target.starknet-contract]]
 build-external-contracts = ["dojo::world::world_contract::world"]
