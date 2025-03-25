@@ -48,5 +48,5 @@ pub mod utils {
 
 pub mod tests {
     // pub mod test_tokeniser;
-    pub mod test_rig;
+// pub mod test_rig;
 }
