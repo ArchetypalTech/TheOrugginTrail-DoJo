@@ -43,9 +43,12 @@ export default defineConfig(async ({ mode }) => {
 		],
 		build: {
 			target: "esnext",
-			minify: true,
 			sourcemap: true,
-			reportCompressedSize: false,
+			minify: false,
+			terserOptions: {
+				compress: false,
+				mangle: false,
+			},
 		},
 		server: {
 			proxy: {
@@ -54,7 +57,7 @@ export default defineConfig(async ({ mode }) => {
 					changeOrigin: true,
 				},
 			},
-			cors: true,
+			cors: false,
 		},
 		resolve: {
 			alias: {
