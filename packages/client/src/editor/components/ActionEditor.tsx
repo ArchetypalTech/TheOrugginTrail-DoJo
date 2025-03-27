@@ -56,10 +56,10 @@ export const ActionEditor = ({
 	};
 
 	// Delete current action
-	const handleDeleteAction = () => {
+	const handleDeleteAction = async () => {
 		if (!editedAction) return;
 
-		EditorData().deleteItem(editedAction.actionId);
+		await EditorData().deleteItem(editedAction.actionId);
 		// Adjust the current action index if needed
 		if (currentActionIndex >= editedObject.objectActionIds.length - 1) {
 			setCurrentActionIndex(Math.max(0, editedObject.objectActionIds.length - 2));

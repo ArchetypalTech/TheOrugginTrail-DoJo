@@ -1312,8 +1312,8 @@
   },
   "contracts": [
     {
-      "address": "0x2c2d137f9b93e783dd6bf8241ead57a25754930622b618c3234bcf4de0e5e1d",
-      "class_hash": "0x2e08460b8593392bea0347b896c1a124548306f73c1b21badae76b9624d4184",
+      "address": "0xbeb2e2f4b910b48cfd266debcdbce664500ee192f6bd19f9e38a157abe491",
+      "class_hash": "0x26ee81c7ee231e3ee7df193417922ee025ae306b1d4b3833e67cbb363670b14",
       "abi": [
         {
           "type": "impl",
@@ -1961,6 +1961,54 @@
               ],
               "outputs": [],
               "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "delete_objects",
+              "inputs": [
+                {
+                  "name": "ids",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "delete_actions",
+              "inputs": [
+                {
+                  "name": "ids",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "delete_rooms",
+              "inputs": [
+                {
+                  "name": "ids",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "delete_txts",
+              "inputs": [
+                {
+                  "name": "ids",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
             }
           ]
         },
@@ -2087,6 +2135,10 @@
         "create_actions",
         "create_rooms",
         "create_txt",
+        "delete_objects",
+        "delete_actions",
+        "delete_rooms",
+        "delete_txts",
         "upgrade"
       ]
     },

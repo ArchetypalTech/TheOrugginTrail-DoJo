@@ -1,5 +1,6 @@
 import { cn, normalizeAddress } from "@/lib/utils/utils";
 import { TagInput as Tags } from "./TagInput";
+import EditorStore from "../editor.store";
 
 export const Header = ({
 	title,
@@ -21,7 +22,11 @@ export const Header = ({
 
 export const DeleteButton = ({ onClick }: { onClick: () => void }) => {
 	return (
-		<button className="btn btn-danger btn-sm" onClick={onClick}>
+		<button className="btn btn-danger btn-sm" onClick={ async () => {
+			EditorStore().notifications.startPublishing();
+			await onClick();
+			EditorStore().notifications.clear();
+		}}>
 			❌
 		</button>
 	);
@@ -29,8 +34,13 @@ export const DeleteButton = ({ onClick }: { onClick: () => void }) => {
 
 export const PublishButton = ({ onClick }: { onClick: () => void }) => {
 	return (
-		<button className="btn btn-sm" onClick={onClick}>
+		<button className="btn btn-sm" onClick={ async () => {
+			EditorStore().notifications.startPublishing();
+			await onClick();
+			EditorStore().notifications.clear();
+		}}>
 			🕊️
+			
 		</button>
 	);
 };

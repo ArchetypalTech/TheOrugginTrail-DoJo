@@ -47,7 +47,6 @@ export const processTxtDef = async (txtDef: T_TextDefinition) => {
 };
 
 export const publishRoom = async (room: T_Room) => {
-	actions.notifications.startPublishing();
 	const txtDef = EditorData().getItem(room.txtDefId) as T_TextDefinition;
 	await processTxtDef(txtDef);
 	const roomData = [
@@ -85,7 +84,6 @@ export const processObjects = async (obj: T_Object) => {
 };
 
 export const publishObject = async (obj: T_Object) => {
-	actions.notifications.startPublishing();
 	console.log("Publishing object", obj);
 	const destId = parseInt(obj.destId || "0");
 	const objData = [
@@ -122,7 +120,6 @@ export const processObjectActions = async (obj: T_Object): Promise<void> => {
 };
 
 export const publishAction = async (action: T_Action) => {
-	actions.notifications.startPublishing();
 	const t = encodeURI(decodeDojoText(action.dBitTxt));
 	const actionData = [
 		parseInt(action.actionId),

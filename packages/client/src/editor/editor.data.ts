@@ -2,6 +2,8 @@ import { StoreBuilder } from "@/lib/utils/storebuilder";
 import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
 import { createRandomName, generateNumericUniqueId } from "./editor.utils";
 import { decodeDojoText } from "@/lib/utils/utils";
+import { SystemCalls } from "@/lib/systemCalls";
+import { publishRoom, publishObject, dispatchDesignerCall } from "./publisher";
 
 type AnyObject = T_Action | T_Room | T_Object | T_TextDefinition;
 
@@ -27,6 +29,23 @@ const setItem = (obj: AnyObject, id: string) => {
 		...prev,
 		dataPool: new Map<string, AnyObject>(get().dataPool).set(id, obj),
 	}));
+};
+
+const clearItem = (id: string) => {
+	const newDataPool = new Map<string, AnyObject>(get().dataPool);
+	newDataPool.delete(id);
+	set((prev) => ({
+			...prev,
+			dataPool: newDataPool,
+	}));
+};
+
+const clearRoom = (id: string) => {
+	set((prev) => ({
+			...prev,
+			rooms: {...Object.entries(get().rooms).filter((room) => room[1].roomId !== id)},
+	}));
+	clearItem(id);
 };
 
 const getItem = (id: string) => get().dataPool.get(id);
@@ -108,29 +127,72 @@ const syncItem = (obj: unknown) => {
 	}, 1);
 };
 
-const deleteItem = (id: string) => {
+const getRoomForObject = (obj: T_Object) => {
+	for (const room of Object.values(get().rooms) as T_Room[]) {
+			if (room.objectIds.includes(obj.objectId)) 
+					return room;
+	}
+	return null;
+};
+
+const removeObjectFromRoom = async (obj: T_Object) => {
+	const room = {...getRoomForObject(obj)} as T_Room;
+	if (room === null) {
+			throw new Error("Object not in any room");
+	}
+	room.objectIds = room.objectIds.filter((id) => id !== obj.objectId);
+	await syncItem({ Room: room });
+	await publishRoom(room);
+};
+
+
+const getObjectForAction = (action: T_Action) => {
+	for (const object of Object.values(get().objects) as T_Object[]) {
+			if (object.objectActionIds.includes(action.actionId)) 
+					return object;
+	}
+	return null;
+};
+
+const removeActionFromObject = async (action: T_Action) => {
+	const object = {...getObjectForAction(action)} as T_Object;
+	if (object === null) {
+			throw new Error("Action not in any object");
+	}
+	object.objectActionIds = object.objectActionIds.filter((id) => id !== action.actionId);
+	await syncItem({ Object: object });
+	await publishObject(object);
+};
+
+const deleteItem = async (id: string) => {
 	if (get().rooms[id] !== undefined) {
 		const room = get().rooms[id] as T_Room;
-		console.log("TEST Deleting room", room);
-		deleteItem(room.txtDefId);
+		console.log("TEST Deleting room", room);		
+		await deleteItem(room.txtDefId);
 		for (const objId of room.objectIds) {
-			deleteItem(objId);
+			await deleteItem(objId);
 		}
+		await deleteRoom(room.roomId);
 	}
 	if (get().objects[id] !== undefined) {
 		const object = get().objects[id] as T_Object;
 		console.log("TEST Deleting object", object);
-		deleteItem(object.txtDefId);
+		await deleteItem(object.txtDefId);
 		for (const actionId of object.objectActionIds) {
-			deleteItem(actionId);
+			await deleteItem(actionId);
 		}
+		await removeObjectFromRoom(object);
+		await deleteObject(object.objectId);		
 	}
 	if (get().actions[id] !== undefined) {
 		const action = get().actions[id] as T_Action;
+		await removeActionFromObject(action);
+		await deleteAction(action.actionId);
 		console.log("TEST Deleting action", action);
 	}
 	if (get().txtDefs[id] !== undefined) {
 		const txtDef = get().txtDefs[id] as T_TextDefinition;
+		await deleteTxt(txtDef.id);
 		console.log("TEST Deleting txtDef", txtDef);
 	}
 };
@@ -212,6 +274,26 @@ const newAction = (object: T_Object) => {
 	return newAction;
 };
 
+const deleteRoom = async (roomId: string) => {
+	await dispatchDesignerCall("delete_rooms", [[roomId]]);
+	clearRoom(roomId);
+};
+
+const deleteObject = async (objectId: string) => {
+	await dispatchDesignerCall("delete_objects", [[objectId]]);
+};
+
+const deleteAction = async (actionId: string) => {
+	await dispatchDesignerCall("delete_actions", [[actionId]]);
+};
+
+const deleteTxt = async (txtId: string) => {
+	await dispatchDesignerCall("delete_txts", [[txtId]]);
+};
+
+
+
+
 const logPool = () => {
 	const poolArray = get().dataPool.values().toArray();
 	const rooms = poolArray.filter((x) => (x as T_Room).roomId !== undefined);
@@ -245,6 +327,9 @@ const EditorData = createFactory({
 	newRoom,
 	newAction,
 	deleteItem,
+	deleteRoom,
+	deleteObject,
+	deleteAction,
 	tagItem,
 	logPool,
 	TEMP_CONSTANT_WORLD_ENTRY_ID,
