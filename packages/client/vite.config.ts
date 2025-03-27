@@ -43,11 +43,21 @@ export default defineConfig(async ({ mode }) => {
 		build: {
 			target: "esnext",
 			sourcemap: true,
-			minify: false,
-			terserOptions: {
-				compress: false,
-				mangle: false,
-			},
+			// minify: false,
+			// terserOptions: {
+			// compress: false,
+			// mangle: false,
+			// },
+			// rollupOptions: {
+			// 	output: {
+			// 		manualChunks: {
+			// 			"@dojoengine/core": ["@dojoengine/core"],
+			// 			"@dojoengine/sdk": ["@dojoengine/sdk"],
+			// 			"@cartridge/controller": ["@cartridge/controller"],
+			// 			starknet: ["starknet"],
+			// 		},
+			// 	},
+			// },
 		},
 		server: {
 			proxy: {
