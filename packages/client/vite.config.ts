@@ -42,9 +42,22 @@ export default defineConfig(async ({ mode }) => {
 		],
 		build: {
 			target: "esnext",
-			minify: true,
 			sourcemap: true,
-			reportCompressedSize: false,
+			// minify: false,
+			// terserOptions: {
+			// compress: false,
+			// mangle: false,
+			// },
+			// rollupOptions: {
+			// 	output: {
+			// 		manualChunks: {
+			// 			"@dojoengine/core": ["@dojoengine/core"],
+			// 			"@dojoengine/sdk": ["@dojoengine/sdk"],
+			// 			"@cartridge/controller": ["@cartridge/controller"],
+			// 			starknet: ["starknet"],
+			// 		},
+			// 	},
+			// },
 		},
 		server: {
 			proxy: {
@@ -53,7 +66,7 @@ export default defineConfig(async ({ mode }) => {
 					changeOrigin: true,
 				},
 			},
-			cors: true,
+			cors: false,
 		},
 		resolve: {
 			alias: {

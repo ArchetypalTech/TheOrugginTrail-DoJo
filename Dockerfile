@@ -40,9 +40,7 @@ RUN npm install -g pnpm@$PNPM_VERSION --force
 # Build the client package
 WORKDIR /app/packages/client
 RUN pnpm install
-# Install the missing @dojoengine/core dependency
-RUN pnpm add @dojoengine/core@1.2.5
-RUN pnpx vite build --mode slot
+RUN pnpm exec vite build --mode slot
 
 # Runtime Stage
 FROM oven/bun:latest as serve
@@ -54,6 +52,7 @@ RUN bun install -g serve
 ARG PORT=3000
 ENV PORT=${PORT}
 
+# Copy only the built client files
 COPY --from=build /app/packages/client/dist /app
 
 EXPOSE ${PORT}
