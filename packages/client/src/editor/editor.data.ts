@@ -3,6 +3,7 @@ import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
 import { createRandomName, generateNumericUniqueId } from "./editor.utils";
 import { decodeDojoText } from "@/lib/utils/utils";
 import { SystemCalls } from "@/lib/systemCalls";
+import { publishRoom, publishObject } from "./publisher";
 
 type AnyObject = T_Action | T_Room | T_Object | T_TextDefinition;
 
@@ -109,6 +110,43 @@ const syncItem = (obj: unknown) => {
 	}, 1);
 };
 
+const getRoomForObject = (obj: T_Object) => {
+	for (const room of Object.values(get().rooms) as T_Room[]) {
+			if (room.objectIds.includes(obj.objectId)) 
+					return room;
+	}
+	return null;
+};
+
+const removeObjectFromRoom = async (obj: T_Object) => {
+	const room = {...getRoomForObject(obj)} as T_Room;
+	if (room === null) {
+			throw new Error("Object not in any room");
+	}
+	room.objectIds = room.objectIds.filter((id) => id !== obj.objectId);
+	await syncItem({ Room: room });
+	await publishRoom(room);
+};
+
+
+const getObjectForAction = (action: T_Action) => {
+	for (const object of Object.values(get().objects) as T_Object[]) {
+			if (object.objectActionIds.includes(action.actionId)) 
+					return object;
+	}
+	return null;
+};
+
+const removeActionFromObject = async (action: T_Action) => {
+	const object = {...getObjectForAction(action)} as T_Object;
+	if (object === null) {
+			throw new Error("Action not in any object");
+	}
+	object.objectActionIds = object.objectActionIds.filter((id) => id !== action.actionId);
+	await syncItem({ Object: object });
+	await publishObject(object);
+};
+
 const deleteItem = async (id: string) => {
 	if (get().rooms[id] !== undefined) {
 		const room = get().rooms[id] as T_Room;
@@ -116,7 +154,6 @@ const deleteItem = async (id: string) => {
 		await deleteItem(room.txtDefId);
 		for (const objId of room.objectIds) {
 			await deleteItem(objId);
-			
 		}
 		await deleteRoom(room.roomId);
 	}
@@ -127,10 +164,12 @@ const deleteItem = async (id: string) => {
 		for (const actionId of object.objectActionIds) {
 			await deleteItem(actionId);
 		}
-		await deleteObject(object.objectId);
+		await removeObjectFromRoom(object);
+		await deleteObject(object.objectId);		
 	}
 	if (get().actions[id] !== undefined) {
 		const action = get().actions[id] as T_Action;
+		await removeActionFromObject(action);
 		await deleteAction(action.actionId);
 		console.log("TEST Deleting action", action);
 	}
