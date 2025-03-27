@@ -70,10 +70,10 @@ export const RoomEditor = ({
 		EditorData().syncItem({ Room: updatedRoom });
 	};
 
-	const handleDeleteRoom = () => {
+	const handleDeleteRoom = async () => {
 		if (!editedRoom) return;
 
-		EditorData().deleteItem(editedRoom.roomId);
+		await EditorData().deleteItem(editedRoom.roomId);
 		const r = EditorData().getRooms();
 		// Adjust the current room index if needed
 		if (currentRoomIndex >= r.length - 1) {
@@ -119,9 +119,8 @@ export const RoomEditor = ({
 				>
 					<DeleteButton onClick={handleDeleteRoom} />
 					<PublishButton
-						onClick={async () => {
-							await publishRoom(editedRoom);
-							EditorStore().notifications.clear();
+						onClick={async () => {							
+							await publishRoom(editedRoom);						
 						}}
 					/>
 				</Header>

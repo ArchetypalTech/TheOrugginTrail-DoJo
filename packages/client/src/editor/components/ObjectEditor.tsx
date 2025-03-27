@@ -69,10 +69,10 @@ export const ObjectEditor = ({
 	};
 
 	// Delete the current object
-	const handleDeleteObject = () => {
+	const handleDeleteObject = async () => {
 		if (!editedObject) return;
 
-		EditorData().deleteItem(editedObject.objectId);
+		await EditorData().deleteItem(editedObject.objectId);
 		// Adjust the current object index if needed
 		if (currentObjectIndex >= editedRoom.objectIds.length - 1) {
 			setCurrentObjectIndex(Math.max(0, editedRoom.objectIds.length - 2));

@@ -3,7 +3,7 @@ import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
 import { createRandomName, generateNumericUniqueId } from "./editor.utils";
 import { decodeDojoText } from "@/lib/utils/utils";
 import { SystemCalls } from "@/lib/systemCalls";
-import { publishRoom, publishObject } from "./publisher";
+import { publishRoom, publishObject, dispatchDesignerCall } from "./publisher";
 
 type AnyObject = T_Action | T_Room | T_Object | T_TextDefinition;
 
@@ -29,6 +29,23 @@ const setItem = (obj: AnyObject, id: string) => {
 		...prev,
 		dataPool: new Map<string, AnyObject>(get().dataPool).set(id, obj),
 	}));
+};
+
+const clearItem = (id: string) => {
+	const newDataPool = new Map<string, AnyObject>(get().dataPool);
+	newDataPool.delete(id);
+	set((prev) => ({
+			...prev,
+			dataPool: newDataPool,
+	}));
+};
+
+const clearRoom = (id: string) => {
+	set((prev) => ({
+			...prev,
+			rooms: {...Object.entries(get().rooms).filter((room) => room[1].roomId !== id)},
+	}));
+	clearItem(id);
 };
 
 const getItem = (id: string) => get().dataPool.get(id);
@@ -258,20 +275,24 @@ const newAction = (object: T_Object) => {
 };
 
 const deleteRoom = async (roomId: string) => {
-	await SystemCalls.execDesignerCall({ call: "delete_rooms", args: [[roomId]] });
+	await dispatchDesignerCall("delete_rooms", [[roomId]]);
+	clearRoom(roomId);
 };
 
 const deleteObject = async (objectId: string) => {
-	await SystemCalls.execDesignerCall({ call: "delete_objects", args: [[objectId]] });
+	await dispatchDesignerCall("delete_objects", [[objectId]]);
 };
 
 const deleteAction = async (actionId: string) => {
-	await SystemCalls.execDesignerCall({ call: "delete_actions", args: [[actionId]] });
+	await dispatchDesignerCall("delete_actions", [[actionId]]);
 };
 
 const deleteTxt = async (txtId: string) => {
-	await SystemCalls.execDesignerCall({ call: "delete_txts", args: [[txtId]] });
+	await dispatchDesignerCall("delete_txts", [[txtId]]);
 };
+
+
+
 
 const logPool = () => {
 	const poolArray = get().dataPool.values().toArray();
