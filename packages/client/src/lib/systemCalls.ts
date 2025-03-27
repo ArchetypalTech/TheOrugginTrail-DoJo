@@ -91,10 +91,14 @@ async function execDesignerCall(props: DesignerCallProps) {
 	try {
 		// other calls follow the same format Array<Object> see Cairo Models
 		let calldata: ReturnType<typeof CallData.compile>;
+		
 		if (call !== "create_txt") {
+			console.log("args", args, call);
 			// reformat args to cairo array
 			const data = toCairoArray(args) as RawArgsArray;
+			console.log("data", data);
 			calldata = CallData.compile(data);
+			console.log("calldata", calldata);
 		} else {
 			const safeEncoded = encodeURI(args[2] as string);
 			const convertedString = byteArray.byteArrayFromString(safeEncoded);

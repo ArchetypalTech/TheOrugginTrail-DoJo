@@ -45,8 +45,8 @@ pub mod models {
 pub mod utils {
     pub mod misc;
 }
+// pub mod tests {
+//     // pub mod test_tokeniser;
+//     pub mod test_rig;
+// }
 
-pub mod tests {
-    // pub mod test_tokeniser;
-    pub mod test_rig;
-}

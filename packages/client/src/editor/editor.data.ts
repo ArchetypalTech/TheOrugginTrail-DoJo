@@ -109,34 +109,34 @@ const syncItem = (obj: unknown) => {
 	}, 1);
 };
 
-const deleteItem = (id: string) => {
+const deleteItem = async (id: string) => {
 	if (get().rooms[id] !== undefined) {
 		const room = get().rooms[id] as T_Room;
 		console.log("TEST Deleting room", room);		
-		deleteItem(room.txtDefId);
+		await deleteItem(room.txtDefId);
 		for (const objId of room.objectIds) {
-			deleteItem(objId);
+			await deleteItem(objId);
 			
 		}
-		deleteAction(room.roomId);
+		await deleteRoom(room.roomId);
 	}
 	if (get().objects[id] !== undefined) {
 		const object = get().objects[id] as T_Object;
 		console.log("TEST Deleting object", object);
-		deleteItem(object.txtDefId);
+		await deleteItem(object.txtDefId);
 		for (const actionId of object.objectActionIds) {
-			deleteItem(actionId);
+			await deleteItem(actionId);
 		}
-		deleteObject(object.objectId);
+		await deleteObject(object.objectId);
 	}
 	if (get().actions[id] !== undefined) {
 		const action = get().actions[id] as T_Action;
-		deleteAction(action.actionId);
+		await deleteAction(action.actionId);
 		console.log("TEST Deleting action", action);
 	}
 	if (get().txtDefs[id] !== undefined) {
 		const txtDef = get().txtDefs[id] as T_TextDefinition;
-		deleteTxt(txtDef.id);
+		await deleteTxt(txtDef.id);
 		console.log("TEST Deleting txtDef", txtDef);
 	}
 };
@@ -218,20 +218,20 @@ const newAction = (object: T_Object) => {
 	return newAction;
 };
 
-const deleteRoom = (roomId: string) => {
-	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [roomId] });
+const deleteRoom = async (roomId: string) => {
+	await SystemCalls.execDesignerCall({ call: "delete_rooms", args: [[roomId]] });
 };
 
-const deleteObject = (objectId: string) => {
-	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [objectId] });
+const deleteObject = async (objectId: string) => {
+	await SystemCalls.execDesignerCall({ call: "delete_objects", args: [[objectId]] });
 };
 
-const deleteAction = (actionId: string) => {
-	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [actionId] });
+const deleteAction = async (actionId: string) => {
+	await SystemCalls.execDesignerCall({ call: "delete_actions", args: [[actionId]] });
 };
 
-const deleteTxt = (txtId: string) => {
-	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [txtId] });
+const deleteTxt = async (txtId: string) => {
+	await SystemCalls.execDesignerCall({ call: "delete_txts", args: [[txtId]] });
 };
 
 const logPool = () => {
