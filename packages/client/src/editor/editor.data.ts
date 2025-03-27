@@ -2,6 +2,7 @@ import { StoreBuilder } from "@/lib/utils/storebuilder";
 import type { T_Action, T_Object, T_Room, T_TextDefinition } from "./lib/types";
 import { createRandomName, generateNumericUniqueId } from "./editor.utils";
 import { decodeDojoText } from "@/lib/utils/utils";
+import { SystemCalls } from "@/lib/systemCalls";
 
 type AnyObject = T_Action | T_Room | T_Object | T_TextDefinition;
 
@@ -111,11 +112,13 @@ const syncItem = (obj: unknown) => {
 const deleteItem = (id: string) => {
 	if (get().rooms[id] !== undefined) {
 		const room = get().rooms[id] as T_Room;
-		console.log("TEST Deleting room", room);
+		console.log("TEST Deleting room", room);		
 		deleteItem(room.txtDefId);
 		for (const objId of room.objectIds) {
 			deleteItem(objId);
+			
 		}
+		deleteAction(room.roomId);
 	}
 	if (get().objects[id] !== undefined) {
 		const object = get().objects[id] as T_Object;
@@ -124,13 +127,16 @@ const deleteItem = (id: string) => {
 		for (const actionId of object.objectActionIds) {
 			deleteItem(actionId);
 		}
+		deleteObject(object.objectId);
 	}
 	if (get().actions[id] !== undefined) {
 		const action = get().actions[id] as T_Action;
+		deleteAction(action.actionId);
 		console.log("TEST Deleting action", action);
 	}
 	if (get().txtDefs[id] !== undefined) {
 		const txtDef = get().txtDefs[id] as T_TextDefinition;
+		deleteTxt(txtDef.id);
 		console.log("TEST Deleting txtDef", txtDef);
 	}
 };
@@ -212,6 +218,22 @@ const newAction = (object: T_Object) => {
 	return newAction;
 };
 
+const deleteRoom = (roomId: string) => {
+	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [roomId] });
+};
+
+const deleteObject = (objectId: string) => {
+	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [objectId] });
+};
+
+const deleteAction = (actionId: string) => {
+	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [actionId] });
+};
+
+const deleteTxt = (txtId: string) => {
+	SystemCalls.execDesignerCall({ call: "delete_rooms", args: [txtId] });
+};
+
 const logPool = () => {
 	const poolArray = get().dataPool.values().toArray();
 	const rooms = poolArray.filter((x) => (x as T_Room).roomId !== undefined);
@@ -245,6 +267,9 @@ const EditorData = createFactory({
 	newRoom,
 	newAction,
 	deleteItem,
+	deleteRoom,
+	deleteObject,
+	deleteAction,
 	tagItem,
 	logPool,
 	TEMP_CONSTANT_WORLD_ENTRY_ID,

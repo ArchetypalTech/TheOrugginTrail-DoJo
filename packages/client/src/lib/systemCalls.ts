@@ -66,7 +66,11 @@ export type DesignerCall =
 	| "create_objects"
 	| "create_actions"
 	| "create_rooms"
-	| "create_txt";
+	| "create_txt"
+	| "delete_objects"
+	| "delete_actions"
+	| "delete_rooms"
+	| "delete_txts";
 
 type DesignerCallProps = {
 	call: DesignerCall;

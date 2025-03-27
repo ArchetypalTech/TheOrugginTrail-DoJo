@@ -66,6 +66,22 @@ const setupController = async () => {
 					entrypoint: "create_txt",
 					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
 				},
+				{
+					entrypoint: "delete_objects",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "delete_actions",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "delete_rooms",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				},
+				{
+					entrypoint: "delete_txts",
+					description: `The terminal endpoint for ${APP_EDITOR_DATA.title}`,
+				}
 			],
 		},
 	};
