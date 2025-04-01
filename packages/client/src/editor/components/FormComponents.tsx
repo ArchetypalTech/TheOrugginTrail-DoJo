@@ -1,6 +1,7 @@
 import { cn, normalizeAddress } from "@/lib/utils/utils";
 import { TagInput as Tags } from "./TagInput";
 import EditorStore from "../editor.store";
+import { Editor } from "../editor";
 
 export const Header = ({
 	title,
@@ -26,6 +27,7 @@ export const DeleteButton = ({ onClick }: { onClick: () => void }) => {
 			EditorStore().notifications.startPublishing();
 			await onClick();
 			EditorStore().notifications.clear();
+			EditorStore().notifications.showSuccess("Deleted item from the world successfully");
 		}}>
 			❌
 		</button>
@@ -38,6 +40,7 @@ export const PublishButton = ({ onClick }: { onClick: () => void }) => {
 			EditorStore().notifications.startPublishing();
 			await onClick();
 			EditorStore().notifications.clear();
+			EditorStore().notifications.showSuccess("Published item to the world successfully");
 		}}>
 			🕊️
 			

@@ -142,7 +142,7 @@ export const publishAction = async (action: T_Action) => {
  * @returns The response from the API
  */
 export const dispatchDesignerCall = async (
-	call: DesignerCall,
+	call: DesignerCall, 
 	args: unknown[],
 ) => {
 	try {
@@ -150,6 +150,14 @@ export const dispatchDesignerCall = async (
 		actions.notifications.addPublishingLog(
 			new CustomEvent("designerCall", { detail: { call, args } }),
 		);
+		if (response.text.toString().includes("error")) {
+			actions.notifications.showSuccess("Published to the world successfully but with errors");
+			actions.notifications.addPublishingLog(
+				new CustomEvent("error", {
+					detail: { error: { message: response.text.toString() }, call, args },
+				}),
+			);
+		}
 		return response.json();
 	} catch (error) {
 		actions.notifications.addPublishingLog(
