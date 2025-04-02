@@ -142,7 +142,7 @@ export const publishAction = async (action: T_Action) => {
  * @returns The response from the API
  */
 export const dispatchDesignerCall = async (
-	call: DesignerCall,
+	call: DesignerCall, 
 	args: unknown[],
 ) => {
 	try {
