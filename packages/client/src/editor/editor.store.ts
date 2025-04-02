@@ -90,6 +90,25 @@ export const actions = {
 				logs: [...state.logs, log],
 			});
 		},
+
+		finalizePublishing: () => {
+			const state = getNotification();
+			actions.notifications.clear();			
+			if (state.logs === undefined) {
+				actions.notifications.showError("No logs to show");
+				console.error("No logs to show");
+				return;
+			} 
+			console.log("Logs:", state.logs);
+			if (state.logs.filter((log) => log.type === "error").length > 0) {
+				actions.notifications.showError(
+					"Published to the world successfully but with errors",
+				);
+			} else {
+				actions.notifications.showSuccess(
+					"Published to the world successfully",
+				);
+			}},
 	},
 
 	// Editor initialization and config operations
@@ -221,10 +240,7 @@ export const actions = {
 			try {
 				await actions.notifications.startPublishing();
 				await publishConfigToContract();
-				actions.notifications.clear();
-				actions.notifications.showSuccess(
-					"World published to contract successfully",
-				);
+				actions.notifications.finalizePublishing();
 				await tick();
 				console.log(EditorData().dataPool);
 				return true;
